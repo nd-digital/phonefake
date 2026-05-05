@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PhoneFake — Simulateur</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(ellipse at top, #2a2a3e 0%, #0d0d13 70%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px;
+    gap: 14px;
+    overflow: hidden;
+  }
+
+  .page-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .page-title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+    background: linear-gradient(135deg, #fff 0%, #b9c2d6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  .lang-switch { display: flex; gap: 6px; }
+  .lang-switch button {
+    border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .lang-switch button:hover { background: rgba(255,255,255,.14); }
+  .lang-switch button.active { background: #4a90e2; border-color: #4a90e2; }
+
+  /* Modale d'aide */
+  .help-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+    backdrop-filter: blur(6px);
+  }
+  .help-overlay.visible { display: flex; }
+  .help-box {
+    background: #1a1a26;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    max-width: 720px; width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px;
+    color: #e6eaf3;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    position: relative;
+  }
+  .help-box h2 { margin: 0 0 16px; font-size: 1.2rem; color: #fff; }
+  .help-box h3 { margin: 18px 0 8px; font-size: 1rem; color: #b9c2d6; }
+  .help-box p, .help-box li { font-size: 0.92rem; line-height: 1.55; color: #cbd0dc; }
+  .help-box ul { margin: 0 0 12px 20px; padding: 0; }
+  .help-box code {
+    background: rgba(255,255,255,.08);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+  .help-close {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(255,255,255,.08);
+    border: none; color: #fff;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .help-close:hover { background: rgba(255,255,255,.16); }
+  .help-screenshot {
+    margin: 16px 0;
+    background: #0d0d13;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .help-screenshot svg { width: 100%; height: auto; display: block; }
+  .help-screenshot-caption { font-size: 0.78rem; color: #8a93a6; text-align: center; font-style: italic; margin-top: 8px; }
+
+  /* === Accessibilité === */
+  .sr-only {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+  .skip-link {
+    position: absolute;
+    top: -100px; left: 0;
+    background: #4a90e2; color: #fff;
+    padding: 12px 20px; z-index: 10000;
+    text-decoration: none; font-weight: 700;
+    border-radius: 0 0 8px 0;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* Focus visible : par défaut discret, renforcé via toggle a11y */
+  :focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; border-radius: 4px; }
+  body.a11y-focus-ring :focus-visible { outline: 4px solid #fbbf24; outline-offset: 3px; }
+
+  /* Tailles de texte */
+  body.a11y-size-large { font-size: 1.15em; }
+  body.a11y-size-xlarge { font-size: 1.35em; }
+
+  /* Contraste élevé */
+  body.a11y-contrast {
+    background: #000 !important;
+    color: #fff !important;
+  }
+  body.a11y-contrast .toolbar,
+  body.a11y-contrast .lang-switch button,
+  body.a11y-contrast .help-box,
+  body.a11y-contrast .a11y-panel {
+    background: #111 !important;
+    border-color: #fff !important;
+  }
+  body.a11y-contrast .toolbar button,
+  body.a11y-contrast button {
+    border: 2px solid #fff !important;
+  }
+
+  /* Police dyslexie (OpenDyslexic via fonts free) */
+  body.a11y-dyslexia,
+  body.a11y-dyslexia button,
+  body.a11y-dyslexia input,
+  body.a11y-dyslexia select,
+  body.a11y-dyslexia textarea {
+    font-family: 'OpenDyslexic', 'Comic Sans MS', system-ui, sans-serif !important;
+    letter-spacing: 0.05em !important;
+    word-spacing: 0.1em !important;
+  }
+
+  /* Animations réduites */
+  body.a11y-reduced-motion *,
+  body.a11y-reduced-motion *::before,
+  body.a11y-reduced-motion *::after {
+    animation-duration: 0.001s !important;
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001s !important;
+      transition-duration: 0.001s !important;
+    }
+  }
+
+  /* Liens de pied de page : pas de couleur lien générique, pas de soulignement */
+  .footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #b9c2d6;
+    flex-wrap: wrap;
+  }
+  .footer-links a,
+  .footer-links a:visited {
+    color: #b9c2d6;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+  }
+  .footer-links a:hover,
+  .footer-links a:focus-visible { color: #fff; }
+  .footer-sep { color: #4a5878; }
+
+  /* Indicateur de dimensions, juste du texte centré dans la toolbar */
+  .dim-badge {
+    color: #b9c2d6;
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    background: transparent;
+    border: none;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+  }
+
+  /* Panel a11y (réutilise help-overlay) */
+  .a11y-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+    backdrop-filter: blur(6px);
+  }
+  .a11y-overlay.visible { display: flex; }
+  .a11y-panel {
+    background: #1a1a26;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    max-width: 460px; width: 100%;
+    padding: 28px;
+    color: #e6eaf3;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    position: relative;
+  }
+  .a11y-panel h2 { margin: 0 0 16px; font-size: 1.2rem; color: #fff; }
+  .a11y-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .a11y-row label { color: #cbd0dc; }
+  .a11y-row select {
+    background: #0d0d13; color: #fff;
+    border: 1px solid rgba(255,255,255,.15);
+    padding: 8px 12px; border-radius: 6px; font-size: 0.9rem;
+  }
+  .a11y-check {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px; cursor: pointer;
+    color: #cbd0dc; font-size: 0.92rem;
+  }
+  .a11y-check input { width: 18px; height: 18px; cursor: pointer; }
+  .a11y-reset {
+    margin-top: 8px; width: 100%;
+    background: rgba(220, 38, 38, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(220, 38, 38, 0.4);
+    padding: 10px; border-radius: 8px;
+    cursor: pointer; font-weight: 600;
+  }
+  .a11y-reset:hover { background: rgba(220, 38, 38, 0.25); }
+  .a11y-hint { font-size: 0.78rem; color: #8a93a6; font-style: italic; text-align: center; margin-top: 12px; }
+
+  /* Touches clavier dans la modale d'aide */
+  .help-box kbd {
+    display: inline-block;
+    padding: 2px 7px;
+    background: #2a2a3e;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.85em;
+    color: #fff;
+    margin: 0 2px;
+  }
+
+  /* Sélecteurs de modèle (au-dessus du stage, alignés avec les téléphones).
+     En mode simple : masqués (la toolbar suffit). En mode compare : visibles
+     pour permettre de choisir le modèle de chaque appareil. */
+  .phone-selectors {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  body.compare-on .phone-selectors { display: flex; }
+
+  /* Le 2e téléphone (clone) est cliquable : la délégation d'événements
+     au niveau du stage redirige les clics sur les app-icons vers openApp. */
+  .phone-model-select {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+  }
+  .phone-model-select:hover { background: rgba(255, 255, 255, 0.14); }
+  .phone-model-select:focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; }
+  /* Le dropdown ouvert garde le style système blanc par défaut → on force
+     un fond sombre + texte blanc pour la lisibilité (sinon blanc sur blanc). */
+  .phone-model-select option {
+    background: #1a1a26;
+    color: #fff;
+  }
+
+  /* Bouton Compare actif : surbrillance pour bien indiquer l'état */
+  #btn-compare.active {
+    background: #4a90e2;
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.35);
+  }
+
+  /* Bouton "icon only" (accessibilité) : SVG blanc agrandi sur fond transparent */
+  .toolbar button.btn-icon-only {
+    padding: 6px 10px;
+    background: transparent;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toolbar button.btn-icon-only svg {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+  .toolbar button.btn-icon-only:hover { background: rgba(255,255,255,.12); }
+
+  /* Mode compare : 2 phones côte à côte, rapprochés */
+  .stage.compare-mode { gap: 6px; }
+  /* Le 2e téléphone est une iframe qui recharge la page en mode embed.
+     Dimensions natives identiques au 1er téléphone (mises à jour par JS). */
+  .phone-mirror-iframe {
+    border: 0;
+    background: transparent;
+    flex-shrink: 0;
+    zoom: var(--phone-scale, 1);
+    transition: width .45s cubic-bezier(.4, 0, .2, 1), height .45s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .stage {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 6px;
+    background: rgba(255,255,255,.08);
+    padding: 6px;
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .toolbar button {
+    padding: 8px 18px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background .2s;
+  }
+  .toolbar button.active { background: #4a90e2; }
+  .toolbar button:not(.active):hover { background: rgba(255,255,255,.1); }
+  .toolbar .sep {
+    width: 1px;
+    background: rgba(255,255,255,.15);
+    margin: 4px 4px;
+  }
+
+  .launcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .launcher label {
+    font-size: 12px;
+    color: rgba(255,255,255,.6);
+  }
+  .launcher select {
+    padding: 8px 14px;
+    background: rgba(255,255,255,.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    min-width: 220px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .launcher select:hover { background-color: rgba(255,255,255,.12); }
+  .launcher select option { background: #1a1a1f; color: #fff; }
+
+  .phone {
+    width: 390px;
+    height: 820px;
+    position: relative;
+    flex-shrink: 0;
+    /* zoom (au lieu de transform:scale) modifie aussi la layout box → les
+       téléphones n'occupent que leur taille visible, ils ne dépassent plus
+       du stage en mode compare/paysage. */
+    zoom: var(--phone-scale, 1);
+    transition:
+      width .45s cubic-bezier(.4, 0, .2, 1),
+      height .45s cubic-bezier(.4, 0, .2, 1),
+      border-radius .3s, background .3s;
+  }
+  /* Les dimensions natives sont désormais imposées par fitPhone() en JS
+     (selon le modèle courant + orientation). Ce qui suit n'est qu'un
+     fallback pour les modes téléphones si jamais le JS n'a pas tourné. */
+  .phone.iphone.landscape,
+  .phone.android.landscape { width: 820px; height: 390px; }
+  .phone.iphone {
+    background: #0a0a0a;
+    border-radius: 56px;
+    padding: 14px;
+    box-shadow: 0 0 0 2px #222, inset 0 0 0 1px #333, 0 30px 80px rgba(0,0,0,.6);
+  }
+  .phone.android {
+    background: #1a1a1a;
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow: 0 0 0 2px #333, 0 30px 80px rgba(0,0,0,.6);
+  }
+  .phone.ipad {
+    background: #0a0a0a;
+    border-radius: 36px;
+    padding: 18px;
+    box-shadow: 0 0 0 2px #222, inset 0 0 0 1px #333, 0 30px 80px rgba(0,0,0,.6);
+  }
+  .phone.ipad .screen { border-radius: 22px; }
+  .phone.android-tablet {
+    background: #1a1a1a;
+    border-radius: 24px;
+    padding: 14px;
+    box-shadow: 0 0 0 2px #333, 0 30px 80px rgba(0,0,0,.6);
+  }
+  .phone.android-tablet .screen { border-radius: 14px; }
+  /* Tablettes : pas de notch, pas de punch-hole, pas d'indicator de home,
+     pas de barre nav style téléphone (elles ont leur propre UI). */
+  .phone.ipad .notch,
+  .phone.ipad .punch-hole,
+  .phone.ipad .nav-bar,
+  .phone.android-tablet .notch,
+  .phone.android-tablet .punch-hole,
+  .phone.android-tablet .nav-bar { display: none; }
+  /* Sur tablettes en paysage on peut élargir la grille d'icônes */
+  .phone.ipad .apps-grid,
+  .phone.android-tablet .apps-grid { grid-template-columns: repeat(6, 1fr); }
+  .phone.ipad.landscape .apps-grid,
+  .phone.android-tablet.landscape .apps-grid { grid-template-columns: repeat(8, 1fr); }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone.iphone .screen { border-radius: 44px; }
+  .phone.android .screen { border-radius: 28px; }
+
+  /* iPhone decorations */
+  .notch {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 34px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 50;
+    display: none;
+    transition: all .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: rgba(255,255,255,.6);
+    border-radius: 3px;
+    z-index: 50;
+    cursor: pointer;
+    display: none;
+    transition: all .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  .phone.iphone .notch,
+  .phone.iphone .home-indicator { display: block; }
+  /* Landscape: notch sur le bord gauche (dans le bezel, pas par-dessus l'écran)
+     + home indicator sur le bord droit. La notch reste fine pour ne pas
+     empiéter sur le contenu — sur un vrai iPhone elle est dans la safe-area. */
+  .phone.iphone.landscape .notch {
+    top: 50%; left: 0;
+    transform: translateY(-50%);
+    width: 14px; height: 110px;
+    border-radius: 0 12px 12px 0;
+  }
+  .phone.iphone.landscape .home-indicator {
+    top: 50%; bottom: auto; right: 4px; left: auto;
+    transform: translateY(-50%);
+    width: 5px; height: 110px;
+  }
+
+  /* Android decorations */
+  .punch-hole {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: #000;
+    border-radius: 50%;
+    z-index: 50;
+    display: none;
+    transition: all .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  .nav-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 44px;
+    background: rgba(10,10,10,.85);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 50;
+    transition: all .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  .phone.android.landscape .punch-hole {
+    top: 50%; left: 14px;
+    transform: translateY(-50%);
+  }
+  .phone.android.landscape .nav-bar {
+    top: 0; bottom: 0; left: auto; right: 0;
+    width: 44px; height: 100%;
+    flex-direction: column;
+  }
+  .nav-bar button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px 18px;
+    border-radius: 8px;
+    transition: background .15s;
+  }
+  .nav-bar button:hover { background: rgba(255,255,255,.1); }
+  .phone.android .punch-hole,
+  .phone.android .nav-bar { display: flex; }
+  .phone.android .punch-hole { display: block; }
+
+  .status-bar {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    z-index: 6;
+    pointer-events: none;
+  }
+  .phone.android .status-bar { padding: 0 16px; height: 32px; font-size: 12px; }
+  .phone.landscape .status-bar { display: none; }
+
+  /* Home screen */
+  .home {
+    position: absolute;
+    inset: 0;
+    padding: 56px 22px 30px;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(160deg, #3b5998 0%, #6a4a8a 60%, #c94b8a 100%);
+  }
+  .phone.android .home {
+    background: linear-gradient(160deg, #1e3c72 0%, #2a5298 100%);
+    padding: 44px 18px 60px;
+  }
+  .phone.iphone.landscape .home { padding: 24px 70px 24px 70px; }
+  .phone.android.landscape .home { padding: 20px 60px 20px 30px; }
+  .phone.landscape .apps-grid { grid-template-columns: repeat(6, 1fr); }
+
+  .apps-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px 8px;
+    align-content: start;
+    padding-top: 8px;
+  }
+  .app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform .12s;
+  }
+  .app-icon:active { transform: scale(.9); }
+  .app-icon .logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 22px;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,.35);
+    overflow: hidden;
+  }
+  .phone.android .app-icon .logo { border-radius: 50%; }
+  .app-icon .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .app-icon .name {
+    font-size: 11px;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,.6);
+    max-width: 76px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: rgba(255,255,255,.7);
+    padding: 40px 20px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* Apps layer */
+  .apps-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+  }
+  .app-window {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    display: none;
+    flex-direction: column;
+    pointer-events: all;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .phone.iphone .app-window {
+    border-radius: 44px;
+    padding-top: 48px; /* clear the notch — content starts below */
+    padding-bottom: 28px; /* clear the home indicator */
+  }
+  .phone.iphone.landscape .app-window {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 48px; /* notch now on the left */
+    padding-right: 28px; /* home indicator now on the right */
+  }
+  .phone.android .app-window {
+    border-radius: 28px;
+    padding-bottom: 44px; /* clear the nav bar */
+  }
+  .phone.android.landscape .app-window {
+    padding-bottom: 0;
+    padding-right: 44px; /* nav bar now on the right */
+  }
+  .app-window.active { display: flex; }
+  .app-window iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #fff;
+  }
+
+  /* App switcher */
+  .app-switcher {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.88);
+    backdrop-filter: blur(20px);
+    z-index: 40;
+    display: none;
+    flex-direction: column;
+    padding: 60px 12px 60px;
+  }
+  .app-switcher.open { display: flex; }
+  .app-switcher .switcher-title {
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 14px;
+    opacity: .7;
+  }
+  .switcher-list {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 4px;
+    scrollbar-width: thin;
+  }
+  .switcher-list::-webkit-scrollbar { height: 6px; }
+  .switcher-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 3px; }
+  .switcher-card {
+    min-width: 130px;
+    width: 130px;
+    background: #1a1a1a;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    overflow: hidden;
+    border: 2px solid transparent;
+    flex-shrink: 0;
+    transition: border-color .15s, transform .15s;
+  }
+  .switcher-card:hover { border-color: #4a90e2; transform: translateY(-4px); }
+  .switcher-card .head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 10px;
+    background: #0d0d0d;
+  }
+  .switcher-card .mini-logo {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .switcher-card .mini-logo img { width: 100%; height: 100%; object-fit: cover; }
+  .switcher-card .title {
+    flex: 1;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+  }
+  .switcher-card .close {
+    width: 22px; height: 22px;
+    border: none;
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .switcher-card .close:hover { background: #e74c3c; }
+  .switcher-card .preview {
+    height: 90px;
+    background: #2a2a2a;
+    color: #888;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    text-align: center;
+  }
+  .switcher-empty {
+    color: rgba(255,255,255,.5);
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 13px;
+  }
+
+  .info {
+    text-align: center;
+    color: rgba(255,255,255,.4);
+    font-size: 11px;
+    max-width: 480px;
+    line-height: 1.5;
+  }
+  .info code {
+    background: rgba(255,255,255,.08);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1 class="page-title" data-i18n="title">📱 PhoneFake — Simulateur mobile</h1>
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button type="button" data-lang="fr" class="active" aria-label="Français" title="Français">🇫🇷</button>
+    <button type="button" data-lang="en" aria-label="English" title="English">🇬🇧</button>
+    <button type="button" data-lang="es" aria-label="Español" title="Español">🇪🇸</button>
+    <button type="button" data-lang="it" aria-label="Italiano" title="Italiano">🇮🇹</button>
+    <button type="button" data-lang="de" aria-label="Deutsch" title="Deutsch">🇩🇪</button>
+  </div>
+</div>
+
+<div class="launcher">
+  <label for="app-launcher" data-i18n="webMode">Mode web :</label>
+  <select id="app-launcher">
+    <option value="" data-i18n="openAppOption">Ouvrir une appli dans un nouvel onglet…</option>
+  </select>
+</div>
+
+<div class="toolbar" role="toolbar" aria-label="Contrôles du simulateur">
+  <button id="btn-home" data-i18n="home" data-i18n-title="homeTitle" title="Retour à l'accueil">Accueil</button>
+  <div class="sep"></div>
+  <button id="btn-iphone" class="active">iPhone</button>
+  <button id="btn-android">Android</button>
+  <button id="btn-ipad" data-i18n="ipad" data-i18n-title="ipadTitle" title="Tablette iPad">iPad</button>
+  <button id="btn-android-tablet" data-i18n="androidTablet" data-i18n-title="androidTabletTitle" title="Tablette Android">Tablette</button>
+  <div class="sep"></div>
+  <button id="btn-switch" data-i18n="apps" data-i18n-title="appsTitle" title="Applis ouvertes">Applis ouvertes</button>
+  <div class="sep"></div>
+  <button id="btn-rotate" data-i18n="rotate" data-i18n-title="rotateTitle" title="Rotation portrait / paysage">⟳ Rotation</button>
+  <button id="btn-compare" data-i18n="compare" data-i18n-title="compareTitle" title="Côte à côte">⇆ Compare</button>
+  <div class="sep"></div>
+  <button id="btn-a11y" class="btn-icon-only" data-i18n-title="a11yTitle" title="Réglages d'accessibilité" aria-label="Accessibilité">
+    <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+      <clipPath id="wcClip">
+        <path d="M -20,50 10,13 c 5.522847,0 10,4.477153 10,10 L 40,50 20,-30"/>
+      </clipPath>
+      <g clip-path="url(#wcClip)">
+        <circle cx="19" cy="3" r="3" fill="#fff" stroke="none"/>
+        <path d="M 16,9 11,19" stroke-width="6"/>
+        <path d="M 29,28 24,18 11,19 16,7.75 8,8 5,14"/>
+      </g>
+      <circle cx="10" cy="23" r="7.25"/>
+    </svg>
+  </button>
+  <button id="btn-help" data-i18n="help" data-i18n-title="helpTitle" title="Aide / À propos">? Aide</button>
+  <div class="sep"></div>
+  <span class="dim-badge" id="dimBadge" aria-live="polite">390 × 820</span>
+</div>
+
+<!-- Skip link pour les lecteurs d'écran -->
+<a href="#stage" class="skip-link" data-i18n="skipToContent">Aller au contenu principal</a>
+
+<!-- Sélecteurs de modèle (au-dessus du / des téléphones, hors stage scalé) -->
+<div class="phone-selectors" id="phoneSelectors">
+  <select class="phone-model-select" id="phoneModelSelect" aria-label="Modèle de l'appareil 1">
+    <option value="iphone">📱 iPhone</option>
+    <option value="android">🤖 Android</option>
+    <option value="ipad">📲 iPad</option>
+    <option value="android-tablet">📲 Tablette Android</option>
+  </select>
+</div>
+
+<!-- Modale d'aide -->
+<div class="help-overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitleEl">
+  <div class="help-box">
+    <button type="button" class="help-close" id="helpClose" aria-label="Fermer">×</button>
+    <h2 id="helpTitleEl" data-i18n="helpModalTitle">📱 PhoneFake — Guide</h2>
+    <p data-i18n="helpIntro">Cet outil simule un appareil mobile (iPhone ou Android) dans ton navigateur, en portrait ou paysage. Il sert à tester l'apparence et le comportement de tes propres applications web — qu'elles soient classiques, responsive, PWA installables ou autres.</p>
+
+    <div class="help-screenshot">
+      <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aperçu PhoneFake">
+        <rect x="0" y="0" width="720" height="280" rx="12" fill="#0d0d13"/>
+        <text x="360" y="28" text-anchor="middle" fill="#b9c2d6" font-family="system-ui" font-size="14" font-weight="700">PhoneFake</text>
+        <rect x="220" y="42" width="280" height="22" rx="11" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)"/>
+        <text x="360" y="57" text-anchor="middle" fill="#fff" font-family="system-ui" font-size="11">iPhone · Android · iPad · Tablette</text>
+
+        <!-- iPhone -->
+        <rect x="40" y="90" width="80" height="160" rx="14" fill="#0a0a0a" stroke="#222"/>
+        <rect x="48" y="104" width="64" height="132" rx="8" fill="#1a1a2e"/>
+        <rect x="68" y="94" width="24" height="4" rx="2" fill="#000"/>
+        <text x="80" y="268" text-anchor="middle" fill="#7a83a0" font-family="system-ui" font-size="10">iPhone</text>
+
+        <!-- Android phone -->
+        <rect x="160" y="90" width="80" height="160" rx="10" fill="#1a1a1a" stroke="#333"/>
+        <rect x="166" y="98" width="68" height="144" rx="6" fill="#1a1a2e"/>
+        <circle cx="200" cy="106" r="3" fill="#000"/>
+        <text x="200" y="268" text-anchor="middle" fill="#7a83a0" font-family="system-ui" font-size="10">Android</text>
+
+        <!-- iPad -->
+        <rect x="290" y="80" width="160" height="180" rx="12" fill="#0a0a0a" stroke="#222"/>
+        <rect x="304" y="94" width="132" height="152" rx="6" fill="#1a1a2e"/>
+        <text x="370" y="278" text-anchor="middle" fill="#7a83a0" font-family="system-ui" font-size="10">iPad</text>
+
+        <!-- Android tablet -->
+        <rect x="500" y="84" width="170" height="172" rx="8" fill="#1a1a1a" stroke="#333"/>
+        <rect x="510" y="94" width="150" height="152" rx="4" fill="#1a1a2e"/>
+        <text x="585" y="274" text-anchor="middle" fill="#7a83a0" font-family="system-ui" font-size="10">Tablette Android</text>
+      </svg>
+      <div class="help-screenshot-caption" data-i18n="helpCaption">Aperçu : 4 formats de simulation — iPhone, Android, iPad, Tablette Android — interchangeables d'un clic.</div>
+    </div>
+
+    <h3 data-i18n="helpFeaturesTitle">✨ Fonctionnalités</h3>
+    <ul>
+      <li data-i18n="helpFeat1"><strong>2 modèles d'appareil</strong> : iPhone (notch + coins arrondis) ou Android (punch-hole + coins plus carrés).</li>
+      <li data-i18n="helpFeat2"><strong>Rotation</strong> : bascule portrait ↔ paysage en un clic, l'écran et les décorations s'adaptent.</li>
+      <li data-i18n="helpFeat3"><strong>Multi-applis</strong> : place tes propres applis dans des sous-dossiers à côté de cette page (chacune avec son <code>index.html</code>) et elles apparaissent dans le menu <em>Mode web</em>.</li>
+      <li data-i18n="helpFeat4"><strong>Compatible</strong> : sites classiques, responsive design, PWA installables, applis avec service worker — tout ce qui se sert dans un navigateur.</li>
+      <li data-i18n="helpFeat5"><strong>Accueil et Applis</strong> : reviens à un launcher minimal ou retrouve la liste des applis ouvertes.</li>
+      <li data-i18n="helpFeat6"><strong>Multilingue</strong> : interface en 5 langues (🇫🇷 français, 🇬🇧 anglais, 🇪🇸 espagnol, 🇮🇹 italien, 🇩🇪 allemand), sélectionnable via les drapeaux en haut.</li>
+      <li data-i18n="helpFeat7"><strong>Mode desktop</strong> : le sélecteur <em>Mode web</em> en haut de la page permet aussi d'ouvrir une appli dans un nouvel onglet du navigateur, en pleine largeur (rendu desktop sans simulation).</li>
+    </ul>
+
+    <h3 data-i18n="helpUsageTitle">💡 Utilisation</h3>
+    <ul>
+      <li data-i18n="helpUse1">Ajoute tes applis dans des sous-dossiers du même répertoire que ce fichier ; elles apparaissent automatiquement dans le sélecteur.</li>
+      <li data-i18n="helpUse2">Choisis iPhone ou Android pour adapter le rendu de ton appli aux contraintes de chaque plateforme.</li>
+      <li data-i18n="helpUse3">Utilise <em>Rotation</em> pour vérifier l'affichage paysage de ton interface.</li>
+    </ul>
+
+    <h3 data-i18n="helpLocalTitle">🖥️ Usage local uniquement</h3>
+    <p data-i18n="helpLocal">PhoneFake est conçu pour un environnement de développement <strong>local</strong> (Laragon, MAMP, XAMPP, serveur Node, etc.). Ce n'est pas un service en ligne — il sert à tester rapidement tes propres applications sur ta machine, avant déploiement.</p>
+
+    <h3 data-i18n="helpShortcutsTitle">⌨️ Raccourcis clavier</h3>
+    <ul>
+      <li data-i18n="helpShort1"><kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablette</li>
+      <li data-i18n="helpShort2"><kbd>R</kbd> Rotation · <kbd>C</kbd> Comparer · <kbd>H</kbd> Aide · <kbd>A</kbd> Accessibilité · <kbd>Échap</kbd> Fermer</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Région live pour annoncer les changements (lecteurs d'écran) -->
+<div id="liveRegion" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<!-- Panel d'accessibilité -->
+<div class="a11y-overlay" id="a11yOverlay" role="dialog" aria-modal="true" aria-labelledby="a11yPanelTitle">
+  <div class="a11y-panel">
+    <button type="button" class="help-close" id="a11yClose" aria-label="Fermer">×</button>
+    <h2 id="a11yPanelTitle" data-i18n="a11yPanelTitle">♿ Accessibilité</h2>
+    <div class="a11y-row">
+      <label for="a11yFontSize" data-i18n="a11yFontSize">Taille du texte</label>
+      <select id="a11yFontSize">
+        <option value="normal" data-i18n="a11ySizeNormal">Normal</option>
+        <option value="large" data-i18n="a11ySizeLarge">Grand</option>
+        <option value="xlarge" data-i18n="a11ySizeXLarge">Très grand</option>
+      </select>
+    </div>
+    <label class="a11y-check">
+      <input type="checkbox" id="a11yContrast">
+      <span data-i18n="a11yContrast">Contraste élevé</span>
+    </label>
+    <label class="a11y-check">
+      <input type="checkbox" id="a11yDyslexia">
+      <span data-i18n="a11yDyslexia">Police dyslexie (OpenDyslexic)</span>
+    </label>
+    <label class="a11y-check">
+      <input type="checkbox" id="a11yReducedMotion">
+      <span data-i18n="a11yReducedMotion">Réduire les animations</span>
+    </label>
+    <label class="a11y-check">
+      <input type="checkbox" id="a11yFocusRing">
+      <span data-i18n="a11yFocusRing">Indicateur de focus renforcé</span>
+    </label>
+    <button type="button" id="a11yReset" class="a11y-reset" data-i18n="a11yReset">Réinitialiser</button>
+    <p class="a11y-hint" data-i18n="a11yHint">Tes choix sont mémorisés et s'appliquent uniquement à cette page.</p>
+  </div>
+</div>
+
+<div class="stage" id="stage">
+<div class="phone iphone" id="phone">
+  <div class="screen">
+    <div class="notch"></div>
+    <div class="punch-hole"></div>
+
+    <div class="status-bar">
+      <span id="clock">00:00</span>
+      <span>100%</span>
+    </div>
+
+    <div class="home" id="home">
+      <div class="apps-grid" id="apps-grid">
+        <div class="empty">Chargement des applis…</div>
+      </div>
+    </div>
+
+    <div class="apps-layer" id="apps-layer"></div>
+
+    <div class="app-switcher" id="app-switcher">
+      <div class="switcher-title">Applis ouvertes</div>
+      <div class="switcher-list" id="switcher-list"></div>
+    </div>
+
+    <div class="nav-bar" id="nav-bar">
+      <button id="and-back" title="Retour">◁</button>
+      <button id="and-home" title="Accueil">○</button>
+      <button id="and-switch" title="Applis récentes">▢</button>
+    </div>
+
+    <div class="home-indicator" id="home-indicator" title="Accueil"></div>
+  </div>
+</div>
+</div><!-- /stage -->
+
+<div class="info" data-i18n="footerInfo">
+  Dépose un sous-dossier dans <code>APPLI/</code> et il apparaîtra automatiquement.
+  Ajoute un <code>icon.png</code> (ou <code>logo.png</code>) dans le dossier pour personnaliser l'icône.
+</div>
+<div class="footer-links">
+  <a href="https://nicolas-degabriel.digital" target="_blank" rel="noopener noreferrer">🌐 nicolas-degabriel.digital</a>
+  <span class="footer-sep">·</span>
+  <a href="https://github.com/nd-digital" target="_blank" rel="noopener noreferrer">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align: -2px;">
+      <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.37-3.87-1.37-.52-1.34-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.73-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.38.97 0 1.95.13 2.86.38 2.18-1.49 3.14-1.18 3.14-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.43-2.69 5.4-5.25 5.69.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.67.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+    </svg>
+    github.com/nd-digital
+  </a>
+</div>
+
+<script>
+  const phone = document.getElementById('phone');
+  const grid = document.getElementById('apps-grid');
+  const appsLayer = document.getElementById('apps-layer');
+  const switcher = document.getElementById('app-switcher');
+  const switcherList = document.getElementById('switcher-list');
+
+  const openApps = new Map(); // id → { app, window, iframe }
+  let activeAppId = null;
+  let knownAppIds = new Set();
+  let knownAppsList = [];  // pour la délégation d'événements (clic sur .app-icon)
+
+  // Dimensions par modèle (portrait : [width, height])
+  const MODEL_DIMS = {
+    'iphone':         [390, 820],
+    'android':        [390, 820],
+    'ipad':           [820, 1180],
+    'android-tablet': [800, 1280]
+  };
+  let currentModel = 'iphone';
+  // Hoist : utilisé par fitPhone()
+  let compareEnabled = false;
+  let comparePhone = null;
+  let compareModel = 'android';
+
+  // Model switch — pilote le 1er téléphone, et synchronise le 2e en mode compare
+  function setModel(m) {
+    if (!MODEL_DIMS[m]) return;
+    currentModel = m;
+    phone.classList.remove('iphone', 'android', 'ipad', 'android-tablet');
+    phone.classList.add(m);
+    ['btn-iphone', 'btn-android', 'btn-ipad', 'btn-android-tablet'].forEach(id => {
+      const map = { 'btn-iphone': 'iphone', 'btn-android': 'android', 'btn-ipad': 'ipad', 'btn-android-tablet': 'android-tablet' };
+      document.getElementById(id).classList.toggle('active', map[id] === m);
+    });
+    // Synchronise le select au-dessus du phone (1er seulement)
+    const sel = document.getElementById('phoneModelSelect');
+    if (sel && sel.value !== m) sel.value = m;
+    fitPhone();
+    // En compare : re-clone le 2e téléphone (qui mirroire le DOM du 1er)
+    // sans toucher à compareModel (le 2e garde son propre modèle).
+    if (compareEnabled) buildCompareMirror();
+    // Annonce a11y (live region)
+    const r = document.getElementById('liveRegion');
+    if (r) {
+      const lang = (document.documentElement.lang || 'fr');
+      const T = (typeof I18N !== 'undefined' && I18N[lang]) ? I18N[lang] : null;
+      const labels = { 'iphone': 'iPhone', 'android': 'Android', 'ipad': (T && T.ipad) || 'iPad', 'android-tablet': (T && T.androidTablet) || 'Tablet' };
+      r.textContent = (lang === 'en' ? 'Switched to ' : 'Modèle : ') + labels[m];
+    }
+  }
+  document.getElementById('btn-iphone').addEventListener('click', () => setModel('iphone'));
+  document.getElementById('btn-android').addEventListener('click', () => setModel('android'));
+  document.getElementById('btn-ipad').addEventListener('click', () => setModel('ipad'));
+  document.getElementById('btn-android-tablet').addEventListener('click', () => setModel('android-tablet'));
+  // Le sélecteur au-dessus du téléphone fait la même chose que les boutons
+  document.getElementById('phoneModelSelect').addEventListener('change', (e) => setModel(e.target.value));
+
+  // Responsive fit + rotation
+  const stage = document.getElementById('stage');
+  const btnRotate = document.getElementById('btn-rotate');
+  let isLandscape = false;
+
+  function fitPhone() {
+    const r = stage.getBoundingClientRect();
+    const dims = MODEL_DIMS[currentModel] || [390, 820];
+    const w = isLandscape ? dims[1] : dims[0];
+    const h = isLandscape ? dims[0] : dims[1];
+    phone.style.width = w + 'px';
+    phone.style.height = h + 'px';
+    if (r.width <= 0 || r.height <= 0) return;
+    // En compare : chaque phone doit tenir dans ~48% de la largeur (marge
+    // de sécurité pour le gap + bordures). En solo : 92% de la largeur.
+    const widthRatio = compareEnabled ? 0.48 : 0.92;
+    const heightRatio = 0.94;
+    const raw = Math.min((r.width * widthRatio) / w, (r.height * heightRatio) / h);
+    phone.style.setProperty('--phone-scale', Math.min(raw, 1));
+    // Mise à jour de l'indicateur de dimensions
+    const badge = document.getElementById('dimBadge');
+    if (badge) badge.textContent = w + ' × ' + h;
+    // Persistance
+    try {
+      localStorage.setItem('phonefake-model', currentModel);
+      localStorage.setItem('phonefake-orientation', isLandscape ? 'landscape' : 'portrait');
+    } catch {}
+    // Compare : redimensionner le clone aussi
+    if (comparePhone) fitComparePhone();
+  }
+
+  btnRotate.addEventListener('click', () => {
+    isLandscape = !isLandscape;
+    btnRotate.classList.toggle('active', isLandscape);
+    phone.classList.toggle('landscape', isLandscape);
+    // Propage la classe landscape au wrapper du 2e téléphone (compare)
+    if (comparePhone) comparePhone.classList.toggle('landscape', isLandscape);
+    fitPhone();
+  });
+
+  window.addEventListener('resize', fitPhone);
+  window.addEventListener('load', fitPhone);
+  fitPhone();
+
+  // Clock
+  function tick() {
+    const d = new Date();
+    document.getElementById('clock').textContent =
+      String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 30000);
+
+  // Helpers
+  function initials(name) {
+    return name.replace(/[-_]/g,' ').split(/\s+/).map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
+  }
+  function colorFor(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    const hue = h % 360;
+    return `linear-gradient(135deg, hsl(${hue},70%,55%), hsl(${(hue+40)%360},65%,40%))`;
+  }
+
+  // Fetch apps
+  async function loadApps() {
+    try {
+      const r = await fetch('apps.php', { cache: 'no-store' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const list = await r.json();
+      renderApps(list);
+    } catch (e) {
+      grid.innerHTML = '<div class="empty">Impossible de charger <code>apps.php</code>.<br>Vérifie que PHP est activé dans Laragon.</div>';
+    }
+  }
+
+  function renderApps(apps) {
+    const currentIds = new Set(apps.map(a => a.id));
+    const changed = apps.length !== knownAppIds.size
+      || apps.some(a => !knownAppIds.has(a.id));
+    if (!changed) return;
+    knownAppIds = currentIds;
+
+    renderLauncher(apps);
+
+    grid.innerHTML = '';
+    if (!apps.length) {
+      grid.innerHTML = '<div class="empty">Aucune appli trouvée.<br>Ajoute un sous-dossier dans <code>APPLI/</code>.</div>';
+      return;
+    }
+    // Mémorise la liste des apps pour la délégation d'événements
+    knownAppsList = apps;
+    apps.forEach(app => {
+      const el = document.createElement('div');
+      el.className = 'app-icon';
+      el.dataset.appId = app.id;
+      const logo = document.createElement('div');
+      logo.className = 'logo';
+      if (app.icon) {
+        const img = document.createElement('img');
+        img.src = app.icon;
+        img.alt = app.name;
+        img.onerror = () => {
+          logo.textContent = initials(app.name);
+          logo.style.background = colorFor(app.name);
+        };
+        logo.appendChild(img);
+      } else {
+        logo.textContent = initials(app.name);
+        logo.style.background = colorFor(app.name);
+      }
+      const n = document.createElement('div');
+      n.className = 'name';
+      n.textContent = app.name;
+      el.appendChild(logo);
+      el.appendChild(n);
+      el.addEventListener('click', () => openApp(app));
+      grid.appendChild(el);
+    });
+  }
+
+  // App lifecycle
+  function openApp(app) {
+    if (!openApps.has(app.id)) {
+      const win = document.createElement('div');
+      win.className = 'app-window';
+      const iframe = document.createElement('iframe');
+      iframe.src = app.url;
+      iframe.title = app.name;
+      iframe.setAttribute('allow', 'camera; microphone; fullscreen; autoplay; clipboard-read; clipboard-write');
+      // À chaque navigation interne dans l'iframe (clic sur un lien),
+      // resynchroniser le 2e téléphone (compare).
+      iframe.addEventListener('load', () => {
+        if (compareEnabled) buildCompareMirror();
+      });
+      win.appendChild(iframe);
+      appsLayer.appendChild(win);
+      openApps.set(app.id, { app, window: win, iframe });
+    }
+    showApp(app.id);
+  }
+
+  // Met à jour les classes .active sur les boutons Accueil/Applis ouvertes
+  // selon l'état courant (rien d'ouvert / appli ouverte / switcher ouvert).
+  function updateNavState() {
+    const btnHome = document.getElementById('btn-home');
+    const btnSwitch = document.getElementById('btn-switch');
+    const switcherOpen = switcher.classList.contains('open');
+    if (btnHome) btnHome.classList.toggle('active', activeAppId === null && !switcherOpen);
+    if (btnSwitch) btnSwitch.classList.toggle('active', switcherOpen);
+  }
+
+  function showApp(id) {
+    openApps.forEach((v, k) => v.window.classList.toggle('active', k === id));
+    activeAppId = id;
+    switcher.classList.remove('open');
+    updateNavState();
+    if (typeof syncCompareIframe === 'function') syncCompareIframe();
+  }
+
+  function goHome() {
+    openApps.forEach(v => v.window.classList.remove('active'));
+    activeAppId = null;
+    switcher.classList.remove('open');
+    updateNavState();
+    if (typeof syncCompareIframe === 'function') syncCompareIframe();
+  }
+
+  function closeApp(id) {
+    const e = openApps.get(id);
+    if (!e) return;
+    e.window.remove();
+    openApps.delete(id);
+    if (activeAppId === id) activeAppId = null;
+    renderSwitcher();
+    if (!openApps.size) switcher.classList.remove('open');
+    if (typeof syncCompareIframe === 'function') syncCompareIframe();
+  }
+
+  function toggleSwitcher() {
+    if (switcher.classList.contains('open')) {
+      switcher.classList.remove('open');
+    } else {
+      renderSwitcher();
+      switcher.classList.add('open');
+    }
+    updateNavState();
+    if (typeof syncCompareIframe === 'function') syncCompareIframe();
+  }
+
+  function renderSwitcher() {
+    switcherList.innerHTML = '';
+    if (!openApps.size) {
+      const e = document.createElement('div');
+      e.className = 'switcher-empty';
+      e.textContent = 'Aucune appli ouverte';
+      switcherList.appendChild(e);
+      return;
+    }
+    openApps.forEach(({ app }, id) => {
+      const card = document.createElement('div');
+      card.className = 'switcher-card';
+      card.dataset.appId = id;
+
+      const head = document.createElement('div');
+      head.className = 'head';
+      const mini = document.createElement('div');
+      mini.className = 'mini-logo';
+      if (app.icon) {
+        const img = document.createElement('img');
+        img.src = app.icon;
+        img.onerror = () => { mini.textContent = initials(app.name); mini.style.background = colorFor(app.name); };
+        mini.appendChild(img);
+      } else {
+        mini.textContent = initials(app.name);
+        mini.style.background = colorFor(app.name);
+      }
+      const title = document.createElement('div');
+      title.className = 'title';
+      title.textContent = app.name;
+      const close = document.createElement('button');
+      close.className = 'close';
+      close.dataset.action = 'close';
+      close.dataset.appId = id;
+      close.textContent = '×';
+      close.title = 'Fermer';
+      close.addEventListener('click', e => { e.stopPropagation(); closeApp(id); });
+      head.appendChild(mini); head.appendChild(title); head.appendChild(close);
+
+      const preview = document.createElement('div');
+      preview.className = 'preview';
+      preview.textContent = 'Toucher pour rouvrir';
+
+      card.appendChild(head);
+      card.appendChild(preview);
+      card.addEventListener('click', () => showApp(id));
+      switcherList.appendChild(card);
+    });
+  }
+
+  // Top toolbar drives Home & Apps switcher
+  document.getElementById('btn-home').addEventListener('click', goHome);
+  document.getElementById('btn-switch').addEventListener('click', toggleSwitcher);
+
+  // Launcher select — opens chosen app in a new tab (web mode)
+  const launcher = document.getElementById('app-launcher');
+  function renderLauncher(apps) {
+    const placeholder = launcher.options[0];
+    launcher.innerHTML = '';
+    launcher.appendChild(placeholder);
+    apps.forEach(app => {
+      const opt = document.createElement('option');
+      opt.value = app.url;
+      opt.textContent = app.name;
+      launcher.appendChild(opt);
+    });
+  }
+  launcher.addEventListener('change', (e) => {
+    const url = e.target.value;
+    if (!url) return;
+    window.open(url, '_blank', 'noopener');
+    e.target.value = '';
+  });
+  // Android nav-bar (3 buttons) + iPhone home-indicator
+  document.getElementById('and-back').addEventListener('click', () => {
+    if (switcher.classList.contains('open')) switcher.classList.remove('open');
+    else goHome();
+  });
+  document.getElementById('and-home').addEventListener('click', goHome);
+  document.getElementById('and-switch').addEventListener('click', toggleSwitcher);
+  document.getElementById('home-indicator').addEventListener('click', goHome);
+
+  // Auto-refresh list every 10s (picks up newly added folders)
+  loadApps();
+  setInterval(loadApps, 10000);
+  // État initial des boutons Accueil / Applis ouvertes
+  updateNavState();
+
+  // Délégation d'événements sur le stage : clic sur le 1er OU le 2e
+  // téléphone (clone) déclenche les bonnes actions. Le clone n'a pas les
+  // listeners JS, on s'appuie sur les attributs data-* déjà présents.
+  stage.addEventListener('click', (e) => {
+    // 1) Bouton fermer une appli dans le switcher
+    const closeBtn = e.target.closest('.switcher-card .close[data-app-id]');
+    if (closeBtn) {
+      e.preventDefault(); e.stopPropagation();
+      closeApp(closeBtn.dataset.appId);
+      return;
+    }
+    // 2) Carte d'appli dans le switcher → ré-ouvrir
+    const switcherCard = e.target.closest('.switcher-card[data-app-id]');
+    if (switcherCard) {
+      e.preventDefault(); e.stopPropagation();
+      showApp(switcherCard.dataset.appId);
+      return;
+    }
+    // 3) Icône d'appli dans le launcher → ouvrir
+    const icon = e.target.closest('.app-icon[data-app-id]');
+    if (icon) {
+      const id = icon.dataset.appId;
+      const app = knownAppsList.find(a => a.id === id);
+      if (app) {
+        e.preventDefault(); e.stopPropagation();
+        openApp(app);
+      }
+      return;
+    }
+    // 4) Home indicator iPhone (clone)
+    const homeInd = e.target.closest('.home-indicator');
+    if (homeInd && homeInd.closest('#phone-compare')) {
+      e.preventDefault(); e.stopPropagation();
+      goHome();
+      return;
+    }
+    // 5) Boutons nav-bar Android (clone) — id préfixé "-c"
+    const navBtn = e.target.closest('.nav-bar button[id$="-c"]');
+    if (navBtn && navBtn.closest('#phone-compare')) {
+      e.preventDefault(); e.stopPropagation();
+      const baseId = navBtn.id.replace(/-c$/, '');
+      if (baseId === 'and-home') goHome();
+      else if (baseId === 'and-switch') toggleSwitcher();
+      else if (baseId === 'and-back') {
+        if (switcher.classList.contains('open')) toggleSwitcher();
+        else goHome();
+      }
+      return;
+    }
+  });
+
+  // (Ancien mode embed + BroadcastChannel retirés — remplacés par le
+  //  clonage DOM direct du 1er téléphone vers le 2e via buildCompareMirror)
+
+  // -------- i18n FR/EN + Help modal --------
+  const I18N = {
+    fr: {
+      title: '📱 PhoneFake — Simulateur mobile',
+      webMode: 'Mode web :',
+      openAppOption: 'Ouvrir une appli dans un nouvel onglet…',
+      ipad: 'iPad',
+      ipadTitle: 'Tablette iPad',
+      androidTablet: 'Tablette',
+      androidTabletTitle: 'Tablette Android',
+      home: 'Accueil',
+      homeTitle: 'Retour à l\'accueil',
+      apps: 'Applis ouvertes',
+      appsTitle: 'Applis ouvertes',
+      rotate: '⟳ Rotation',
+      rotateTitle: 'Rotation portrait / paysage',
+      help: '? Aide',
+      helpTitle: 'Aide / À propos',
+      helpModalTitle: '📱 PhoneFake — Guide',
+      helpIntro: 'Cet outil simule un appareil mobile (iPhone ou Android) dans ton navigateur, en portrait ou paysage. Il sert à tester l\'apparence et le comportement de tes propres applications web — qu\'elles soient classiques, responsive, PWA installables ou autres.',
+      helpCaption: 'Aperçu : 4 formats de simulation — iPhone, Android, iPad, Tablette Android — interchangeables d\'un clic.',
+      helpFeaturesTitle: '✨ Fonctionnalités',
+      helpFeat1: '<strong>4 formats d\'appareil</strong> : iPhone (notch), Android phone (punch-hole), iPad (tablette Apple) et tablette Android — chacun avec ses propres dimensions natives.',
+      helpFeat2: '<strong>Rotation</strong> : bascule portrait ↔ paysage en un clic, l\'écran et les décorations s\'adaptent.',
+      helpFeat3: '<strong>Multi-applis</strong> : place tes propres applis dans des sous-dossiers à côté de cette page (chacune avec son <code>index.html</code>) et elles apparaissent dans le menu <em>Mode web</em>.',
+      helpFeat4: '<strong>Compatible</strong> : sites classiques, responsive design, PWA installables, applis avec service worker — tout ce qui se sert dans un navigateur.',
+      helpFeat5: '<strong>Accueil et Applis</strong> : reviens à un launcher minimal ou retrouve la liste des applis ouvertes.',
+      helpFeat6: '<strong>Multilingue</strong> : interface en 5 langues (🇫🇷 français, 🇬🇧 anglais, 🇪🇸 espagnol, 🇮🇹 italien, 🇩🇪 allemand), sélectionnable via les drapeaux en haut.',
+      helpFeat7: '<strong>Mode desktop</strong> : le sélecteur <em>Mode web</em> en haut de la page permet aussi d\'ouvrir une appli dans un nouvel onglet du navigateur, en pleine largeur (rendu desktop sans simulation).',
+      helpUsageTitle: '💡 Utilisation',
+      helpUse1: 'Ajoute tes applis dans des sous-dossiers du même répertoire que ce fichier ; elles apparaissent automatiquement dans le sélecteur.',
+      helpUse2: 'Choisis iPhone ou Android pour adapter le rendu de ton appli aux contraintes de chaque plateforme.',
+      helpUse3: 'Utilise <em>Rotation</em> pour vérifier l\'affichage paysage de ton interface.',
+      helpLocalTitle: '🖥️ Usage local uniquement',
+      helpLocal: 'PhoneFake est conçu pour un environnement de développement <strong>local</strong> (Laragon, MAMP, XAMPP, serveur Node, etc.). Ce n\'est pas un service en ligne — il sert à tester rapidement tes propres applications sur ta machine, avant déploiement.',
+      helpShortcutsTitle: '⌨️ Raccourcis clavier',
+      helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablette',
+      helpShort2: '<kbd>R</kbd> Rotation · <kbd>C</kbd> Comparer · <kbd>H</kbd> Aide · <kbd>A</kbd> Accessibilité · <kbd>Échap</kbd> Fermer',
+      compare: '⇆ Compare',
+      compareTitle: 'Côte à côte',
+      a11y: '♿',
+      a11yTitle: 'Réglages d\'accessibilité',
+      a11yPanelTitle: '♿ Accessibilité',
+      a11yFontSize: 'Taille du texte',
+      a11ySizeNormal: 'Normal',
+      a11ySizeLarge: 'Grand',
+      a11ySizeXLarge: 'Très grand',
+      a11yContrast: 'Contraste élevé',
+      a11yDyslexia: 'Police dyslexie (OpenDyslexic)',
+      a11yReducedMotion: 'Réduire les animations',
+      a11yFocusRing: 'Indicateur de focus renforcé',
+      a11yReset: 'Réinitialiser',
+      a11yHint: 'Tes choix sont mémorisés et s\'appliquent uniquement à cette page.',
+      skipToContent: 'Aller au contenu principal',
+      announceCompareOn: 'Mode comparaison activé',
+      announceCompareOff: 'Mode comparaison désactivé',
+      footerInfo: 'Dépose un sous-dossier dans <code>APPLI/</code> et il apparaîtra automatiquement. Ajoute un <code>icon.png</code> (ou <code>logo.png</code>) dans le dossier pour personnaliser l\'icône.'
+    },
+    en: {
+      title: '📱 PhoneFake — Mobile simulator',
+      webMode: 'Web mode:',
+      openAppOption: 'Open an app in a new tab…',
+      ipad: 'iPad',
+      ipadTitle: 'iPad tablet',
+      androidTablet: 'Tablet',
+      androidTabletTitle: 'Android tablet',
+      home: 'Home',
+      homeTitle: 'Back to home',
+      apps: 'Open apps',
+      appsTitle: 'Open apps',
+      rotate: '⟳ Rotate',
+      rotateTitle: 'Rotate portrait / landscape',
+      help: '? Help',
+      helpTitle: 'Help / About',
+      helpModalTitle: '📱 PhoneFake — Guide',
+      helpIntro: 'This tool simulates a mobile device (iPhone or Android) in your browser, in portrait or landscape. Use it to test the look and behavior of your own web apps — whether classic websites, responsive design, installable PWAs, or anything else.',
+      helpCaption: 'Overview: 4 simulation formats — iPhone, Android, iPad, Android tablet — switchable with one click.',
+      helpFeaturesTitle: '✨ Features',
+      helpFeat1: '<strong>4 device formats</strong>: iPhone (notch), Android phone (punch-hole), iPad (Apple tablet), and Android tablet — each with native dimensions.',
+      helpFeat2: '<strong>Rotation</strong>: toggle portrait ↔ landscape with one click, screen and decorations adapt.',
+      helpFeat3: '<strong>Multi-app</strong>: drop your own apps into subfolders next to this page (each with its <code>index.html</code>) and they appear in the <em>Web mode</em> menu.',
+      helpFeat4: '<strong>Compatible</strong>: classic websites, responsive design, installable PWAs, apps with service workers — anything served in a browser.',
+      helpFeat5: '<strong>Home and Apps</strong>: return to a minimal launcher or browse the list of open apps.',
+      helpFeat6: '<strong>Multilingual</strong>: interface in 5 languages (🇫🇷 French, 🇬🇧 English, 🇪🇸 Spanish, 🇮🇹 Italian, 🇩🇪 German), selectable via the flags at the top.',
+      helpFeat7: '<strong>Desktop mode</strong>: the <em>Web mode</em> selector at the top of the page also lets you open an app in a new browser tab, full width (raw desktop rendering, no simulation).',
+      helpUsageTitle: '💡 Usage',
+      helpUse1: 'Add your apps in subfolders next to this file; they appear automatically in the selector.',
+      helpUse2: 'Pick iPhone or Android to adjust the rendering of your app to each platform\'s constraints.',
+      helpUse3: 'Use <em>Rotate</em> to check landscape display of your interface.',
+      helpLocalTitle: '🖥️ Local use only',
+      helpLocal: 'PhoneFake is designed for a <strong>local</strong> dev environment (Laragon, MAMP, XAMPP, Node server, etc.). It is not an online service — it lets you quickly test your own apps on your machine before deployment.',
+      helpShortcutsTitle: '⌨️ Keyboard shortcuts',
+      helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablet',
+      helpShort2: '<kbd>R</kbd> Rotate · <kbd>C</kbd> Compare · <kbd>H</kbd> Help · <kbd>A</kbd> Accessibility · <kbd>Esc</kbd> Close',
+      compare: '⇆ Compare',
+      compareTitle: 'Side by side',
+      a11y: '♿',
+      a11yTitle: 'Accessibility settings',
+      a11yPanelTitle: '♿ Accessibility',
+      a11yFontSize: 'Text size',
+      a11ySizeNormal: 'Normal',
+      a11ySizeLarge: 'Large',
+      a11ySizeXLarge: 'Very large',
+      a11yContrast: 'High contrast',
+      a11yDyslexia: 'Dyslexia font (OpenDyslexic)',
+      a11yReducedMotion: 'Reduce animations',
+      a11yFocusRing: 'Enhanced focus indicator',
+      a11yReset: 'Reset',
+      a11yHint: 'Your choices are saved and apply only to this page.',
+      skipToContent: 'Skip to main content',
+      announceCompareOn: 'Compare mode enabled',
+      announceCompareOff: 'Compare mode disabled',
+      footerInfo: 'Drop a subfolder in <code>APPLI/</code> and it will appear automatically. Add an <code>icon.png</code> (or <code>logo.png</code>) in the folder to customize the icon.'
+    },
+    es: {
+      title: '📱 PhoneFake — Simulador móvil',
+      webMode: 'Modo web:',
+      openAppOption: 'Abrir una app en una nueva pestaña…',
+      ipad: 'iPad',
+      ipadTitle: 'Tableta iPad',
+      androidTablet: 'Tableta',
+      androidTabletTitle: 'Tableta Android',
+      home: 'Inicio',
+      homeTitle: 'Volver al inicio',
+      apps: 'Apps abiertas',
+      appsTitle: 'Apps abiertas',
+      rotate: '⟳ Girar',
+      rotateTitle: 'Rotar vertical / horizontal',
+      help: '? Ayuda',
+      helpTitle: 'Ayuda / Acerca de',
+      helpModalTitle: '📱 PhoneFake — Guía',
+      helpIntro: 'Esta herramienta simula un dispositivo móvil (iPhone o Android) en tu navegador, en vertical u horizontal. Sirve para probar el aspecto y el comportamiento de tus propias aplicaciones web — sean clásicas, responsive, PWA instalables o de otro tipo.',
+      helpCaption: 'Vista general: 4 formatos de simulación — iPhone, Android, iPad, Tableta Android — intercambiables con un clic.',
+      helpFeaturesTitle: '✨ Funcionalidades',
+      helpFeat1: '<strong>4 formatos de dispositivo</strong>: iPhone (notch), Android phone (punch-hole), iPad (tableta Apple) y tableta Android — cada uno con sus dimensiones nativas.',
+      helpFeat2: '<strong>Rotación</strong>: alterna vertical ↔ horizontal con un clic, la pantalla y los detalles se adaptan.',
+      helpFeat3: '<strong>Multi-app</strong>: coloca tus propias apps en subcarpetas junto a esta página (cada una con su <code>index.html</code>) y aparecerán en el menú <em>Modo web</em>.',
+      helpFeat4: '<strong>Compatible</strong>: sitios clásicos, responsive design, PWAs instalables, apps con service worker — cualquier cosa que se sirva en un navegador.',
+      helpFeat5: '<strong>Inicio y Apps</strong>: vuelve a un launcher mínimo o consulta la lista de apps abiertas.',
+      helpFeat6: '<strong>Multilingüe</strong>: interfaz en 5 idiomas (🇫🇷 francés, 🇬🇧 inglés, 🇪🇸 español, 🇮🇹 italiano, 🇩🇪 alemán), seleccionable mediante las banderas de arriba.',
+      helpFeat7: '<strong>Modo escritorio</strong>: el selector <em>Modo web</em> en la parte superior también permite abrir una app en una nueva pestaña, en pantalla completa (renderizado escritorio sin simulación).',
+      helpUsageTitle: '💡 Uso',
+      helpUse1: 'Coloca tus apps en subcarpetas dentro del mismo directorio que este archivo; aparecerán automáticamente en el selector.',
+      helpUse2: 'Elige iPhone o Android para adaptar el renderizado de tu app a las restricciones de cada plataforma.',
+      helpUse3: 'Usa <em>Girar</em> para verificar la visualización horizontal de tu interfaz.',
+      helpLocalTitle: '🖥️ Solo uso local',
+      helpLocal: 'PhoneFake está diseñado para un entorno de desarrollo <strong>local</strong> (Laragon, MAMP, XAMPP, servidor Node, etc.). No es un servicio en línea — sirve para probar rápidamente tus propias apps en tu máquina, antes del despliegue.',
+      helpShortcutsTitle: '⌨️ Atajos de teclado',
+      helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tableta',
+      helpShort2: '<kbd>R</kbd> Girar · <kbd>C</kbd> Comparar · <kbd>H</kbd> Ayuda · <kbd>A</kbd> Accesibilidad · <kbd>Esc</kbd> Cerrar',
+      compare: '⇆ Comparar',
+      compareTitle: 'Lado a lado',
+      a11y: '♿',
+      a11yTitle: 'Ajustes de accesibilidad',
+      a11yPanelTitle: '♿ Accesibilidad',
+      a11yFontSize: 'Tamaño del texto',
+      a11ySizeNormal: 'Normal',
+      a11ySizeLarge: 'Grande',
+      a11ySizeXLarge: 'Muy grande',
+      a11yContrast: 'Alto contraste',
+      a11yDyslexia: 'Fuente para dislexia (OpenDyslexic)',
+      a11yReducedMotion: 'Reducir animaciones',
+      a11yFocusRing: 'Indicador de foco reforzado',
+      a11yReset: 'Restablecer',
+      a11yHint: 'Tus ajustes se guardan y solo se aplican a esta página.',
+      skipToContent: 'Ir al contenido principal',
+      announceCompareOn: 'Modo comparación activado',
+      announceCompareOff: 'Modo comparación desactivado',
+      footerInfo: 'Coloca una subcarpeta en <code>APPLI/</code> y aparecerá automáticamente. Añade un <code>icon.png</code> (o <code>logo.png</code>) en la carpeta para personalizar el icono.'
+    },
+    it: {
+      title: '📱 PhoneFake — Simulatore mobile',
+      webMode: 'Modalità web:',
+      openAppOption: 'Apri un\'app in una nuova scheda…',
+      ipad: 'iPad',
+      ipadTitle: 'Tablet iPad',
+      androidTablet: 'Tablet',
+      androidTabletTitle: 'Tablet Android',
+      home: 'Home',
+      homeTitle: 'Torna alla home',
+      apps: 'App aperte',
+      appsTitle: 'App aperte',
+      rotate: '⟳ Ruota',
+      rotateTitle: 'Ruota verticale / orizzontale',
+      help: '? Aiuto',
+      helpTitle: 'Aiuto / Informazioni',
+      helpModalTitle: '📱 PhoneFake — Guida',
+      helpIntro: 'Questo strumento simula un dispositivo mobile (iPhone o Android) nel tuo browser, in verticale o orizzontale. Serve per testare l\'aspetto e il comportamento delle tue applicazioni web — siano esse classiche, responsive, PWA installabili o altro.',
+      helpCaption: 'Anteprima: 4 formati di simulazione — iPhone, Android, iPad, Tablet Android — intercambiabili con un clic.',
+      helpFeaturesTitle: '✨ Funzionalità',
+      helpFeat1: '<strong>4 formati di dispositivo</strong>: iPhone (notch), Android phone (punch-hole), iPad (tablet Apple) e tablet Android — ognuno con le proprie dimensioni native.',
+      helpFeat2: '<strong>Rotazione</strong>: passa da verticale a orizzontale con un clic, lo schermo e i dettagli si adattano.',
+      helpFeat3: '<strong>Multi-app</strong>: metti le tue app in sottocartelle accanto a questa pagina (ognuna con il suo <code>index.html</code>) e appariranno nel menu <em>Modalità web</em>.',
+      helpFeat4: '<strong>Compatibile</strong>: siti classici, responsive design, PWA installabili, app con service worker — tutto ciò che gira nel browser.',
+      helpFeat5: '<strong>Home e App</strong>: torna a un launcher minimale o consulta la lista delle app aperte.',
+      helpFeat6: '<strong>Multilingua</strong>: interfaccia in 5 lingue (🇫🇷 francese, 🇬🇧 inglese, 🇪🇸 spagnolo, 🇮🇹 italiano, 🇩🇪 tedesco), selezionabile tramite le bandiere in alto.',
+      helpFeat7: '<strong>Modalità desktop</strong>: il selettore <em>Modalità web</em> in alto consente anche di aprire un\'app in una nuova scheda, a tutta larghezza (rendering desktop senza simulazione).',
+      helpUsageTitle: '💡 Utilizzo',
+      helpUse1: 'Metti le tue app in sottocartelle accanto a questo file; appariranno automaticamente nel selettore.',
+      helpUse2: 'Scegli iPhone o Android per adattare il rendering ai vincoli di ciascuna piattaforma.',
+      helpUse3: 'Usa <em>Ruota</em> per verificare la visualizzazione orizzontale dell\'interfaccia.',
+      helpLocalTitle: '🖥️ Solo uso locale',
+      helpLocal: 'PhoneFake è progettato per un ambiente di sviluppo <strong>locale</strong> (Laragon, MAMP, XAMPP, server Node, ecc.). Non è un servizio online — serve a testare rapidamente le tue app sulla tua macchina, prima del deploy.',
+      helpShortcutsTitle: '⌨️ Scorciatoie da tastiera',
+      helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablet',
+      helpShort2: '<kbd>R</kbd> Ruota · <kbd>C</kbd> Confronta · <kbd>H</kbd> Aiuto · <kbd>A</kbd> Accessibilità · <kbd>Esc</kbd> Chiudi',
+      compare: '⇆ Confronta',
+      compareTitle: 'Affiancati',
+      a11y: '♿',
+      a11yTitle: 'Impostazioni di accessibilità',
+      a11yPanelTitle: '♿ Accessibilità',
+      a11yFontSize: 'Dimensione del testo',
+      a11ySizeNormal: 'Normale',
+      a11ySizeLarge: 'Grande',
+      a11ySizeXLarge: 'Molto grande',
+      a11yContrast: 'Contrasto elevato',
+      a11yDyslexia: 'Font per dislessia (OpenDyslexic)',
+      a11yReducedMotion: 'Riduci animazioni',
+      a11yFocusRing: 'Indicatore di focus rinforzato',
+      a11yReset: 'Ripristina',
+      a11yHint: 'Le tue scelte sono salvate e si applicano solo a questa pagina.',
+      skipToContent: 'Vai al contenuto principale',
+      announceCompareOn: 'Modalità confronto attivata',
+      announceCompareOff: 'Modalità confronto disattivata',
+      footerInfo: 'Metti una sottocartella in <code>APPLI/</code> e apparirà automaticamente. Aggiungi un <code>icon.png</code> (o <code>logo.png</code>) nella cartella per personalizzare l\'icona.'
+    },
+    de: {
+      title: '📱 PhoneFake — Mobil-Simulator',
+      webMode: 'Web-Modus:',
+      openAppOption: 'Eine App in einem neuen Tab öffnen…',
+      ipad: 'iPad',
+      ipadTitle: 'iPad-Tablet',
+      androidTablet: 'Tablet',
+      androidTabletTitle: 'Android-Tablet',
+      home: 'Start',
+      homeTitle: 'Zurück zur Startseite',
+      apps: 'Offene Apps',
+      appsTitle: 'Offene Apps',
+      rotate: '⟳ Drehen',
+      rotateTitle: 'Hochformat / Querformat drehen',
+      help: '? Hilfe',
+      helpTitle: 'Hilfe / Über',
+      helpModalTitle: '📱 PhoneFake — Anleitung',
+      helpIntro: 'Dieses Tool simuliert ein Mobilgerät (iPhone oder Android) in deinem Browser, im Hoch- oder Querformat. Es dient zum Testen des Aussehens und Verhaltens deiner eigenen Web-Apps — egal ob klassische Webseiten, Responsive Design, installierbare PWAs oder andere.',
+      helpCaption: 'Übersicht: 4 Simulationsformate — iPhone, Android, iPad, Android-Tablet — mit einem Klick wechselbar.',
+      helpFeaturesTitle: '✨ Funktionen',
+      helpFeat1: '<strong>4 Geräteformate</strong>: iPhone (Notch), Android Phone (Punch-Hole), iPad (Apple-Tablet) und Android-Tablet — jeweils mit nativen Abmessungen.',
+      helpFeat2: '<strong>Rotation</strong>: Wechsle Hoch- ↔ Querformat mit einem Klick, Bildschirm und Details passen sich an.',
+      helpFeat3: '<strong>Multi-App</strong>: Lege deine Apps in Unterordner neben dieser Seite ab (jede mit ihrer <code>index.html</code>) und sie erscheinen im Menü <em>Web-Modus</em>.',
+      helpFeat4: '<strong>Kompatibel</strong>: klassische Websites, Responsive Design, installierbare PWAs, Apps mit Service Worker — alles, was im Browser läuft.',
+      helpFeat5: '<strong>Start und Apps</strong>: zurück zu einem minimalen Launcher oder Liste der offenen Apps anzeigen.',
+      helpFeat6: '<strong>Mehrsprachig</strong>: Oberfläche in 5 Sprachen (🇫🇷 Französisch, 🇬🇧 Englisch, 🇪🇸 Spanisch, 🇮🇹 Italienisch, 🇩🇪 Deutsch), über die Flaggen oben wählbar.',
+      helpFeat7: '<strong>Desktop-Modus</strong>: der <em>Web-Modus</em>-Selektor oben ermöglicht auch das Öffnen einer App in einem neuen Tab, in voller Breite (Desktop-Rendering ohne Simulation).',
+      helpUsageTitle: '💡 Verwendung',
+      helpUse1: 'Lege deine Apps in Unterordner neben dieser Datei; sie erscheinen automatisch im Selektor.',
+      helpUse2: 'Wähle iPhone oder Android, um das Rendering an die Plattform-Einschränkungen anzupassen.',
+      helpUse3: 'Nutze <em>Drehen</em>, um die Querformat-Anzeige deiner Oberfläche zu prüfen.',
+      helpLocalTitle: '🖥️ Nur lokale Nutzung',
+      helpLocal: 'PhoneFake ist für eine <strong>lokale</strong> Entwicklungsumgebung gedacht (Laragon, MAMP, XAMPP, Node-Server usw.). Es ist kein Online-Dienst — es dient zum schnellen Testen deiner Apps auf deinem Rechner, vor dem Deployment.',
+      helpShortcutsTitle: '⌨️ Tastenkürzel',
+      helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablet',
+      helpShort2: '<kbd>R</kbd> Drehen · <kbd>C</kbd> Vergleichen · <kbd>H</kbd> Hilfe · <kbd>A</kbd> Barrierefreiheit · <kbd>Esc</kbd> Schließen',
+      compare: '⇆ Vergleichen',
+      compareTitle: 'Nebeneinander',
+      a11y: '♿',
+      a11yTitle: 'Barrierefreiheits-Einstellungen',
+      a11yPanelTitle: '♿ Barrierefreiheit',
+      a11yFontSize: 'Textgröße',
+      a11ySizeNormal: 'Normal',
+      a11ySizeLarge: 'Groß',
+      a11ySizeXLarge: 'Sehr groß',
+      a11yContrast: 'Hoher Kontrast',
+      a11yDyslexia: 'Legasthenie-Schrift (OpenDyslexic)',
+      a11yReducedMotion: 'Animationen reduzieren',
+      a11yFocusRing: 'Verstärkter Fokus-Indikator',
+      a11yReset: 'Zurücksetzen',
+      a11yHint: 'Deine Einstellungen werden gespeichert und nur auf dieser Seite angewendet.',
+      skipToContent: 'Zum Hauptinhalt springen',
+      announceCompareOn: 'Vergleichsmodus aktiviert',
+      announceCompareOff: 'Vergleichsmodus deaktiviert',
+      footerInfo: 'Lege einen Unterordner in <code>APPLI/</code> ab — er erscheint automatisch. Füge eine <code>icon.png</code> (oder <code>logo.png</code>) im Ordner hinzu, um das Icon anzupassen.'
+    }
+  };
+
+  function applyLang(lang) {
+    if (!I18N[lang]) lang = 'fr';
+    const t = I18N[lang];
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const key = el.dataset.i18nTitle;
+      if (t[key] !== undefined) el.title = t[key];
+    });
+    document.querySelectorAll('.lang-switch button').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    try { localStorage.setItem('phonefake-lang', lang); } catch {}
+  }
+
+  document.querySelectorAll('.lang-switch button').forEach(b => {
+    b.addEventListener('click', () => applyLang(b.dataset.lang));
+  });
+
+  // Help modal
+  const helpOverlay = document.getElementById('helpOverlay');
+  document.getElementById('btn-help').addEventListener('click', () => helpOverlay.classList.add('visible'));
+  document.getElementById('helpClose').addEventListener('click', () => helpOverlay.classList.remove('visible'));
+  helpOverlay.addEventListener('click', (e) => { if (e.target === helpOverlay) helpOverlay.classList.remove('visible'); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && helpOverlay.classList.contains('visible')) helpOverlay.classList.remove('visible'); });
+
+  // Init langue (localStorage ou navigateur)
+  const stored = (function () { try { return localStorage.getItem('phonefake-lang'); } catch { return null; } })();
+  const navLang = (navigator.language || 'fr').slice(0, 2).toLowerCase();
+  const supported = ['fr', 'en', 'es', 'it', 'de'];
+  applyLang(stored || (supported.includes(navLang) ? navLang : 'fr'));
+
+  // -------- Live region pour annonces a11y --------
+  function announce(msg) {
+    const r = document.getElementById('liveRegion');
+    if (r) { r.textContent = msg; }
+  }
+
+  // -------- Persistance modèle + orientation --------
+  try {
+    const savedModel = localStorage.getItem('phonefake-model');
+    const savedOri = localStorage.getItem('phonefake-orientation');
+    if (savedModel && MODEL_DIMS[savedModel]) setModel(savedModel);
+    if (savedOri === 'landscape') {
+      isLandscape = true;
+      phone.classList.add('landscape');
+      fitPhone();
+    }
+  } catch {}
+
+  // -------- Raccourcis clavier --------
+  document.addEventListener('keydown', (e) => {
+    // Ignorer si focus dans un input/textarea/select
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (['input', 'textarea', 'select'].includes(tag)) return;
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+    switch (e.key) {
+      case '1': setModel('iphone'); break;
+      case '2': setModel('android'); break;
+      case '3': setModel('ipad'); break;
+      case '4': setModel('android-tablet'); break;
+      case 'r': case 'R': btnRotate.click(); break;
+      case 'h': case 'H': document.getElementById('btn-help').click(); break;
+      case 'c': case 'C': document.getElementById('btn-compare').click(); break;
+      case 'a': case 'A': document.getElementById('btn-a11y').click(); break;
+    }
+  });
+
+  // -------- Mode compare (côte à côte) --------
+  function fitComparePhone() {
+    if (!comparePhone) return;
+    const r = stage.getBoundingClientRect();
+    const dims = MODEL_DIMS[compareModel] || [390, 820];
+    const w = isLandscape ? dims[1] : dims[0];
+    const h = isLandscape ? dims[0] : dims[1];
+    comparePhone.style.width = w + 'px';
+    comparePhone.style.height = h + 'px';
+    const raw = Math.min((r.width * 0.48) / w, (r.height * 0.94) / h);
+    comparePhone.style.setProperty('--phone-scale', Math.min(raw, 1));
+  }
+
+  // Construit / reconstruit le 2e téléphone en clonant le DOM du 1er.
+  // Approche : à chaque changement d'état, on re-clone (simple et fiable).
+  // Tradeoff : les iframes des apps se rechargent à chaque sync (acceptable
+  // en local). Optim future possible si gênant.
+  function buildCompareMirror() {
+    if (!compareEnabled) return;
+    const stage = document.getElementById('stage');
+    const fresh = phone.cloneNode(true);
+    fresh.id = 'phone-compare';
+    // Renommer tous les IDs internes du clone pour éviter les duplicates
+    fresh.querySelectorAll('[id]').forEach(el => { el.id = el.id + '-c'; });
+    // Forcer le modèle souhaité pour le 2e
+    ['iphone', 'android', 'ipad', 'android-tablet'].forEach(c => fresh.classList.remove(c));
+    fresh.classList.add(compareModel);
+    if (isLandscape) fresh.classList.add('landscape');
+    if (comparePhone) {
+      comparePhone.replaceWith(fresh);
+    } else {
+      stage.appendChild(fresh);
+    }
+    comparePhone = fresh;
+    fitComparePhone();
+  }
+  // Alias rétrocompat (anciennement utilisé pour iframe miroir)
+  function syncCompareIframe() { if (compareEnabled) buildCompareMirror(); }
+
+  function toggleCompare() {
+    const btn = document.getElementById('btn-compare');
+    const selectorsRow = document.getElementById('phoneSelectors');
+    if (compareEnabled) {
+      // Désactivation
+      const cP = document.getElementById('phone-compare');
+      if (cP) cP.remove();
+      const cSel = document.getElementById('phoneModelSelect-compare');
+      if (cSel) cSel.remove();
+      comparePhone = null;
+      stage.classList.remove('compare-mode');
+      document.body.classList.remove('compare-on');
+      btn.classList.remove('active');
+      compareEnabled = false;
+      announce(I18N[document.documentElement.lang || 'fr']?.announceCompareOff || 'Mode comparaison désactivé');
+    } else {
+      // Créer un 2e téléphone "miroir" simplifié : juste un screen + iframe.
+      // Pas de launcher / pas d'IDs dupliqués / l'app active du 1er est
+      // affichée en miroir.
+      compareModel = (currentModel === 'iphone') ? 'android' : (currentModel === 'android' ? 'iphone' : 'android');
+      // Le 2e téléphone est un CLONE visuel du 1er, recopié à chaque
+      // changement d'état (openApp, goHome, etc.). Lecture seule
+      // (pointer-events: none) — l'utilisateur interagit avec le 1er.
+      buildCompareMirror();
+
+      // 2e select (modèle indépendant pour la comparaison visuelle)
+      const selFirst = document.getElementById('phoneModelSelect');
+      const cloneSel = selFirst.cloneNode(true);
+      cloneSel.id = 'phoneModelSelect-compare';
+      cloneSel.setAttribute('aria-label', 'Modèle de l\'appareil 2');
+      cloneSel.value = compareModel;
+      cloneSel.addEventListener('change', (e) => {
+        compareModel = e.target.value;
+        // Re-cloner le 2e téléphone avec le nouveau modèle (le clone reprend
+        // compareModel au lieu de la classe du 1er téléphone).
+        buildCompareMirror();
+      });
+      selectorsRow.appendChild(cloneSel);
+
+      stage.classList.add('compare-mode');
+      document.body.classList.add('compare-on');
+      btn.classList.add('active');
+      compareEnabled = true;
+      fitPhone();
+      fitComparePhone();
+      syncCompareIframe();
+      announce(I18N[document.documentElement.lang || 'fr']?.announceCompareOn || 'Mode comparaison activé');
+    }
+  }
+  document.getElementById('btn-compare').addEventListener('click', toggleCompare);
+
+  // -------- Panel a11y --------
+  const a11yOverlay = document.getElementById('a11yOverlay');
+  document.getElementById('btn-a11y').addEventListener('click', () => a11yOverlay.classList.add('visible'));
+  document.getElementById('a11yClose').addEventListener('click', () => a11yOverlay.classList.remove('visible'));
+  a11yOverlay.addEventListener('click', (e) => { if (e.target === a11yOverlay) a11yOverlay.classList.remove('visible'); });
+
+  function a11yApply(prefs) {
+    document.body.classList.remove('a11y-size-large', 'a11y-size-xlarge');
+    if (prefs.fontSize === 'large') document.body.classList.add('a11y-size-large');
+    if (prefs.fontSize === 'xlarge') document.body.classList.add('a11y-size-xlarge');
+    document.body.classList.toggle('a11y-contrast', !!prefs.contrast);
+    document.body.classList.toggle('a11y-dyslexia', !!prefs.dyslexia);
+    document.body.classList.toggle('a11y-reduced-motion', !!prefs.reducedMotion);
+    document.body.classList.toggle('a11y-focus-ring', !!prefs.focusRing);
+  }
+  function a11yLoad() {
+    let p = { fontSize: 'normal', contrast: false, dyslexia: false, reducedMotion: false, focusRing: false };
+    try { p = { ...p, ...JSON.parse(localStorage.getItem('phonefake-a11y') || '{}') }; } catch {}
+    document.getElementById('a11yFontSize').value = p.fontSize;
+    document.getElementById('a11yContrast').checked = p.contrast;
+    document.getElementById('a11yDyslexia').checked = p.dyslexia;
+    document.getElementById('a11yReducedMotion').checked = p.reducedMotion;
+    document.getElementById('a11yFocusRing').checked = p.focusRing;
+    a11yApply(p);
+  }
+  function a11ySave() {
+    const p = {
+      fontSize: document.getElementById('a11yFontSize').value,
+      contrast: document.getElementById('a11yContrast').checked,
+      dyslexia: document.getElementById('a11yDyslexia').checked,
+      reducedMotion: document.getElementById('a11yReducedMotion').checked,
+      focusRing: document.getElementById('a11yFocusRing').checked
+    };
+    try { localStorage.setItem('phonefake-a11y', JSON.stringify(p)); } catch {}
+    a11yApply(p);
+  }
+  ['a11yFontSize', 'a11yContrast', 'a11yDyslexia', 'a11yReducedMotion', 'a11yFocusRing'].forEach(id => {
+    document.getElementById(id).addEventListener('change', a11ySave);
+  });
+  document.getElementById('a11yReset').addEventListener('click', () => {
+    try { localStorage.removeItem('phonefake-a11y'); } catch {}
+    a11yLoad();
+  });
+  a11yLoad();
+</script>
+</body>
+</html>
