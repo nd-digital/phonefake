@@ -9,7 +9,7 @@
 [![Vanilla JS](https://img.shields.io/badge/vanilla-JS%20%2B%20PHP-success.svg)]()
 [![No build](https://img.shields.io/badge/build-aucun-blue.svg)]()
 
-<img src="docs/01-home-iphone.png" alt="PhoneFake — écran d'accueil" width="800">
+<img src="docs/demo.gif" alt="Démo animée de PhoneFake" width="800">
 
 </div>
 
