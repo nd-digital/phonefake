@@ -1,5 +1,3 @@
-# Sous-projets autonomes (chacun a son propre repo)
-
 # Outils
 .claude/
 .vscode/
@@ -12,6 +10,16 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Secrets / config locale (préventif — ne jamais versionner)
+.env
+.env.*
+*.local
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.*
 
 # Tout autre sous-dossier (apps tierces ajoutées localement, etc.)
 # Seuls les fichiers à la racine sont versionnés.
