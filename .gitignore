@@ -27,3 +27,7 @@ secrets.*
 # Tout autre sous-dossier (apps tierces ajoutées localement, etc.)
 # Seuls les fichiers à la racine sont versionnés.
 /*/
+
+# Exception : les visuels du README sont versionnés (repo public)
+!/docs/
+!/docs/**
