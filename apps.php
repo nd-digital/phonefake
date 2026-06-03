@@ -112,6 +112,58 @@ function readManifest($manifestPath, $entry, $baseDir) {
     return ['icon' => $icon, 'name' => $name];
 }
 
+/**
+ * Génère un logo placeholder (SVG en data URI) quand aucune icône n'existe.
+ * Fond en dégradé déterministe (hash du nom, même algo que colorFor() côté JS
+ * pour la cohérence visuelle), texte = nom nettoyé réparti sur 1 à 3 lignes
+ * avec une taille de police qui s'adapte pour tenir dans le carré.
+ */
+function generatePlaceholderIcon($name) {
+    // Hash → teinte (identique à colorFor() côté front)
+    $h = 0;
+    $len = strlen($name);
+    for ($i = 0; $i < $len; $i++) {
+        $h = ($h * 31 + ord($name[$i])) & 0xFFFFFFFF;
+    }
+    $hue  = $h % 360;
+    $hue2 = ($hue + 40) % 360;
+
+    // Mots du nom (max 3 lignes ; les mots restants fusionnés sur la dernière)
+    $words = preg_split('/\s+/', trim($name)) ?: [$name];
+    if (count($words) > 3) {
+        $words = array_merge(array_slice($words, 0, 2), [implode(' ', array_slice($words, 2))]);
+    }
+    $lines  = count($words);
+    $maxLen = max(1, max(array_map('strlen', $words)));
+
+    $S = 240; $pad = 28; $usable = $S - 2 * $pad;
+    // Police limitée par la largeur (mot le plus long) ET la hauteur (nb de lignes)
+    $byWidth  = $usable / ($maxLen * 0.62);
+    $byHeight = $usable / ($lines * 1.25);
+    $fs = (int) max(20, min(96, $byWidth, $byHeight));
+    $lh = $fs * 1.2;
+    $startY = ($S - $lh * $lines) / 2 + $fs * 0.78; // baseline de la 1re ligne
+
+    $texts = '';
+    foreach ($words as $idx => $w) {
+        $y = round($startY + $idx * $lh, 1);
+        $texts .= '<text x="' . ($S / 2) . '" y="' . $y . '" text-anchor="middle" '
+                . 'font-family="system-ui,Segoe UI,Roboto,sans-serif" font-weight="700" '
+                . 'font-size="' . $fs . '" fill="#fff">' . htmlspecialchars($w, ENT_QUOTES) . '</text>';
+    }
+
+    $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' . $S . ' ' . $S . '">'
+         . '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
+         . '<stop offset="0" stop-color="hsl(' . $hue . ',70%,55%)"/>'
+         . '<stop offset="1" stop-color="hsl(' . $hue2 . ',65%,40%)"/>'
+         . '</linearGradient></defs>'
+         . '<rect width="' . $S . '" height="' . $S . '" rx="48" fill="url(#g)"/>'
+         . $texts
+         . '</svg>';
+
+    return 'data:image/svg+xml;base64,' . base64_encode($svg);
+}
+
 $apps = [];
 
 foreach (scandir($base) as $entry) {
@@ -193,8 +245,14 @@ foreach (scandir($base) as $entry) {
         if (strpos($icon, $entry . '/') !== 0) $icon = $entry . '/' . $icon;
     }
 
+    // Aucune icône trouvée — génère un logo placeholder (SVG) à partir du nom.
+    if (!$icon) {
+        $icon = generatePlaceholderIcon($name);
+    }
+
     // Cache-busting: append file mtime so icon changes bypass browser cache
-    if ($icon) {
+    // (ignoré pour les logos générés, qui sont des data URI et non des fichiers)
+    if ($icon && strpos($icon, 'data:') !== 0) {
         $iconAbs = $base . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $icon);
         if (file_exists($iconAbs)) {
             $icon .= '?v=' . filemtime($iconAbs);

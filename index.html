@@ -109,6 +109,26 @@
   .help-screenshot svg { width: 100%; height: auto; display: block; }
   .help-screenshot-caption { font-size: 0.78rem; color: #8a93a6; text-align: center; font-style: italic; margin-top: 8px; }
 
+  /* === Modale "Nouvelle appli" === */
+  .new-app-box { max-width: 480px; }
+  .new-app-form { display: flex; gap: 8px; margin: 16px 0 4px; }
+  .new-app-form input {
+    flex: 1; min-width: 0; padding: 10px 12px;
+    border-radius: 8px; border: 1px solid rgba(255,255,255,.15);
+    background: #0d0d13; color: #fff; font-size: 0.95rem;
+  }
+  .new-app-form input:focus { outline: 2px solid #5b6cff; outline-offset: 0; border-color: #5b6cff; }
+  .new-app-form button {
+    padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer;
+    background: linear-gradient(135deg, #5b6cff, #8a3ffc);
+    color: #fff; font-weight: 600; font-size: 0.95rem; white-space: nowrap;
+  }
+  .new-app-form button:hover { filter: brightness(1.08); }
+  .new-app-form button:disabled { opacity: .5; cursor: default; filter: none; }
+  .new-app-status { font-size: 0.85rem; min-height: 1.2em; margin: 8px 0 0; color: #8a93a6; }
+  .new-app-status.error { color: #ff7a7a; }
+  .new-app-status.success { color: #6ee7a8; }
+
   /* === Accessibilité === */
   .sr-only {
     position: absolute !important;
@@ -847,13 +867,13 @@
 
 <div class="toolbar" role="toolbar" aria-label="Contrôles du simulateur">
   <button id="btn-home" data-i18n="home" data-i18n-title="homeTitle" title="Retour à l'accueil">Accueil</button>
+  <button id="btn-new-app" data-i18n="newApp" data-i18n-title="newAppTitle" title="Créer une nouvelle appli">＋ Appli</button>
+  <button id="btn-switch" data-i18n="apps" data-i18n-title="appsTitle" title="Applis ouvertes">Applis ouvertes</button>
   <div class="sep"></div>
   <button id="btn-iphone" class="active">iPhone</button>
   <button id="btn-android">Android</button>
   <button id="btn-ipad" data-i18n="ipad" data-i18n-title="ipadTitle" title="Tablette iPad">iPad</button>
   <button id="btn-android-tablet" data-i18n="androidTablet" data-i18n-title="androidTabletTitle" title="Tablette Android">Tablette</button>
-  <div class="sep"></div>
-  <button id="btn-switch" data-i18n="apps" data-i18n-title="appsTitle" title="Applis ouvertes">Applis ouvertes</button>
   <div class="sep"></div>
   <button id="btn-rotate" data-i18n="rotate" data-i18n-title="rotateTitle" title="Rotation portrait / paysage">⟳ Rotation</button>
   <button id="btn-compare" data-i18n="compare" data-i18n-title="compareTitle" title="Côte à côte">⇆ Compare</button>
@@ -991,6 +1011,20 @@
     </label>
     <button type="button" id="a11yReset" class="a11y-reset" data-i18n="a11yReset">Réinitialiser</button>
     <p class="a11y-hint" data-i18n="a11yHint">Tes choix sont mémorisés et s'appliquent uniquement à cette page.</p>
+  </div>
+</div>
+
+<!-- Modale : créer une nouvelle appli -->
+<div class="help-overlay" id="newAppOverlay" role="dialog" aria-modal="true" aria-labelledby="newAppTitleEl">
+  <div class="help-box new-app-box">
+    <button type="button" class="help-close" id="newAppClose" aria-label="Fermer">×</button>
+    <h2 id="newAppTitleEl" data-i18n="newAppModalTitle">＋ Nouvelle appli</h2>
+    <p data-i18n="newAppIntro">Entre un nom : PhoneFake crée un dossier avec une structure PWA de base (point d'entrée, manifeste, service worker, page hors-ligne, css/js) et l'affiche aussitôt.</p>
+    <div class="new-app-form">
+      <input type="text" id="newAppName" data-i18n-placeholder="newAppPlaceholder" placeholder="Nom de l'appli (ex. Mon Projet)" autocomplete="off" maxlength="60" aria-label="Nom de l'appli">
+      <button type="button" id="newAppCreate" data-i18n="newAppCreate">Créer</button>
+    </div>
+    <p class="new-app-status" id="newAppStatus" aria-live="polite"></p>
   </div>
 </div>
 
@@ -1717,6 +1751,38 @@
     }
   };
 
+  // Clés "Nouvelle appli" (ajoutées séparément pour ne pas alourdir chaque bloc langue)
+  Object.assign(I18N.fr, {
+    newApp: '＋ Appli', newAppTitle: 'Créer une nouvelle appli', newAppModalTitle: '＋ Nouvelle appli',
+    newAppIntro: 'Entre un nom : PhoneFake crée un dossier avec une structure PWA de base (point d\'entrée, manifeste, service worker, page hors-ligne, css/js) et l\'affiche aussitôt.',
+    newAppPlaceholder: 'Nom de l\'appli (ex. Mon Projet)', newAppCreate: 'Créer',
+    newAppCreating: 'Création…', newAppDone: 'Appli « {n} » créée !', newAppError: 'Erreur : {e}'
+  });
+  Object.assign(I18N.en, {
+    newApp: '＋ App', newAppTitle: 'Create a new app', newAppModalTitle: '＋ New app',
+    newAppIntro: 'Enter a name: PhoneFake creates a folder with a base PWA structure (entry point, manifest, service worker, offline page, css/js) and shows it right away.',
+    newAppPlaceholder: 'App name (e.g. My Project)', newAppCreate: 'Create',
+    newAppCreating: 'Creating…', newAppDone: 'App “{n}” created!', newAppError: 'Error: {e}'
+  });
+  Object.assign(I18N.es, {
+    newApp: '＋ App', newAppTitle: 'Crear una nueva app', newAppModalTitle: '＋ Nueva app',
+    newAppIntro: 'Escribe un nombre: PhoneFake crea una carpeta con una estructura PWA básica (punto de entrada, manifiesto, service worker, página sin conexión, css/js) y la muestra al instante.',
+    newAppPlaceholder: 'Nombre de la app (ej. Mi Proyecto)', newAppCreate: 'Crear',
+    newAppCreating: 'Creando…', newAppDone: '¡App «{n}» creada!', newAppError: 'Error: {e}'
+  });
+  Object.assign(I18N.it, {
+    newApp: '＋ App', newAppTitle: 'Crea una nuova app', newAppModalTitle: '＋ Nuova app',
+    newAppIntro: 'Inserisci un nome: PhoneFake crea una cartella con una struttura PWA di base (punto d\'ingresso, manifest, service worker, pagina offline, css/js) e la mostra subito.',
+    newAppPlaceholder: 'Nome dell\'app (es. Il mio progetto)', newAppCreate: 'Crea',
+    newAppCreating: 'Creazione…', newAppDone: 'App «{n}» creata!', newAppError: 'Errore: {e}'
+  });
+  Object.assign(I18N.de, {
+    newApp: '＋ App', newAppTitle: 'Neue App erstellen', newAppModalTitle: '＋ Neue App',
+    newAppIntro: 'Gib einen Namen ein: PhoneFake erstellt einen Ordner mit einer PWA-Grundstruktur (Einstiegspunkt, Manifest, Service Worker, Offline-Seite, css/js) und zeigt ihn sofort an.',
+    newAppPlaceholder: 'App-Name (z. B. Mein Projekt)', newAppCreate: 'Erstellen',
+    newAppCreating: 'Wird erstellt…', newAppDone: 'App „{n}“ erstellt!', newAppError: 'Fehler: {e}'
+  });
+
   function applyLang(lang) {
     if (!I18N[lang]) lang = 'fr';
     const t = I18N[lang];
@@ -1728,6 +1794,10 @@
     document.querySelectorAll('[data-i18n-title]').forEach(el => {
       const key = el.dataset.i18nTitle;
       if (t[key] !== undefined) el.title = t[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      if (t[key] !== undefined) el.placeholder = t[key];
     });
     document.querySelectorAll('.lang-switch button').forEach(b => {
       b.classList.toggle('active', b.dataset.lang === lang);
@@ -1745,6 +1815,57 @@
   document.getElementById('helpClose').addEventListener('click', () => helpOverlay.classList.remove('visible'));
   helpOverlay.addEventListener('click', (e) => { if (e.target === helpOverlay) helpOverlay.classList.remove('visible'); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && helpOverlay.classList.contains('visible')) helpOverlay.classList.remove('visible'); });
+
+  // -------- Créer une nouvelle appli --------
+  const newAppOverlay = document.getElementById('newAppOverlay');
+  const newAppName = document.getElementById('newAppName');
+  const newAppCreate = document.getElementById('newAppCreate');
+  const newAppStatus = document.getElementById('newAppStatus');
+  function newAppT(key, fallback) {
+    const lang = document.documentElement.lang || 'fr';
+    return (I18N[lang] && I18N[lang][key]) || fallback;
+  }
+  function openNewApp() {
+    newAppStatus.textContent = '';
+    newAppStatus.className = 'new-app-status';
+    newAppName.value = '';
+    newAppCreate.disabled = false;
+    newAppOverlay.classList.add('visible');
+    setTimeout(() => newAppName.focus(), 50);
+  }
+  function closeNewApp() { newAppOverlay.classList.remove('visible'); }
+  document.getElementById('btn-new-app').addEventListener('click', openNewApp);
+  document.getElementById('newAppClose').addEventListener('click', closeNewApp);
+  newAppOverlay.addEventListener('click', (e) => { if (e.target === newAppOverlay) closeNewApp(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && newAppOverlay.classList.contains('visible')) closeNewApp(); });
+
+  async function createApp() {
+    const name = newAppName.value.trim();
+    if (!name) { newAppName.focus(); return; }
+    newAppCreate.disabled = true;
+    newAppStatus.className = 'new-app-status';
+    newAppStatus.textContent = newAppT('newAppCreating', 'Création…');
+    try {
+      const r = await fetch('create-app.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+        body: new URLSearchParams({ name }).toString()
+      });
+      const data = await r.json().catch(() => ({ error: 'Réponse invalide' }));
+      if (!r.ok || data.error) throw new Error(data.error || ('HTTP ' + r.status));
+      newAppStatus.className = 'new-app-status success';
+      newAppStatus.textContent = newAppT('newAppDone', 'Appli « {n} » créée !').replace('{n}', data.name);
+      knownAppIds = new Set();       // force le re-render de la grille
+      await loadApps();              // refresh immédiat → le logo généré s'affiche
+      setTimeout(closeNewApp, 1300);
+    } catch (err) {
+      newAppStatus.className = 'new-app-status error';
+      newAppStatus.textContent = newAppT('newAppError', 'Erreur : {e}').replace('{e}', err.message);
+      newAppCreate.disabled = false;
+    }
+  }
+  newAppCreate.addEventListener('click', createApp);
+  newAppName.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); createApp(); } });
 
   // Init langue (localStorage ou navigateur)
   const stored = (function () { try { return localStorage.getItem('phonefake-lang'); } catch { return null; } })();
