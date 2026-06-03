@@ -172,6 +172,8 @@ foreach (scandir($base) as $entry) {
     if (!is_dir($path)) continue;
     if (in_array($entry, $excluded, true)) continue;
     if ($entry[0] === '.') continue;
+    // Masque les dossiers de sauvegarde (ex. "…-backup-…", "…backup.git")
+    if (stripos($entry, 'backup') !== false) continue;
 
     // 1) PWA manifest (preferred)
     $icon = null;

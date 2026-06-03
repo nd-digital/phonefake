@@ -11,6 +11,9 @@ Thumbs.db
 # Logs
 *.log
 
+# Matériel marketing (local, jamais publié)
+.MARKET/
+
 # Secrets / config locale (préventif — ne jamais versionner)
 .env
 .env.*

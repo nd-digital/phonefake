@@ -671,9 +671,14 @@
     text-shadow: 0 1px 3px rgba(0,0,0,.6);
     max-width: 76px;
     text-align: center;
-    white-space: nowrap;
+    /* 2 lignes max, puis ellipsis ; coupe les mots trop longs au lieu de tronquer */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
+    line-height: 1.2;
     font-weight: 500;
   }
 
