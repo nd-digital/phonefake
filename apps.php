@@ -3,7 +3,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
 $base = __DIR__;
-$excluded = ['node_modules', '.git', '.idea', '.vscode', 'vendor', 'memory', 'assets'];
+$excluded = ['node_modules', '.git', '.idea', '.vscode', 'vendor', 'memory', 'assets', 'docs'];
 
 $manifestCandidates = [
     'manifest.json', 'manifest.webmanifest',
