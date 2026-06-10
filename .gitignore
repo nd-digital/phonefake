@@ -11,6 +11,10 @@ Thumbs.db
 # Logs
 *.log
 
+# Notes de travail internes (jamais publiées sur GitHub)
+/CLAUDE.md
+/memory/
+
 # Matériel marketing (local, jamais publié)
 .MARKET/
 
