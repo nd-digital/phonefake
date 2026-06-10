@@ -1,9 +1,9 @@
 <?php
 /**
- * create-app.php — crée un nouveau dossier d'appli avec une structure PWA de base.
- * POST { name } → crée <SLUG>/public/{index.html, manifest.json, service-worker.js,
- * offline.html, icons/, css/style.css, js/app.js} puis renvoie { ok, id, name, url }.
- * Le front re-fetch apps.php ensuite : le logo (auto-généré faute d'icône) s'affiche.
+ * create-app.php -- creates a new app folder with a base PWA structure.
+ * POST { name } -> creates <SLUG>/public/{index.html, manifest.json, service-worker.js,
+ * offline.html, icons/, css/style.css, js/app.js}, then returns { ok, id, name, url }.
+ * The front end then re-fetches apps.php: the logo (auto-generated when missing) shows.
  */
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -14,8 +14,19 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// CSRF protection (double-submit cookie): the token in the X-CSRF-Token header
+// must match the phonefake_csrf cookie issued by apps.php. A cross-site attacker
+// can neither read the cookie nor set a custom header, so forged POSTs are blocked.
+$cookieToken = $_COOKIE['phonefake_csrf'] ?? '';
+$headerToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+if ($cookieToken === '' || !hash_equals($cookieToken, $headerToken)) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Requête non autorisée (jeton CSRF invalide).']);
+    exit;
+}
+
 $base = __DIR__;
-// Noms réservés (dossiers techniques / sous-dossiers usuels d'une appli)
+// Reserved names (technical folders / common app subfolders)
 $reserved = ['node_modules', 'git', 'idea', 'vscode', 'vendor', 'memory', 'assets',
              'public', 'src', 'lib', 'data', 'scripts', 'tests', 'certs', 'dist', 'build'];
 
@@ -26,8 +37,8 @@ if ($rawName === '') {
 }
 if (mb_strlen($rawName) > 60) $rawName = mb_substr($rawName, 0, 60);
 
-// Slug : translittère les accents (table déterministe, indépendante de la locale),
-// ne garde que [A-Za-z0-9], sépare par '-', majuscules.
+// Slug: transliterate accents (deterministic, locale-independent table),
+// keep only [A-Za-z0-9], separate with '-', uppercase.
 $accents = [
     'à'=>'a','á'=>'a','â'=>'a','ã'=>'a','ä'=>'a','å'=>'a','ç'=>'c',
     'è'=>'e','é'=>'e','ê'=>'e','ë'=>'e','ì'=>'i','í'=>'i','î'=>'i','ï'=>'i',
@@ -54,7 +65,7 @@ if (file_exists($path)) {
     exit;
 }
 
-// --- Création de l'arborescence ---
+// --- Create the folder tree ---
 $dirs = [$path, "$path/public", "$path/public/icons", "$path/public/css", "$path/public/js"];
 foreach ($dirs as $d) {
     if (!is_dir($d) && !@mkdir($d, 0775, true)) {
@@ -63,13 +74,13 @@ foreach ($dirs as $d) {
     }
 }
 
-// --- Substitutions pour les gabarits ---
+// --- Template substitutions ---
 $nameHtml = htmlspecialchars($rawName, ENT_QUOTES, 'UTF-8');
 $nameJs   = json_encode($rawName, JSON_UNESCAPED_UNICODE);
 $repl = ['{{NAME}}' => $nameHtml, '{{SLUG}}' => $slug, '{{NAME_JS}}' => $nameJs];
 $tpl = function ($s) use ($repl) { return strtr($s, $repl); };
 
-// --- manifest.json (les icônes pointent vers des fichiers absents → logo auto-généré) ---
+// --- manifest.json (icons point to missing files -> auto-generated logo) ---
 $manifest = [
     'name'             => $rawName,
     'short_name'       => $rawName,
@@ -84,7 +95,7 @@ $manifest = [
     ],
 ];
 
-// --- Gabarits (nowdoc : aucune interpolation, placeholders remplacés ensuite) ---
+// --- Templates (nowdoc: no interpolation, placeholders replaced afterwards) ---
 $indexHtml = $tpl(<<<'HTML'
 <!DOCTYPE html>
 <html lang="fr">
@@ -228,7 +239,7 @@ code { background: rgba(255, 255, 255, .08); padding: 1px 6px; border-radius: 4p
 .foot { text-align: center; color: #7a83a0; font-size: .8rem; margin-top: 28px; }
 CSS;
 
-// --- Écriture des fichiers ---
+// --- Write the files ---
 $files = [
     "$path/public/index.html"        => $indexHtml,
     "$path/public/offline.html"      => $offlineHtml,
@@ -243,7 +254,7 @@ foreach ($files as $file => $content) {
         exit;
     }
 }
-// Garde icons/ versionnable / visible même vide
+// Keep icons/ tracked / visible even when empty
 @file_put_contents("$path/public/icons/.gitkeep", '');
 
 echo json_encode([

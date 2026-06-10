@@ -129,7 +129,7 @@
   .new-app-status.error { color: #ff7a7a; }
   .new-app-status.success { color: #6ee7a8; }
 
-  /* === Accessibilité === */
+  /* === Accessibility === */
   .sr-only {
     position: absolute !important;
     width: 1px; height: 1px;
@@ -146,7 +146,7 @@
   }
   .skip-link:focus { top: 0; }
 
-  /* Focus visible : par défaut discret, renforcé via toggle a11y */
+  /* Focus ring: subtle by default, reinforced via the a11y toggle */
   :focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; border-radius: 4px; }
   body.a11y-focus-ring :focus-visible { outline: 4px solid #fbbf24; outline-offset: 3px; }
 
@@ -154,7 +154,7 @@
   body.a11y-size-large { font-size: 1.15em; }
   body.a11y-size-xlarge { font-size: 1.35em; }
 
-  /* Contraste élevé */
+  /* High contrast */
   body.a11y-contrast {
     background: #000 !important;
     color: #fff !important;
@@ -182,7 +182,7 @@
     word-spacing: 0.1em !important;
   }
 
-  /* Animations réduites */
+  /* Reduced motion */
   body.a11y-reduced-motion *,
   body.a11y-reduced-motion *::before,
   body.a11y-reduced-motion *::after {
@@ -197,7 +197,7 @@
     }
   }
 
-  /* Liens de pied de page : pas de couleur lien générique, pas de soulignement */
+  /* Footer links: no generic link color, no underline */
   .footer-links {
     display: flex;
     align-items: center;
@@ -221,7 +221,7 @@
   .footer-links a:focus-visible { color: #fff; }
   .footer-sep { color: #4a5878; }
 
-  /* Indicateur de dimensions, juste du texte centré dans la toolbar */
+  /* Dimensions badge: just centered text in the toolbar */
   .dim-badge {
     color: #b9c2d6;
     font-size: 0.85rem;
@@ -234,7 +234,7 @@
     user-select: none;
   }
 
-  /* Panel a11y (réutilise help-overlay) */
+  /* A11y panel (reuses help-overlay) */
   .a11y-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,.7);
@@ -293,9 +293,9 @@
     margin: 0 2px;
   }
 
-  /* Sélecteurs de modèle (au-dessus du stage, alignés avec les téléphones).
-     En mode simple : masqués (la toolbar suffit). En mode compare : visibles
-     pour permettre de choisir le modèle de chaque appareil. */
+  /* Model selectors (above the stage, aligned with the phones).
+     Solo mode: hidden (the toolbar is enough). Compare mode: visible
+     so each device's model can be chosen. */
   .phone-selectors {
     display: none;
     align-items: center;
@@ -305,8 +305,8 @@
   }
   body.compare-on .phone-selectors { display: flex; }
 
-  /* Le 2e téléphone (clone) est cliquable : la délégation d'événements
-     au niveau du stage redirige les clics sur les app-icons vers openApp. */
+  /* The 2nd phone (clone) is clickable: event delegation at the stage
+     level routes clicks on app icons to openApp. */
   .phone-model-select {
     background: rgba(255, 255, 255, 0.08);
     color: #fff;
@@ -320,21 +320,21 @@
   }
   .phone-model-select:hover { background: rgba(255, 255, 255, 0.14); }
   .phone-model-select:focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; }
-  /* Le dropdown ouvert garde le style système blanc par défaut → on force
-     un fond sombre + texte blanc pour la lisibilité (sinon blanc sur blanc). */
+  /* The open dropdown keeps the white system style by default -> force
+     a dark background + white text for readability (otherwise white on white). */
   .phone-model-select option {
     background: #1a1a26;
     color: #fff;
   }
 
-  /* Bouton Compare actif : surbrillance pour bien indiquer l'état */
+  /* Active Compare button: highlight to clearly show the state */
   #btn-compare.active {
     background: #4a90e2;
     color: #fff;
     box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.35);
   }
 
-  /* Bouton "icon only" (accessibilité) : SVG blanc agrandi sur fond transparent */
+  /* "Icon only" button (accessibility): enlarged white SVG on a transparent background */
   .toolbar button.btn-icon-only {
     padding: 6px 10px;
     background: transparent;
@@ -350,10 +350,10 @@
   }
   .toolbar button.btn-icon-only:hover { background: rgba(255,255,255,.12); }
 
-  /* Mode compare : 2 phones côte à côte, rapprochés */
+  /* Compare mode: 2 phones side by side, brought closer */
   .stage.compare-mode { gap: 6px; }
-  /* Le 2e téléphone est une iframe qui recharge la page en mode embed.
-     Dimensions natives identiques au 1er téléphone (mises à jour par JS). */
+  /* The 2nd phone is an iframe that reloads the page in embed mode.
+     Native dimensions identical to the 1st phone (updated by JS). */
   .phone-mirror-iframe {
     border: 0;
     background: transparent;
@@ -441,9 +441,9 @@
       height .45s cubic-bezier(.4, 0, .2, 1),
       border-radius .3s, background .3s;
   }
-  /* Les dimensions natives sont désormais imposées par fitPhone() en JS
-     (selon le modèle courant + orientation). Ce qui suit n'est qu'un
-     fallback pour les modes téléphones si jamais le JS n'a pas tourné. */
+  /* Native dimensions are now enforced by fitPhone() in JS
+     (based on the current model + orientation). What follows is only a
+     fallback for phone modes in case the JS did not run. */
   .phone.iphone.landscape,
   .phone.android.landscape { width: 820px; height: 390px; }
   .phone.iphone {
@@ -480,7 +480,7 @@
   .phone.android-tablet .notch,
   .phone.android-tablet .punch-hole,
   .phone.android-tablet .nav-bar { display: none; }
-  /* Sur tablettes en paysage on peut élargir la grille d'icônes */
+  /* On tablets in landscape we can widen the icon grid */
   .phone.ipad .apps-grid,
   .phone.android-tablet .apps-grid { grid-template-columns: repeat(6, 1fr); }
   .phone.ipad.landscape .apps-grid,
@@ -526,9 +526,9 @@
   }
   .phone.iphone .notch,
   .phone.iphone .home-indicator { display: block; }
-  /* Landscape: notch sur le bord gauche (dans le bezel, pas par-dessus l'écran)
-     + home indicator sur le bord droit. La notch reste fine pour ne pas
-     empiéter sur le contenu — sur un vrai iPhone elle est dans la safe-area. */
+  /* Landscape: notch on the left edge (in the bezel, not over the screen)
+     + home indicator on the right edge. The notch stays thin so it does not
+     encroach on the content -- on a real iPhone it sits in the safe area. */
   .phone.iphone.landscape .notch {
     top: 50%; left: 0;
     transform: translateY(-50%);
@@ -901,10 +901,10 @@
   <span class="dim-badge" id="dimBadge" aria-live="polite">390 × 820</span>
 </div>
 
-<!-- Skip link pour les lecteurs d'écran -->
+<!-- Skip link for screen readers -->
 <a href="#stage" class="skip-link" data-i18n="skipToContent">Aller au contenu principal</a>
 
-<!-- Sélecteurs de modèle (au-dessus du / des téléphones, hors stage scalé) -->
+<!-- Model selectors (above the phone(s), outside the scaled stage) -->
 <div class="phone-selectors" id="phoneSelectors">
   <select class="phone-model-select" id="phoneModelSelect" aria-label="Modèle de l'appareil 1">
     <option value="iphone">📱 iPhone</option>
@@ -982,10 +982,10 @@
   </div>
 </div>
 
-<!-- Région live pour annoncer les changements (lecteurs d'écran) -->
+<!-- Live region to announce changes (screen readers) -->
 <div id="liveRegion" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
-<!-- Panel d'accessibilité -->
+<!-- Accessibility panel -->
 <div class="a11y-overlay" id="a11yOverlay" role="dialog" aria-modal="true" aria-labelledby="a11yPanelTitle">
   <div class="a11y-panel">
     <button type="button" class="help-close" id="a11yClose" aria-label="Fermer">×</button>
@@ -1019,7 +1019,7 @@
   </div>
 </div>
 
-<!-- Modale : créer une nouvelle appli -->
+<!-- Modal: create a new app -->
 <div class="help-overlay" id="newAppOverlay" role="dialog" aria-modal="true" aria-labelledby="newAppTitleEl">
   <div class="help-box new-app-box">
     <button type="button" class="help-close" id="newAppClose" aria-label="Fermer">×</button>
@@ -1093,9 +1093,9 @@
   const openApps = new Map(); // id → { app, window, iframe }
   let activeAppId = null;
   let knownAppIds = new Set();
-  let knownAppsList = [];  // pour la délégation d'événements (clic sur .app-icon)
+  let knownAppsList = [];  // for event delegation (clicking .app-icon)
 
-  // Dimensions par modèle (portrait : [width, height])
+  // Dimensions per model (portrait: [width, height])
   const MODEL_DIMS = {
     'iphone':         [390, 820],
     'android':        [390, 820],
@@ -1103,12 +1103,12 @@
     'android-tablet': [800, 1280]
   };
   let currentModel = 'iphone';
-  // Hoist : utilisé par fitPhone()
+  // Hoisted: used by fitPhone()
   let compareEnabled = false;
   let comparePhone = null;
   let compareModel = 'android';
 
-  // Model switch — pilote le 1er téléphone, et synchronise le 2e en mode compare
+  // Model switch -- drives the 1st phone, and syncs the 2nd in compare mode
   function setModel(m) {
     if (!MODEL_DIMS[m]) return;
     currentModel = m;
@@ -1122,8 +1122,8 @@
     const sel = document.getElementById('phoneModelSelect');
     if (sel && sel.value !== m) sel.value = m;
     fitPhone();
-    // En compare : re-clone le 2e téléphone (qui mirroire le DOM du 1er)
-    // sans toucher à compareModel (le 2e garde son propre modèle).
+    // In compare: re-clone the 2nd phone (which mirrors the 1st's DOM)
+    // without touching compareModel (the 2nd keeps its own model).
     if (compareEnabled) buildCompareMirror();
     // Annonce a11y (live region)
     const r = document.getElementById('liveRegion');
@@ -1138,7 +1138,7 @@
   document.getElementById('btn-android').addEventListener('click', () => setModel('android'));
   document.getElementById('btn-ipad').addEventListener('click', () => setModel('ipad'));
   document.getElementById('btn-android-tablet').addEventListener('click', () => setModel('android-tablet'));
-  // Le sélecteur au-dessus du téléphone fait la même chose que les boutons
+  // The selector above the phone does the same thing as the buttons
   document.getElementById('phoneModelSelect').addEventListener('change', (e) => setModel(e.target.value));
 
   // Responsive fit + rotation
@@ -1155,12 +1155,12 @@
     phone.style.height = h + 'px';
     if (r.width <= 0 || r.height <= 0) return;
     // En compare : chaque phone doit tenir dans ~48% de la largeur (marge
-    // de sécurité pour le gap + bordures). En solo : 92% de la largeur.
+    // safety margin for the gap + borders). Solo: 92% of the width.
     const widthRatio = compareEnabled ? 0.48 : 0.92;
     const heightRatio = 0.94;
     const raw = Math.min((r.width * widthRatio) / w, (r.height * heightRatio) / h);
     phone.style.setProperty('--phone-scale', Math.min(raw, 1));
-    // Mise à jour de l'indicateur de dimensions
+    // Update the dimensions badge
     const badge = document.getElementById('dimBadge');
     if (badge) badge.textContent = w + ' × ' + h;
     // Persistance
@@ -1176,7 +1176,7 @@
     isLandscape = !isLandscape;
     btnRotate.classList.toggle('active', isLandscape);
     phone.classList.toggle('landscape', isLandscape);
-    // Propage la classe landscape au wrapper du 2e téléphone (compare)
+    // Propagate the landscape class to the 2nd phone's wrapper (compare)
     if (comparePhone) comparePhone.classList.toggle('landscape', isLandscape);
     fitPhone();
   });
@@ -1230,7 +1230,7 @@
       grid.innerHTML = '<div class="empty">Aucune appli trouvée.<br>Ajoute un sous-dossier dans <code>APPLI/</code>.</div>';
       return;
     }
-    // Mémorise la liste des apps pour la délégation d'événements
+    // Remember the apps list for event delegation
     knownAppsList = apps;
     apps.forEach(app => {
       const el = document.createElement('div');
@@ -1270,8 +1270,8 @@
       iframe.src = app.url;
       iframe.title = app.name;
       iframe.setAttribute('allow', 'camera; microphone; fullscreen; autoplay; clipboard-read; clipboard-write');
-      // À chaque navigation interne dans l'iframe (clic sur un lien),
-      // resynchroniser le 2e téléphone (compare).
+      // On each internal navigation inside the iframe (clicking a link),
+      // re-sync the 2nd phone (compare).
       iframe.addEventListener('load', () => {
         if (compareEnabled) buildCompareMirror();
       });
@@ -1282,8 +1282,8 @@
     showApp(app.id);
   }
 
-  // Met à jour les classes .active sur les boutons Accueil/Applis ouvertes
-  // selon l'état courant (rien d'ouvert / appli ouverte / switcher ouvert).
+  // Update the .active classes on the Home / Open apps buttons
+  // based on the current state (nothing open / app open / switcher open).
   function updateNavState() {
     const btnHome = document.getElementById('btn-home');
     const btnSwitch = document.getElementById('btn-switch');
@@ -1415,12 +1415,12 @@
   // Auto-refresh list every 10s (picks up newly added folders)
   loadApps();
   setInterval(loadApps, 10000);
-  // État initial des boutons Accueil / Applis ouvertes
+  // Initial state of the Home / Open apps buttons
   updateNavState();
 
-  // Délégation d'événements sur le stage : clic sur le 1er OU le 2e
-  // téléphone (clone) déclenche les bonnes actions. Le clone n'a pas les
-  // listeners JS, on s'appuie sur les attributs data-* déjà présents.
+  // Event delegation on the stage: click on the 1st OR the 2nd
+  // phone (clone) triggers the right actions. The clone has no
+  // JS listeners, so we rely on the data-* attributes already present.
   stage.addEventListener('click', (e) => {
     // 1) Bouton fermer une appli dans le switcher
     const closeBtn = e.target.closest('.switcher-card .close[data-app-id]');
@@ -1429,14 +1429,14 @@
       closeApp(closeBtn.dataset.appId);
       return;
     }
-    // 2) Carte d'appli dans le switcher → ré-ouvrir
+    // 2) App card in the switcher -> reopen
     const switcherCard = e.target.closest('.switcher-card[data-app-id]');
     if (switcherCard) {
       e.preventDefault(); e.stopPropagation();
       showApp(switcherCard.dataset.appId);
       return;
     }
-    // 3) Icône d'appli dans le launcher → ouvrir
+    // 3) App icon in the launcher -> open
     const icon = e.target.closest('.app-icon[data-app-id]');
     if (icon) {
       const id = icon.dataset.appId;
@@ -1454,7 +1454,7 @@
       goHome();
       return;
     }
-    // 5) Boutons nav-bar Android (clone) — id préfixé "-c"
+    // 5) Android nav-bar buttons (clone) -- id suffixed with "-c"
     const navBtn = e.target.closest('.nav-bar button[id$="-c"]');
     if (navBtn && navBtn.closest('#phone-compare')) {
       e.preventDefault(); e.stopPropagation();
@@ -1469,10 +1469,7 @@
     }
   });
 
-  // (Ancien mode embed + BroadcastChannel retirés — remplacés par le
-  //  clonage DOM direct du 1er téléphone vers le 2e via buildCompareMirror)
-
-  // -------- i18n FR/EN + Help modal --------
+  // -------- i18n (FR/EN/ES/IT/DE) + Help modal --------
   const I18N = {
     fr: {
       title: '📱 PhoneFake — Simulateur mobile',
@@ -1756,7 +1753,7 @@
     }
   };
 
-  // Clés "Nouvelle appli" (ajoutées séparément pour ne pas alourdir chaque bloc langue)
+  // "New app" keys (added separately to avoid bloating each language block)
   Object.assign(I18N.fr, {
     newApp: '＋ Appli', newAppTitle: 'Créer une nouvelle appli', newAppModalTitle: '＋ Nouvelle appli',
     newAppIntro: 'Entre un nom : PhoneFake crée un dossier avec une structure PWA de base (point d\'entrée, manifeste, service worker, page hors-ligne, css/js) et l\'affiche aussitôt.',
@@ -1821,7 +1818,7 @@
   helpOverlay.addEventListener('click', (e) => { if (e.target === helpOverlay) helpOverlay.classList.remove('visible'); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && helpOverlay.classList.contains('visible')) helpOverlay.classList.remove('visible'); });
 
-  // -------- Créer une nouvelle appli --------
+  // -------- Create a new app --------
   const newAppOverlay = document.getElementById('newAppOverlay');
   const newAppName = document.getElementById('newAppName');
   const newAppCreate = document.getElementById('newAppCreate');
@@ -1829,6 +1826,11 @@
   function newAppT(key, fallback) {
     const lang = document.documentElement.lang || 'fr';
     return (I18N[lang] && I18N[lang][key]) || fallback;
+  }
+  // Read the CSRF token issued by apps.php (double-submit cookie pattern).
+  function getCsrfToken() {
+    const m = document.cookie.match(/(?:^|;\s*)phonefake_csrf=([^;]+)/);
+    return m ? decodeURIComponent(m[1]) : '';
   }
   function openNewApp() {
     newAppStatus.textContent = '';
@@ -1853,7 +1855,10 @@
     try {
       const r = await fetch('create-app.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          'X-CSRF-Token': getCsrfToken()
+        },
         body: new URLSearchParams({ name }).toString()
       });
       const data = await r.json().catch(() => ({ error: 'Réponse invalide' }));
@@ -1861,7 +1866,7 @@
       newAppStatus.className = 'new-app-status success';
       newAppStatus.textContent = newAppT('newAppDone', 'Appli « {n} » créée !').replace('{n}', data.name);
       knownAppIds = new Set();       // force le re-render de la grille
-      await loadApps();              // refresh immédiat → le logo généré s'affiche
+      await loadApps();              // immediate refresh -> the generated logo appears
       setTimeout(closeNewApp, 1300);
     } catch (err) {
       newAppStatus.className = 'new-app-status error';
@@ -1884,7 +1889,7 @@
     if (r) { r.textContent = msg; }
   }
 
-  // -------- Persistance modèle + orientation --------
+  // -------- Persist model + orientation --------
   try {
     const savedModel = localStorage.getItem('phonefake-model');
     const savedOri = localStorage.getItem('phonefake-orientation');
@@ -1914,7 +1919,7 @@
     }
   });
 
-  // -------- Mode compare (côte à côte) --------
+  // -------- Compare mode (side by side) --------
   function fitComparePhone() {
     if (!comparePhone) return;
     const r = stage.getBoundingClientRect();
@@ -1927,18 +1932,18 @@
     comparePhone.style.setProperty('--phone-scale', Math.min(raw, 1));
   }
 
-  // Construit / reconstruit le 2e téléphone en clonant le DOM du 1er.
-  // Approche : à chaque changement d'état, on re-clone (simple et fiable).
-  // Tradeoff : les iframes des apps se rechargent à chaque sync (acceptable
-  // en local). Optim future possible si gênant.
+  // Build / rebuild the 2nd phone by cloning the 1st's DOM.
+  // Approach: on each state change, re-clone (simple and reliable).
+  // Tradeoff: the apps' iframes reload on each sync (acceptable
+  // locally). Future optimization possible if bothersome.
   function buildCompareMirror() {
     if (!compareEnabled) return;
     const stage = document.getElementById('stage');
     const fresh = phone.cloneNode(true);
     fresh.id = 'phone-compare';
-    // Renommer tous les IDs internes du clone pour éviter les duplicates
+    // Rename all the clone's internal IDs to avoid duplicates
     fresh.querySelectorAll('[id]').forEach(el => { el.id = el.id + '-c'; });
-    // Forcer le modèle souhaité pour le 2e
+    // Force the desired model for the 2nd
     ['iphone', 'android', 'ipad', 'android-tablet'].forEach(c => fresh.classList.remove(c));
     fresh.classList.add(compareModel);
     if (isLandscape) fresh.classList.add('landscape');
@@ -1950,14 +1955,14 @@
     comparePhone = fresh;
     fitComparePhone();
   }
-  // Alias rétrocompat (anciennement utilisé pour iframe miroir)
+  // Back-compat alias (formerly used for the mirror iframe)
   function syncCompareIframe() { if (compareEnabled) buildCompareMirror(); }
 
   function toggleCompare() {
     const btn = document.getElementById('btn-compare');
     const selectorsRow = document.getElementById('phoneSelectors');
     if (compareEnabled) {
-      // Désactivation
+      // Disable
       const cP = document.getElementById('phone-compare');
       if (cP) cP.remove();
       const cSel = document.getElementById('phoneModelSelect-compare');
@@ -1969,16 +1974,16 @@
       compareEnabled = false;
       announce(I18N[document.documentElement.lang || 'fr']?.announceCompareOff || 'Mode comparaison désactivé');
     } else {
-      // Créer un 2e téléphone "miroir" simplifié : juste un screen + iframe.
-      // Pas de launcher / pas d'IDs dupliqués / l'app active du 1er est
-      // affichée en miroir.
+      // Create a simplified "mirror" 2nd phone: just a screen + iframe.
+      // No launcher / no duplicated IDs / the 1st's active app is
+      // shown mirrored.
       compareModel = (currentModel === 'iphone') ? 'android' : (currentModel === 'android' ? 'iphone' : 'android');
-      // Le 2e téléphone est un CLONE visuel du 1er, recopié à chaque
-      // changement d'état (openApp, goHome, etc.). Lecture seule
-      // (pointer-events: none) — l'utilisateur interagit avec le 1er.
+      // The 2nd phone is a visual CLONE of the 1st, recopied on each
+      // state change (openApp, goHome, etc.). Read-only
+      // (pointer-events: none) -- the user interacts with the 1st.
       buildCompareMirror();
 
-      // 2e select (modèle indépendant pour la comparaison visuelle)
+      // 2nd select (independent model for visual comparison)
       const selFirst = document.getElementById('phoneModelSelect');
       const cloneSel = selFirst.cloneNode(true);
       cloneSel.id = 'phoneModelSelect-compare';
@@ -1986,8 +1991,8 @@
       cloneSel.value = compareModel;
       cloneSel.addEventListener('change', (e) => {
         compareModel = e.target.value;
-        // Re-cloner le 2e téléphone avec le nouveau modèle (le clone reprend
-        // compareModel au lieu de la classe du 1er téléphone).
+        // Re-clone the 2nd phone with the new model (the clone takes
+        // compareModel instead of the 1st phone's class).
         buildCompareMirror();
       });
       selectorsRow.appendChild(cloneSel);

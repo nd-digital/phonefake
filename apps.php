@@ -2,6 +2,17 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
+// Issue a CSRF token cookie (double-submit pattern) consumed by create-app.php.
+// Stateless: the security comes from the same-origin policy — a cross-site page
+// can neither read this cookie nor set the matching custom request header.
+if (empty($_COOKIE['phonefake_csrf'])) {
+    setcookie('phonefake_csrf', bin2hex(random_bytes(32)), [
+        'expires'  => 0,
+        'path'     => '/',
+        'samesite' => 'Strict',
+    ]);
+}
+
 $base = __DIR__;
 $excluded = ['node_modules', '.git', '.idea', '.vscode', 'vendor', 'memory', 'assets', 'docs'];
 
@@ -113,13 +124,13 @@ function readManifest($manifestPath, $entry, $baseDir) {
 }
 
 /**
- * Génère un logo placeholder (SVG en data URI) quand aucune icône n'existe.
- * Fond en dégradé déterministe (hash du nom, même algo que colorFor() côté JS
- * pour la cohérence visuelle), texte = nom nettoyé réparti sur 1 à 3 lignes
- * avec une taille de police qui s'adapte pour tenir dans le carré.
+ * Generate a placeholder logo (SVG data URI) when an app has no resolvable icon.
+ * Deterministic gradient background (hash of the name, same algorithm as colorFor()
+ * on the JS side for visual consistency); the text is the cleaned name over 1 to 3 lines
+ * with a font size that adapts to fit inside the square.
  */
 function generatePlaceholderIcon($name) {
-    // Hash → teinte (identique à colorFor() côté front)
+    // Hash -> hue (same as colorFor() on the front end)
     $h = 0;
     $len = strlen($name);
     for ($i = 0; $i < $len; $i++) {
@@ -128,7 +139,7 @@ function generatePlaceholderIcon($name) {
     $hue  = $h % 360;
     $hue2 = ($hue + 40) % 360;
 
-    // Mots du nom (max 3 lignes ; les mots restants fusionnés sur la dernière)
+    // Words of the name (max 3 lines; extra words merged onto the last one)
     $words = preg_split('/\s+/', trim($name)) ?: [$name];
     if (count($words) > 3) {
         $words = array_merge(array_slice($words, 0, 2), [implode(' ', array_slice($words, 2))]);
@@ -137,12 +148,12 @@ function generatePlaceholderIcon($name) {
     $maxLen = max(1, max(array_map('strlen', $words)));
 
     $S = 240; $pad = 28; $usable = $S - 2 * $pad;
-    // Police limitée par la largeur (mot le plus long) ET la hauteur (nb de lignes)
+    // Font size bounded by width (longest word) AND height (number of lines)
     $byWidth  = $usable / ($maxLen * 0.62);
     $byHeight = $usable / ($lines * 1.25);
     $fs = (int) max(20, min(96, $byWidth, $byHeight));
     $lh = $fs * 1.2;
-    $startY = ($S - $lh * $lines) / 2 + $fs * 0.78; // baseline de la 1re ligne
+    $startY = ($S - $lh * $lines) / 2 + $fs * 0.78; // baseline of the first line
 
     $texts = '';
     foreach ($words as $idx => $w) {
@@ -172,7 +183,7 @@ foreach (scandir($base) as $entry) {
     if (!is_dir($path)) continue;
     if (in_array($entry, $excluded, true)) continue;
     if ($entry[0] === '.') continue;
-    // Masque les dossiers de sauvegarde (ex. "…-backup-…", "…backup.git")
+    // Hide backup folders (e.g. "...-backup-...", "...backup.git")
     if (stripos($entry, 'backup') !== false) continue;
 
     // 1) PWA manifest (preferred)
@@ -247,13 +258,13 @@ foreach (scandir($base) as $entry) {
         if (strpos($icon, $entry . '/') !== 0) $icon = $entry . '/' . $icon;
     }
 
-    // Aucune icône trouvée — génère un logo placeholder (SVG) à partir du nom.
+    // No icon found -- generate a placeholder logo (SVG) from the name.
     if (!$icon) {
         $icon = generatePlaceholderIcon($name);
     }
 
     // Cache-busting: append file mtime so icon changes bypass browser cache
-    // (ignoré pour les logos générés, qui sont des data URI et non des fichiers)
+    // (skipped for generated logos, which are data URIs and not files)
     if ($icon && strpos($icon, 'data:') !== 0) {
         $iconAbs = $base . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $icon);
         if (file_exists($iconAbs)) {
