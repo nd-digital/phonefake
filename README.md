@@ -42,15 +42,24 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 
 ## 🖼️ Aperçu
 
-<div align="center">
-
-| Appli ouverte | Mode comparaison |
-|:---:|:---:|
-| <img src="docs/02-app-open-weather.png" alt="Une appli ouverte dans le simulateur" width="380"> | <img src="docs/03-compare-mode.png" alt="Mode comparaison, deux appareils côte à côte" width="380"> |
-| **Création d'appli** | **Accessibilité** |
-| <img src="docs/04-create-app-modal.png" alt="Modale de création d'une nouvelle appli" width="380"> | <img src="docs/05-accessibility.png" alt="Panneau des réglages d'accessibilité" width="380"> |
-
-</div>
+<table align="center">
+  <tr>
+    <td align="center"><b>Appli ouverte</b></td>
+    <td align="center"><b>Mode comparaison</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/02-app-open-weather.png" alt="Une appli ouverte dans le simulateur" width="380"></td>
+    <td align="center"><img src="docs/03-compare-mode.png" alt="Mode comparaison, deux appareils côte à côte" width="380"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Création d'appli</b></td>
+    <td align="center"><b>Accessibilité</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/04-create-app-modal.png" alt="Modale de création d'une nouvelle appli" width="380"></td>
+    <td align="center"><img src="docs/05-accessibility.png" alt="Panneau des réglages d'accessibilité" width="380"></td>
+  </tr>
+</table>
 
 ---
 
