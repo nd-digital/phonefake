@@ -38,6 +38,8 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 | ♿ **Accessibilité** | Taille texte, contraste, police dyslexie, animations réduites |
 | ⌨️ **Raccourcis** | `1`-`4` appareils · `R` rotation · `C` comparer · `H` aide · `A` accessibilité |
 | 🔔 **Mises à jour** | Bannière en haut si une version plus récente est disponible sur GitHub |
+| 📸 **Capture** | Exporte l'écran simulé en PNG (via la capture d'écran native du navigateur) |
+| 🪟 **Installable (PWA)** | S'installe comme une appli de bureau (Edge/Chrome) et fonctionne hors-ligne |
 
 ---
 
@@ -95,6 +97,19 @@ Au chargement, PhoneFake compare sa version à la dernière *release* publiée s
 - La bannière est masquable et n'apparaît qu'une fois par nouvelle version.
 
 > 💡 Pour les contributeurs : pensez à incrémenter `APP_VERSION` dans `index.html` à chaque release.
+
+---
+
+## 🪟 Installer comme application (PWA)
+
+PhoneFake est une **PWA** : tu peux l'installer comme une vraie appli de bureau.
+
+- Dans **Edge / Chrome**, ouvre PhoneFake puis clique sur l'icône d'installation dans la barre d'adresse (ou menu → *Installer PhoneFake*). Il s'ouvre alors dans sa propre fenêtre (menu Démarrer, barre des tâches), sans Electron.
+- L'enveloppe (interface) fonctionne **hors-ligne** ; la liste des applis nécessite toujours le serveur PHP local (`apps.php`).
+
+## 📸 Capture d'écran
+
+Le bouton **📸 Capture** exporte l'écran simulé (l'appareil et son contenu) en PNG. La capture utilise l'API native du navigateur : il te demandera une fois quelle surface partager (l'onglet courant est pré-sélectionné).
 
 ---
 
