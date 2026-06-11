@@ -88,6 +88,7 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 ## 📄 Licence
 
 [MIT](LICENSE) — fais-en ce que tu veux.
+Traductions (FR · ES · IT · DE, non officielles) : [LICENSE-translations.md](LICENSE-translations.md).
 
 ---
 
