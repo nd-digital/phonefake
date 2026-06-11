@@ -37,6 +37,7 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 | 🌍 **5 langues** | FR · EN · ES · IT · DE |
 | ♿ **Accessibilité** | Taille texte, contraste, police dyslexie, animations réduites |
 | ⌨️ **Raccourcis** | `1`-`4` appareils · `R` rotation · `C` comparer · `H` aide · `A` accessibilité |
+| 🔔 **Mises à jour** | Bannière en haut si une version plus récente est disponible sur GitHub |
 
 ---
 
@@ -82,6 +83,18 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 
 - **`apps.php`** scanne les sous-dossiers et renvoie la liste des applis (nom, icône, point d'entrée) en JSON. Détection intelligente : manifeste PWA, icônes conventionnelles, redirections, override via `phonefake.json`.
 - **`index.html`** est le simulateur complet (HTML/CSS/JS vanilla, zéro dépendance, zéro build) : il met chaque appli dans une `<iframe>` mise à l'échelle, avec un mini-OS mobile (accueil, multitâche, navigation).
+
+---
+
+## 🔔 Mises à jour
+
+Au chargement, PhoneFake compare sa version à la dernière *release* publiée sur GitHub. Si une version plus récente existe, une **bannière** s'affiche en haut de la page avec ta version locale, la version en ligne et un lien vers les [releases](https://github.com/nd-digital/phonefake/releases).
+
+- La vérification se fait au plus une fois toutes les 6 h (cache local) ; aucune donnée n'est envoyée.
+- Pour mettre à jour : `git pull` (si cloné) ou télécharge la dernière release et remplace les fichiers.
+- La bannière est masquable et n'apparaît qu'une fois par nouvelle version.
+
+> 💡 Pour les contributeurs : pensez à incrémenter `APP_VERSION` dans `index.html` à chaque release.
 
 ---
 
