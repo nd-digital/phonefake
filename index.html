@@ -420,6 +420,21 @@
     background: rgba(255,255,255,.15);
     margin: 4px 4px;
   }
+  /* Burger button: hidden on wide screens, shown when the toolbar is collapsed */
+  .btn-burger { display: none; font-size: 18px; line-height: 1; }
+
+  /* Responsive: collapse the toolbar behind a burger on narrow windows */
+  @media (max-width: 1024px) {
+    .btn-burger { display: inline-flex; align-items: center; justify-content: center; }
+    .toolbar { flex-wrap: wrap; border-radius: 16px; justify-content: center; }
+    /* collapsed: hide everything except the burger
+       (.toolbar:not(.open) outranks the .btn-icon-only display rule) */
+    .toolbar:not(.open) > :not(.btn-burger) { display: none; }
+    /* expanded: stack items vertically, one per row */
+    .toolbar.open > :not(.btn-burger) { flex-basis: 100%; justify-content: center; align-items: center; }
+    .toolbar.open .sep { display: none; }                      /* separators are pointless when vertical */
+    .toolbar.open .dim-badge { width: 100%; justify-content: center; }
+  }
 
   .launcher {
     display: flex;
@@ -898,7 +913,8 @@
   </select>
 </div>
 
-<div class="toolbar" role="toolbar" aria-label="Contrôles du simulateur">
+<div class="toolbar" id="toolbar" role="toolbar" aria-label="Contrôles du simulateur">
+  <button id="btn-burger" class="btn-burger" aria-label="Menu" aria-expanded="false" aria-controls="toolbar" title="Menu">☰</button>
   <button id="btn-home" data-i18n="home" data-i18n-title="homeTitle" title="Retour à l'accueil">Accueil</button>
   <button id="btn-new-app" data-i18n="newApp" data-i18n-title="newAppTitle" title="Créer une nouvelle appli">＋ Appli</button>
   <button id="btn-switch" data-i18n="apps" data-i18n-title="appsTitle" title="Applis ouvertes">Applis ouvertes</button>
@@ -2152,9 +2168,28 @@
   }
   document.getElementById('btn-capture').addEventListener('click', captureScreen);
 
+  // -------- Responsive burger menu (collapsed toolbar on narrow windows) --------
+  (function () {
+    const toolbar = document.getElementById('toolbar');
+    const burger = document.getElementById('btn-burger');
+    if (!toolbar || !burger) return;
+    burger.addEventListener('click', () => {
+      const open = toolbar.classList.toggle('open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    // Close the menu after picking any action (any toolbar button except the burger)
+    toolbar.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (btn && btn !== burger) {
+        toolbar.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.0.9';
+  const APP_VERSION = '1.0.10';
   const GH_REPO = 'nd-digital/phonefake';
 
   function cmpVersions(a, b) {
