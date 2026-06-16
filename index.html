@@ -420,20 +420,40 @@
     background: rgba(255,255,255,.15);
     margin: 4px 4px;
   }
+  /* The controls live in this wrapper: inline on desktop, dropdown panel on mobile */
+  .toolbar-menu { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
   /* Burger button: hidden on wide screens, shown when the toolbar is collapsed */
   .btn-burger { display: none; font-size: 18px; line-height: 1; }
 
-  /* Responsive: collapse the toolbar behind a burger on narrow windows */
+  /* Responsive: collapse the toolbar into a compact, left-anchored dropdown */
   @media (max-width: 1024px) {
     .btn-burger { display: inline-flex; align-items: center; justify-content: center; }
-    .toolbar { flex-wrap: wrap; border-radius: 16px; justify-content: center; }
-    /* collapsed: hide everything except the burger
-       (.toolbar:not(.open) outranks the .btn-icon-only display rule) */
-    .toolbar:not(.open) > :not(.btn-burger) { display: none; }
-    /* expanded: stack items vertically, one per row */
-    .toolbar.open > :not(.btn-burger) { flex-basis: 100%; justify-content: center; align-items: center; }
-    .toolbar.open .sep { display: none; }                      /* separators are pointless when vertical */
-    .toolbar.open .dim-badge { width: 100%; justify-content: center; }
+    .toolbar { position: relative; align-self: flex-start; }   /* burger on the left */
+    .toolbar-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;                       /* dropdown anchored to the left */
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      width: max-content;            /* sized to its content, not full width */
+      min-width: 170px;
+      max-width: 80vw;
+      max-height: 70vh;
+      overflow-y: auto;
+      background: #1a1a26;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 6px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.55);
+      z-index: 600;
+    }
+    .toolbar.open .toolbar-menu { display: flex; }
+    .toolbar-menu button { width: 100%; justify-content: flex-start; text-align: left; }
+    .toolbar-menu .sep { display: none; }    /* separators are pointless in a vertical menu */
+    .toolbar-menu .dim-badge { padding: 8px 14px; }
   }
 
   .launcher {
@@ -914,7 +934,8 @@
 </div>
 
 <div class="toolbar" id="toolbar" role="toolbar" aria-label="Contrôles du simulateur">
-  <button id="btn-burger" class="btn-burger" aria-label="Menu" aria-expanded="false" aria-controls="toolbar" title="Menu">☰</button>
+  <button id="btn-burger" class="btn-burger" aria-label="Menu" aria-expanded="false" aria-controls="toolbar-menu" title="Menu">☰</button>
+  <div class="toolbar-menu" id="toolbar-menu">
   <button id="btn-home" data-i18n="home" data-i18n-title="homeTitle" title="Retour à l'accueil">Accueil</button>
   <button id="btn-new-app" data-i18n="newApp" data-i18n-title="newAppTitle" title="Créer une nouvelle appli">＋ Appli</button>
   <button id="btn-switch" data-i18n="apps" data-i18n-title="appsTitle" title="Applis ouvertes">Applis ouvertes</button>
@@ -944,6 +965,7 @@
   <button id="btn-help" data-i18n="help" data-i18n-title="helpTitle" title="Aide / À propos">? Aide</button>
   <div class="sep"></div>
   <span class="dim-badge" id="dimBadge" aria-live="polite">390 × 820</span>
+  </div>
 </div>
 
 <!-- Skip link for screen readers -->
@@ -2173,23 +2195,30 @@
     const toolbar = document.getElementById('toolbar');
     const burger = document.getElementById('btn-burger');
     if (!toolbar || !burger) return;
-    burger.addEventListener('click', () => {
+    const closeMenu = () => {
+      toolbar.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    };
+    burger.addEventListener('click', (e) => {
+      e.stopPropagation();
       const open = toolbar.classList.toggle('open');
       burger.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
-    // Close the menu after picking any action (any toolbar button except the burger)
+    // Close after picking any action (any toolbar button except the burger)
     toolbar.addEventListener('click', (e) => {
       const btn = e.target.closest('button');
-      if (btn && btn !== burger) {
-        toolbar.classList.remove('open');
-        burger.setAttribute('aria-expanded', 'false');
-      }
+      if (btn && btn !== burger) closeMenu();
     });
+    // Close when clicking outside, or on Escape
+    document.addEventListener('click', (e) => {
+      if (toolbar.classList.contains('open') && !toolbar.contains(e.target)) closeMenu();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
   })();
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.0.10';
+  const APP_VERSION = '1.0.11';
   const GH_REPO = 'nd-digital/phonefake';
 
   function cmpVersions(a, b) {
