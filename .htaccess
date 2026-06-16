@@ -1,0 +1,12 @@
+# Force HTTPS for PhoneFake.
+# Why: when PhoneFake is opened over HTTPS, the apps it embeds must also be HTTPS
+# (a browser blocks an http:// iframe inside an https page = "mixed content").
+# Serving PhoneFake over HTTPS keeps everything consistent.
+#
+# Requires SSL enabled on your local server (Laragon enables it by default).
+# If you prefer plain HTTP, simply delete this file.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
