@@ -1420,7 +1420,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.0.13';
+  const APP_VERSION = '1.0.14';
   const GH_REPO = 'nd-digital/phonefake';
 
   function cmpVersions(a, b) {
@@ -1435,9 +1435,12 @@
   function showUpdateBanner(latest) {
     const banner = document.getElementById('update-banner');
     const t = I18N[document.documentElement.lang] || I18N.fr;
-    banner.querySelector('.update-text').innerHTML =
-      '📱 PhoneFake — ' + (t.updateAvailable || 'Update available')
+    const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const notes = localStorage.getItem('phonefake-update-notes') || '';
+    let html = '📱 PhoneFake — ' + (t.updateAvailable || 'Update available')
       + ' : <strong>v' + APP_VERSION + '</strong> → <strong>v' + latest + '</strong>';
+    if (notes) html += ' <span class="update-notes">— ' + esc(notes) + '</span>';
+    banner.querySelector('.update-text').innerHTML = html;
     document.getElementById('update-link').textContent = t.updateView || 'View →';
     banner.hidden = false;
     document.getElementById('update-close').onclick = () => {
@@ -1459,8 +1462,13 @@
         const data = await r.json();
         latest = (data.tag_name || '').replace(/^v/, '');
         if (!latest) return;
+        // Teaser of the release notes (first meaningful line, markdown stripped)
+        let teaser = ((data.body || '').replace(/\r/g, '').split('\n').map((l) => l.trim()).find((l) => l) || data.name || '')
+          .replace(/[*_`]/g, '').replace(/^[#>\s-]+/, '').trim();
+        if (teaser.length > 90) teaser = teaser.slice(0, 90).trim() + '…';
         localStorage.setItem('phonefake-update-checked', String(now));
         localStorage.setItem('phonefake-update-latest', latest);
+        localStorage.setItem('phonefake-update-notes', teaser);
       }
       if (cmpVersions(latest, APP_VERSION) > 0
           && localStorage.getItem('phonefake-update-dismissed') !== latest) {

@@ -118,6 +118,7 @@
     display: flex; align-items: center; justify-content: center;
   }
   .update-banner .update-close:hover { background: rgba(255,255,255,.38); }
+  .update-banner .update-notes { font-weight: 400; opacity: .9; }
 
   /* === Modale "Nouvelle appli" === */
   .new-app-box { max-width: 480px; }
