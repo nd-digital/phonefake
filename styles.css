@@ -1,0 +1,930 @@
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(ellipse at top, #2a2a3e 0%, #0d0d13 70%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px;
+    gap: 14px;
+    overflow: hidden;
+  }
+
+  .page-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .page-title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+    background: linear-gradient(135deg, #fff 0%, #b9c2d6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  .lang-switch { display: flex; gap: 6px; }
+  .lang-switch button {
+    border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .lang-switch button:hover { background: rgba(255,255,255,.14); }
+  .lang-switch button.active { background: #4a90e2; border-color: #4a90e2; }
+
+  /* Modale d'aide */
+  .help-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+    backdrop-filter: blur(6px);
+  }
+  .help-overlay.visible { display: flex; }
+  .help-box {
+    background: #1a1a26;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    max-width: 720px; width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px;
+    color: #e6eaf3;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    position: relative;
+  }
+  .help-box h2 { margin: 0 0 16px; font-size: 1.2rem; color: #fff; }
+  .help-box h3 { margin: 18px 0 8px; font-size: 1rem; color: #b9c2d6; }
+  .help-box p, .help-box li { font-size: 0.92rem; line-height: 1.55; color: #cbd0dc; }
+  .help-box ul { margin: 0 0 12px 20px; padding: 0; }
+  .help-box code {
+    background: rgba(255,255,255,.08);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+  .help-close {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(255,255,255,.08);
+    border: none; color: #fff;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .help-close:hover { background: rgba(255,255,255,.16); }
+  .help-screenshot {
+    margin: 16px 0;
+    background: #0d0d13;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .help-screenshot svg { width: 100%; height: auto; display: block; }
+  .help-screenshot-caption { font-size: 0.78rem; color: #8a93a6; text-align: center; font-style: italic; margin-top: 8px; }
+
+  /* === Update notice banner === */
+  .update-banner {
+    display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+    position: relative; padding: 9px 42px 9px 16px;
+    background: linear-gradient(135deg, #5b6cff, #8a3ffc); color: #fff;
+    font-size: 0.88rem; text-align: center;
+  }
+  .update-banner[hidden] { display: none; }
+  .update-banner .update-link { color: #fff; font-weight: 700; text-decoration: underline; white-space: nowrap; }
+  .update-banner .update-link:hover { text-decoration: none; }
+  .update-banner .update-close {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,.2); border: none; color: #fff;
+    width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 1rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .update-banner .update-close:hover { background: rgba(255,255,255,.38); }
+
+  /* === Modale "Nouvelle appli" === */
+  .new-app-box { max-width: 480px; }
+  .new-app-form { display: flex; gap: 8px; margin: 16px 0 4px; }
+  .new-app-form input {
+    flex: 1; min-width: 0; padding: 10px 12px;
+    border-radius: 8px; border: 1px solid rgba(255,255,255,.15);
+    background: #0d0d13; color: #fff; font-size: 0.95rem;
+  }
+  .new-app-form input:focus { outline: 2px solid #5b6cff; outline-offset: 0; border-color: #5b6cff; }
+  .new-app-form button {
+    padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer;
+    background: linear-gradient(135deg, #5b6cff, #8a3ffc);
+    color: #fff; font-weight: 600; font-size: 0.95rem; white-space: nowrap;
+  }
+  .new-app-form button:hover { filter: brightness(1.08); }
+  .new-app-form button:disabled { opacity: .5; cursor: default; filter: none; }
+  .new-app-status { font-size: 0.85rem; min-height: 1.2em; margin: 8px 0 0; color: #8a93a6; }
+  .new-app-status.error { color: #ff7a7a; }
+  .new-app-status.success { color: #6ee7a8; }
+
+  /* === Accessibility === */
+  .sr-only {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+  .skip-link {
+    position: absolute;
+    top: -100px; left: 0;
+    background: #4a90e2; color: #fff;
+    padding: 12px 20px; z-index: 10000;
+    text-decoration: none; font-weight: 700;
+    border-radius: 0 0 8px 0;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* Focus ring: subtle by default, reinforced via the a11y toggle */
+  :focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; border-radius: 4px; }
+  body.a11y-focus-ring :focus-visible { outline: 4px solid #fbbf24; outline-offset: 3px; }
+
+  /* Tailles de texte */
+  body.a11y-size-large { font-size: 1.15em; }
+  body.a11y-size-xlarge { font-size: 1.35em; }
+
+  /* High contrast */
+  body.a11y-contrast {
+    background: #000 !important;
+    color: #fff !important;
+  }
+  body.a11y-contrast .toolbar,
+  body.a11y-contrast .lang-switch button,
+  body.a11y-contrast .help-box,
+  body.a11y-contrast .a11y-panel {
+    background: #111 !important;
+    border-color: #fff !important;
+  }
+  body.a11y-contrast .toolbar button,
+  body.a11y-contrast button {
+    border: 2px solid #fff !important;
+  }
+
+  /* Police dyslexie (OpenDyslexic via fonts free) */
+  body.a11y-dyslexia,
+  body.a11y-dyslexia button,
+  body.a11y-dyslexia input,
+  body.a11y-dyslexia select,
+  body.a11y-dyslexia textarea {
+    font-family: 'OpenDyslexic', 'Comic Sans MS', system-ui, sans-serif !important;
+    letter-spacing: 0.05em !important;
+    word-spacing: 0.1em !important;
+  }
+
+  /* Reduced motion */
+  body.a11y-reduced-motion *,
+  body.a11y-reduced-motion *::before,
+  body.a11y-reduced-motion *::after {
+    animation-duration: 0.001s !important;
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001s !important;
+      transition-duration: 0.001s !important;
+    }
+  }
+
+  /* Footer links: no generic link color, no underline */
+  .footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #b9c2d6;
+    flex-wrap: wrap;
+  }
+  .footer-links a,
+  .footer-links a:visited {
+    color: #b9c2d6;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+  }
+  .footer-links a:hover,
+  .footer-links a:focus-visible { color: #fff; }
+  .footer-sep { color: #4a5878; }
+
+  /* Dimensions badge: just centered text in the toolbar */
+  .dim-badge {
+    color: #b9c2d6;
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    background: transparent;
+    border: none;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+  }
+
+  /* A11y panel (reuses help-overlay) */
+  .a11y-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+    backdrop-filter: blur(6px);
+  }
+  .a11y-overlay.visible { display: flex; }
+  .a11y-panel {
+    background: #1a1a26;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    max-width: 460px; width: 100%;
+    padding: 28px;
+    color: #e6eaf3;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    position: relative;
+  }
+  .a11y-panel h2 { margin: 0 0 16px; font-size: 1.2rem; color: #fff; }
+  .a11y-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .a11y-row label { color: #cbd0dc; }
+  .a11y-row select {
+    background: #0d0d13; color: #fff;
+    border: 1px solid rgba(255,255,255,.15);
+    padding: 8px 12px; border-radius: 6px; font-size: 0.9rem;
+  }
+  .a11y-check {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px; cursor: pointer;
+    color: #cbd0dc; font-size: 0.92rem;
+  }
+  .a11y-check input { width: 18px; height: 18px; cursor: pointer; }
+  .a11y-reset {
+    margin-top: 8px; width: 100%;
+    background: rgba(220, 38, 38, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(220, 38, 38, 0.4);
+    padding: 10px; border-radius: 8px;
+    cursor: pointer; font-weight: 600;
+  }
+  .a11y-reset:hover { background: rgba(220, 38, 38, 0.25); }
+  .a11y-hint { font-size: 0.78rem; color: #8a93a6; font-style: italic; text-align: center; margin-top: 12px; }
+
+  /* Touches clavier dans la modale d'aide */
+  .help-box kbd {
+    display: inline-block;
+    padding: 2px 7px;
+    background: #2a2a3e;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.85em;
+    color: #fff;
+    margin: 0 2px;
+  }
+
+  /* Model selectors (above the stage, aligned with the phones).
+     Solo mode: hidden (the toolbar is enough). Compare mode: visible
+     so each device's model can be chosen. */
+  .phone-selectors {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  body.compare-on .phone-selectors { display: flex; }
+
+  /* The 2nd phone (clone) is clickable: event delegation at the stage
+     level routes clicks on app icons to openApp. */
+  .phone-model-select {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+  }
+  .phone-model-select:hover { background: rgba(255, 255, 255, 0.14); }
+  .phone-model-select:focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; }
+  /* The open dropdown keeps the white system style by default -> force
+     a dark background + white text for readability (otherwise white on white). */
+  .phone-model-select option {
+    background: #1a1a26;
+    color: #fff;
+  }
+
+  /* Active Compare button: highlight to clearly show the state */
+  #btn-compare.active {
+    background: #4a90e2;
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.35);
+  }
+
+  /* "Icon only" button (accessibility): enlarged white SVG on a transparent background */
+  .toolbar button.btn-icon-only {
+    padding: 6px 10px;
+    background: transparent;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toolbar button.btn-icon-only svg {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+  .toolbar button.btn-icon-only:hover { background: rgba(255,255,255,.12); }
+
+  /* Compare mode: 2 phones side by side, brought closer */
+  .stage.compare-mode { gap: 44px; }   /* room for each device's zoom slider */
+  /* The 2nd phone is an iframe that reloads the page in embed mode.
+     Native dimensions identical to the 1st phone (updated by JS). */
+  .phone-mirror-iframe {
+    border: 0;
+    background: transparent;
+    flex-shrink: 0;
+    zoom: var(--phone-scale, 1);
+    transition: width .45s cubic-bezier(.4, 0, .2, 1), height .45s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .stage {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 6px;
+    background: rgba(255,255,255,.08);
+    padding: 6px;
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .toolbar button {
+    padding: 8px 18px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background .2s;
+  }
+  .toolbar button.active { background: #4a90e2; }
+  .toolbar button:not(.active):hover { background: rgba(255,255,255,.1); }
+  .toolbar .sep {
+    width: 1px;
+    background: rgba(255,255,255,.15);
+    margin: 4px 4px;
+  }
+  /* The controls live in this wrapper: inline on desktop, dropdown panel on mobile */
+  .toolbar-menu { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+  /* Burger button: hidden on wide screens, shown when the toolbar is collapsed */
+  .btn-burger { display: none; font-size: 18px; line-height: 1; }
+
+  /* Responsive: collapse the toolbar into a compact, left-anchored dropdown */
+  @media (max-width: 1024px) {
+    .btn-burger { display: inline-flex; align-items: center; justify-content: center; }
+    .toolbar { position: relative; align-self: flex-end; }   /* burger on the right */
+    .toolbar-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;                      /* dropdown anchored to the right */
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      width: max-content;            /* sized to its content, not full width */
+      min-width: 170px;
+      max-width: 80vw;
+      max-height: 70vh;
+      overflow-y: auto;
+      background: #1a1a26;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 6px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.55);
+      z-index: 600;
+    }
+    .toolbar.open .toolbar-menu { display: flex; }
+    .toolbar-menu button { width: 100%; justify-content: flex-start; text-align: left; }
+    .toolbar-menu .sep { display: none; }    /* separators are pointless in a vertical menu */
+    .toolbar-menu .dim-badge { padding: 8px 14px; }
+  }
+
+  .launcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .launcher label {
+    font-size: 12px;
+    color: rgba(255,255,255,.6);
+  }
+  .launcher select {
+    padding: 8px 14px;
+    background: rgba(255,255,255,.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    min-width: 220px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .launcher select:hover { background-color: rgba(255,255,255,.12); }
+  .launcher select option { background: #1a1a1f; color: #fff; }
+
+  .phone {
+    width: 390px;
+    height: 820px;
+    position: relative;
+    flex-shrink: 0;
+    /* zoom (au lieu de transform:scale) modifie aussi la layout box → les
+       téléphones n'occupent que leur taille visible, ils ne dépassent plus
+       du stage en mode compare/paysage. */
+    zoom: var(--phone-scale, 1);
+    transition:
+      width .45s cubic-bezier(.4, 0, .2, 1),
+      height .45s cubic-bezier(.4, 0, .2, 1),
+      border-radius .3s, background .3s;
+  }
+  /* Native dimensions are now enforced by fitPhone() in JS
+     (based on the current model + orientation). What follows is only a
+     fallback for phone modes in case the JS did not run. */
+  .phone.iphone.landscape,
+  .phone.android.landscape { width: 820px; height: 390px; }
+  .phone.iphone {
+    background: #0a0a0a;
+    border-radius: 56px;
+    padding: 14px;
+    box-shadow: 0 0 0 2px #222, inset 0 0 0 1px #333, 0 30px 80px rgba(0,0,0,.6);
+  }
+  .phone.android {
+    background: #1a1a1a;
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow: 0 0 0 2px #333, 0 30px 80px rgba(0,0,0,.6);
+  }
+  .phone.ipad {
+    background: #0a0a0a;
+    border-radius: 36px;
+    padding: 18px;
+    box-shadow: 0 0 0 2px #222, inset 0 0 0 1px #333, 0 30px 80px rgba(0,0,0,.6);
+  }
+  .phone.ipad .screen { border-radius: 22px; }
+  .phone.android-tablet {
+    background: #1a1a1a;
+    border-radius: 24px;
+    padding: 14px;
+    box-shadow: 0 0 0 2px #333, 0 30px 80px rgba(0,0,0,.6);
+  }
+  .phone.android-tablet .screen { border-radius: 14px; }
+  /* Tablettes : pas de notch, pas de punch-hole, pas d'indicator de home,
+     pas de barre nav style téléphone (elles ont leur propre UI). */
+  .phone.ipad .notch,
+  .phone.ipad .punch-hole,
+  .phone.ipad .nav-bar,
+  .phone.android-tablet .notch,
+  .phone.android-tablet .punch-hole,
+  .phone.android-tablet .nav-bar { display: none; }
+  /* On tablets in landscape we can widen the icon grid */
+  .phone.ipad .apps-grid,
+  .phone.android-tablet .apps-grid { grid-template-columns: repeat(6, 1fr); }
+  .phone.ipad.landscape .apps-grid,
+  .phone.android-tablet.landscape .apps-grid { grid-template-columns: repeat(8, 1fr); }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone.iphone .screen { border-radius: 44px; }
+  .phone.android .screen { border-radius: 28px; }
+
+  /* iPhone decorations */
+  .notch {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 34px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 50;
+    display: none;
+    transition: all .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: rgba(255,255,255,.6);
+    border-radius: 3px;
+    z-index: 50;
+    cursor: pointer;
+    display: none;
+    transition: all .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  .phone.iphone .notch,
+  .phone.iphone .home-indicator { display: block; }
+  /* Landscape: notch on the left edge (in the bezel, not over the screen)
+     + home indicator on the right edge. The notch stays thin so it does not
+     encroach on the content -- on a real iPhone it sits in the safe area. */
+  .phone.iphone.landscape .notch {
+    top: 50%; left: 0;
+    transform: translateY(-50%);
+    width: 14px; height: 110px;
+    border-radius: 0 12px 12px 0;
+  }
+  .phone.iphone.landscape .home-indicator {
+    top: 50%; bottom: auto; right: 4px; left: auto;
+    transform: translateY(-50%);
+    width: 5px; height: 110px;
+  }
+
+  /* Android decorations */
+  .punch-hole {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: #000;
+    border-radius: 50%;
+    z-index: 50;
+    display: none;
+    transition: all .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  .nav-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 44px;
+    background: rgba(10,10,10,.85);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 50;
+    transition: all .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  .phone.android.landscape .punch-hole {
+    top: 50%; left: 14px;
+    transform: translateY(-50%);
+  }
+  .phone.android.landscape .nav-bar {
+    top: 0; bottom: 0; left: auto; right: 0;
+    width: 44px; height: 100%;
+    flex-direction: column;
+  }
+  .nav-bar button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px 18px;
+    border-radius: 8px;
+    transition: background .15s;
+  }
+  .nav-bar button:hover { background: rgba(255,255,255,.1); }
+  .phone.android .punch-hole,
+  .phone.android .nav-bar { display: flex; }
+  .phone.android .punch-hole { display: block; }
+
+  .status-bar {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    z-index: 6;
+    pointer-events: none;
+  }
+  .phone.android .status-bar { padding: 0 16px; height: 32px; font-size: 12px; }
+  .phone.landscape .status-bar { display: none; }
+
+  /* Home screen */
+  .home {
+    position: absolute;
+    inset: 0;
+    padding: 56px 22px 30px;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(160deg, #3b5998 0%, #6a4a8a 60%, #c94b8a 100%);
+  }
+  .phone.android .home {
+    background: linear-gradient(160deg, #1e3c72 0%, #2a5298 100%);
+    padding: 44px 18px 60px;
+  }
+  .phone.iphone.landscape .home { padding: 24px 70px 24px 70px; }
+  .phone.android.landscape .home { padding: 20px 60px 20px 30px; }
+  .phone.landscape .apps-grid { grid-template-columns: repeat(6, 1fr); }
+
+  .apps-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px 8px;
+    align-content: start;
+    padding-top: 8px;
+  }
+  .app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform .12s;
+  }
+  .app-icon:active { transform: scale(.9); }
+  .app-icon .logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 22px;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,.35);
+    overflow: hidden;
+  }
+  .phone.android .app-icon .logo { border-radius: 50%; }
+  .app-icon .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .app-icon .name {
+    font-size: 11px;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,.6);
+    max-width: 76px;
+    text-align: center;
+    /* 2 lignes max, puis ellipsis ; coupe les mots trop longs au lieu de tronquer */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    line-height: 1.2;
+    font-weight: 500;
+  }
+
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: rgba(255,255,255,.7);
+    padding: 40px 20px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* Apps layer */
+  .apps-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+  }
+  .app-window {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    display: none;
+    flex-direction: column;
+    pointer-events: all;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .phone.iphone .app-window {
+    border-radius: 44px;
+    padding-top: 48px; /* clear the notch — content starts below */
+    padding-bottom: 28px; /* clear the home indicator */
+  }
+  .phone.iphone.landscape .app-window {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 48px; /* notch now on the left */
+    padding-right: 28px; /* home indicator now on the right */
+  }
+  .phone.android .app-window {
+    border-radius: 28px;
+    padding-bottom: 44px; /* clear the nav bar */
+  }
+  .phone.android.landscape .app-window {
+    padding-bottom: 0;
+    padding-right: 44px; /* nav bar now on the right */
+  }
+  .app-window.active { display: flex; }
+  .app-window iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #fff;
+    transform-origin: 0 0;   /* zoom anchors at top-left */
+    will-change: transform;        /* own GPU layer → clean repaint while zoomed/panned */
+    backface-visibility: hidden;
+  }
+  /* Transparent layer to pan the zoomed view (an iframe swallows drag events) */
+  .pan-overlay {
+    position: absolute; inset: 0; z-index: 5;
+    display: none; cursor: grab; touch-action: none;
+  }
+  .pan-overlay.active { display: block; }
+  .pan-overlay.dragging { cursor: grabbing; }
+
+  /* Vertical zoom slider, to the right of each device (shown when an app is open) */
+  .zoom-bar {
+    position: absolute; top: 12%; right: -28px; width: 12px; height: 76%;
+    border-radius: 999px; background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: none; cursor: pointer; touch-action: none; z-index: 6;
+  }
+  .phone.zoomable .zoom-bar { display: block; }
+  .zoom-fill {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 0%;
+    background: linear-gradient(#8a3ffc, #5b6cff); border-radius: 999px; pointer-events: none;
+  }
+  .zoom-thumb {
+    position: absolute; left: 50%; bottom: 0%;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    transform: translate(-50%, 50%); cursor: grab; pointer-events: none;
+  }
+  .zoom-bar.dragging .zoom-thumb { cursor: grabbing; }
+  .zoom-pct {
+    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    font-size: 11px; font-weight: 600; color: #cdd4e6; white-space: nowrap;
+    background: rgba(0, 0, 0, 0.55); padding: 1px 6px; border-radius: 6px; pointer-events: none;
+  }
+
+  /* App switcher */
+  .app-switcher {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.88);
+    backdrop-filter: blur(20px);
+    z-index: 40;
+    display: none;
+    flex-direction: column;
+    padding: 60px 12px 60px;
+  }
+  .app-switcher.open { display: flex; }
+  .app-switcher .switcher-title {
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 14px;
+    opacity: .7;
+  }
+  .switcher-list {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 4px;
+    scrollbar-width: thin;
+  }
+  .switcher-list::-webkit-scrollbar { height: 6px; }
+  .switcher-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 3px; }
+  .switcher-card {
+    min-width: 130px;
+    width: 130px;
+    background: #1a1a1a;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    overflow: hidden;
+    border: 2px solid transparent;
+    flex-shrink: 0;
+    transition: border-color .15s, transform .15s;
+  }
+  .switcher-card:hover { border-color: #4a90e2; transform: translateY(-4px); }
+  .switcher-card .head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 10px;
+    background: #0d0d0d;
+  }
+  .switcher-card .mini-logo {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .switcher-card .mini-logo img { width: 100%; height: 100%; object-fit: cover; }
+  .switcher-card .title {
+    flex: 1;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+  }
+  .switcher-card .close {
+    width: 22px; height: 22px;
+    border: none;
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .switcher-card .close:hover { background: #e74c3c; }
+  .switcher-card .preview {
+    height: 90px;
+    background: #2a2a2a;
+    color: #888;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    text-align: center;
+  }
+  .switcher-empty {
+    color: rgba(255,255,255,.5);
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 13px;
+  }
+
+  .info {
+    text-align: center;
+    color: rgba(255,255,255,.4);
+    font-size: 11px;
+    max-width: 480px;
+    line-height: 1.5;
+  }
+  .info code {
+    background: rgba(255,255,255,.08);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+  }

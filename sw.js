@@ -5,8 +5,8 @@
 
 const CACHE = 'phonefake-shell-v1';
 const ROOTPATH = new URL('./', self.location).pathname; // e.g. "/" or "/APPLI/"
-const SHELL = ['./', './index.html', './favicon.svg', './manifest.json', './icon-192.png', './icon-512.png'];
-const SHELL_FILES = ['', 'index.html', 'favicon.svg', 'manifest.json', 'icon-192.png', 'icon-512.png'];
+const SHELL = ['./', './index.html', './styles.css', './favicon.svg', './manifest.json', './icon-192.png', './icon-512.png'];
+const SHELL_FILES = ['', 'index.html', 'styles.css', 'favicon.svg', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
