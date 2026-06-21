@@ -20,6 +20,7 @@
 </div>
 
 <div class="page-header">
+  <a class="server-link" href="../" data-i18n="serverHome" data-i18n-title="serverHomeTitle" title="Retour à l'accueil du serveur">↩ Serveur</a>
   <h1 class="page-title" data-i18n="title">📱 PhoneFake — Simulateur mobile</h1>
   <div class="lang-switch" role="group" aria-label="Language">
     <button type="button" data-lang="fr" class="active" aria-label="Français" title="Français">🇫🇷</button>
@@ -988,6 +989,13 @@
   Object.assign(I18N.it, { capture: '📸 Cattura', captureTitle: 'Cattura lo schermo simulato', captureUnsupported: 'La cattura non è supportata da questo browser.' });
   Object.assign(I18N.de, { capture: '📸 Aufnahme', captureTitle: 'Simulierten Bildschirm aufnehmen', captureUnsupported: 'Aufnahme wird von diesem Browser nicht unterstützt.' });
 
+  // "Back to server home" link
+  Object.assign(I18N.fr, { serverHome: '↩ Serveur', serverHomeTitle: 'Retour à l\'accueil du serveur' });
+  Object.assign(I18N.en, { serverHome: '↩ Server', serverHomeTitle: 'Back to the server home' });
+  Object.assign(I18N.es, { serverHome: '↩ Servidor', serverHomeTitle: 'Volver al inicio del servidor' });
+  Object.assign(I18N.it, { serverHome: '↩ Server', serverHomeTitle: 'Torna alla home del server' });
+  Object.assign(I18N.de, { serverHome: '↩ Server', serverHomeTitle: 'Zurück zur Server-Startseite' });
+
   function applyLang(lang) {
     if (!I18N[lang]) lang = 'fr';
     const t = I18N[lang];
@@ -1420,7 +1428,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.0.14';
+  const APP_VERSION = '1.0.15';
   const GH_REPO = 'nd-digital/phonefake';
 
   function cmpVersions(a, b) {
