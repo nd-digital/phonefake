@@ -94,6 +94,8 @@
     box-shadow: 0 30px 80px rgba(0,0,0,.6);
     position: relative;
   }
+  /* The help modal is a bit wider (it holds the 5-device preview schematic) */
+  #helpOverlay .help-box { max-width: 900px; }
   .help-box h2 { margin: 0 0 16px; font-size: 1.2rem; color: #fff; }
   .help-box h3 { margin: 18px 0 8px; font-size: 1rem; color: #b9c2d6; }
   .help-box p, .help-box li { font-size: 0.92rem; line-height: 1.55; color: #cbd0dc; }
@@ -254,6 +256,51 @@
   .footer-links a:hover,
   .footer-links a:focus-visible { color: #fff; }
   .footer-sep { color: #4a5878; }
+  /* README link: a button styled exactly like the footer links */
+  .footer-readme {
+    background: none; border: none; padding: 0; cursor: pointer;
+    color: #b9c2d6; font: inherit; font-size: 0.85rem;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: color 0.15s;
+  }
+  .footer-readme:hover, .footer-readme:focus-visible { color: #fff; }
+
+  /* README modal: wider box (~half screen), scrollable */
+  .readme-box {
+    max-width: 1000px;
+    width: 52vw;
+    min-width: 340px;
+    text-align: left;
+  }
+  @media (max-width: 900px) { .readme-box { width: 92vw; } }
+  .readme-body { color: #cbd0dc; font-size: 0.92rem; line-height: 1.6; }
+  .readme-body h1 { font-size: 1.5rem; color: #fff; margin: 0 0 12px; }
+  .readme-body h2 { font-size: 1.2rem; color: #fff; margin: 24px 0 10px; }
+  .readme-body h3 { font-size: 1rem; color: #b9c2d6; margin: 18px 0 8px; }
+  .readme-body p { margin: 0 0 12px; }
+  .readme-body ul, .readme-body ol { margin: 0 0 12px 22px; padding: 0; }
+  .readme-body li { margin: 3px 0; }
+  .readme-body a { color: #8ab4ff; text-decoration: none; }
+  .readme-body a:hover { text-decoration: underline; }
+  .readme-body img { max-width: 100%; height: auto; border-radius: 8px; }
+  .readme-body code {
+    background: rgba(255,255,255,.08); padding: 1px 6px; border-radius: 4px; font-size: 0.85em;
+  }
+  .readme-body pre {
+    background: #0d0d13; border: 1px solid rgba(255,255,255,.08); border-radius: 10px;
+    padding: 14px; overflow-x: auto;
+  }
+  .readme-body pre code { background: none; padding: 0; }
+  .readme-body blockquote {
+    margin: 0 0 12px; padding: 8px 14px; border-left: 3px solid #5b6cff;
+    background: rgba(91,108,255,.08); border-radius: 0 8px 8px 0; color: #cbd0dc;
+  }
+  .readme-body hr { border: none; border-top: 1px solid rgba(255,255,255,.12); margin: 20px 0; }
+  .readme-body table { border-collapse: collapse; width: 100%; margin: 0 0 14px; }
+  .readme-body th, .readme-body td {
+    border: 1px solid rgba(255,255,255,.12); padding: 8px 10px; text-align: left; vertical-align: top;
+  }
+  .readme-body th { background: rgba(255,255,255,.05); color: #fff; }
 
   /* Dimensions badge: just centered text in the toolbar */
   .dim-badge {
@@ -327,19 +374,71 @@
     margin: 0 2px;
   }
 
-  /* Model selectors (above the stage, aligned with the phones).
-     Solo mode: hidden (the toolbar is enough). Compare mode: visible
-     so each device's model can be chosen. */
-  .phone-selectors {
+  /* --- Device columns (each = a head [toggle + model select] above its device) --- */
+  .device-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* centers the head/select over its device */
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  /* Head (toggle + select): hidden in solo mode, shown in compare */
+  .col-head {
     display: none;
     align-items: center;
-    justify-content: center;
-    gap: 24px;
-    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 34px;
   }
-  body.compare-on .phone-selectors { display: flex; }
+  body.compare-on .col-head { display: flex; }
+  .col-device { display: flex; align-items: center; justify-content: center; }
+  /* Compare columns 2 & 3 appear only in compare mode */
+  .compare-col { display: none; }
+  body.compare-on .compare-col { display: flex; }
+  /* A deactivated column ('Désactivé') keeps only its head; its device zone is skipped */
+  .device-col.collapsed .col-device { display: none; }
+  .device-col.collapsed { align-self: flex-start; }
 
-  /* The 2nd phone (clone) is clickable: event delegation at the stage
+  /* Body wraps the device; the "enlarge" button sits to the SIDE (top-right,
+     in the gap next to the screen) so it is never clipped below the stage. */
+  .col-body { position: relative; display: flex; align-items: center; justify-content: center; }
+  .device-col.collapsed .col-body { display: none; }
+  .zoom-expand {
+    position: absolute; top: 0; right: -38px;
+    width: 30px; height: 30px; border-radius: 9px; z-index: 7;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #cbd0dc; font-size: 16px; line-height: 1; cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
+  }
+  .zoom-expand:hover { background: rgba(255, 255, 255, 0.18); color: #fff; transform: scale(1.08); }
+  .zoom-expand:focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; }
+
+  /* Enlarge modal: one device shown at full viewport height, with a grow effect */
+  .zoom-modal {
+    position: fixed; inset: 0; z-index: 2000; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(6px);
+  }
+  .zoom-modal.visible { display: flex; }
+  .zoom-modal-content {
+    display: flex; align-items: center; justify-content: center;
+    transform: scale(0.22); opacity: 0; transform-origin: center;
+    transition: transform 0.4s cubic-bezier(0.2, 0.75, 0.3, 1), opacity 0.32s ease;
+  }
+  .zoom-modal.open .zoom-modal-content { transform: scale(1); opacity: 1; }
+  .zoom-restore {
+    position: fixed; top: 16px; right: 16px; z-index: 2001;
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff; font-size: 1.3rem; cursor: pointer; transition: background 0.15s;
+  }
+  .zoom-restore:hover { background: rgba(255, 255, 255, 0.24); }
+  /* Greyed-out options: a device already chosen in another column (or a 2nd
+     'Désactivé') is disabled — the browser dims disabled <option>s natively. */
+
+  /* The mirror devices are clickable: event delegation at the stage
      level routes clicks on app icons to openApp. */
   .phone-model-select {
     background: rgba(255, 255, 255, 0.08);
@@ -384,16 +483,14 @@
   }
   .toolbar button.btn-icon-only:hover { background: rgba(255,255,255,.12); }
 
-  /* Compare mode: 2 phones side by side, brought closer */
-  .stage.compare-mode { gap: 44px; }   /* room for each device's zoom slider */
-  /* The 2nd phone is an iframe that reloads the page in embed mode.
-     Native dimensions identical to the 1st phone (updated by JS). */
-  .phone-mirror-iframe {
-    border: 0;
-    background: transparent;
-    flex-shrink: 0;
-    zoom: var(--phone-scale, 1);
-    transition: width .45s cubic-bezier(.4, 0, .2, 1), height .45s cubic-bezier(.4, 0, .2, 1);
+  /* Compare mode: up to 3 device columns side by side.
+     Columns are top-aligned so their heads (toggle + select) line up on one row,
+     and — since JS scales every active device to the SAME height — their screens
+     align too. Extra right gap leaves room for each device's zoom slider. */
+  .stage.compare-mode {
+    gap: 56px;
+    align-items: flex-start;
+    padding-top: 6px;
   }
 
   .stage {
@@ -541,19 +638,43 @@
     box-shadow: 0 0 0 2px #333, 0 30px 80px rgba(0,0,0,.6);
   }
   .phone.android-tablet .screen { border-radius: 14px; }
-  /* Tablettes : pas de notch, pas de punch-hole, pas d'indicator de home,
-     pas de barre nav style téléphone (elles ont leur propre UI). */
+  /* Desktop : écran d'ordinateur sur pied (moniteur paysage large). */
+  .phone.desktop {
+    background: #17171c;
+    border-radius: 16px;
+    padding: 16px 16px 22px;
+    box-shadow: 0 0 0 2px #2a2a2a, inset 0 0 0 1px #34343c, 0 30px 80px rgba(0, 0, 0, .6);
+  }
+  .phone.desktop .screen { border-radius: 6px; }
+  /* Pied central + socle sous le moniteur */
+  .phone.desktop::after {
+    content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    width: 16%; height: 34px;
+    background: linear-gradient(#2a2a2a, #1c1c22);
+  }
+  .phone.desktop::before {
+    content: ""; position: absolute; top: calc(100% + 30px); left: 50%; transform: translateX(-50%);
+    width: 40%; height: 12px; background: #23232a; border-radius: 7px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .5);
+  }
+  /* Tablettes + desktop : pas de notch, punch-hole, home-indicator ni nav-bar téléphone. */
   .phone.ipad .notch,
   .phone.ipad .punch-hole,
   .phone.ipad .nav-bar,
   .phone.android-tablet .notch,
   .phone.android-tablet .punch-hole,
-  .phone.android-tablet .nav-bar { display: none; }
+  .phone.android-tablet .nav-bar,
+  .phone.desktop .notch,
+  .phone.desktop .punch-hole,
+  .phone.desktop .nav-bar,
+  .phone.desktop .home-indicator,
+  .phone.desktop .status-bar { display: none; }
   /* On tablets in landscape we can widen the icon grid */
   .phone.ipad .apps-grid,
   .phone.android-tablet .apps-grid { grid-template-columns: repeat(6, 1fr); }
   .phone.ipad.landscape .apps-grid,
   .phone.android-tablet.landscape .apps-grid { grid-template-columns: repeat(8, 1fr); }
+  .phone.desktop .apps-grid { grid-template-columns: repeat(8, 1fr); }
 
   .screen {
     width: 100%;

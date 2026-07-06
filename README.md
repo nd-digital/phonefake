@@ -5,7 +5,7 @@
 ### Teste tes applis web dans un vrai cadre mobile — en local, sans rien installer.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-5b6cff.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.2-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
+[![Version](https://img.shields.io/badge/version-1.1.0-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
 [![Vanilla JS](https://img.shields.io/badge/vanilla-JS%20%2B%20PHP-success.svg)]()
 [![No build](https://img.shields.io/badge/build-aucun-blue.svg)]()
 
@@ -29,14 +29,15 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 
 | | |
 |---|---|
-| 📱 **4 appareils** | iPhone (notch), Android (punch-hole), iPad, tablette Android — dimensions natives |
+| 📱 **5 appareils** | iPhone (notch), Android (punch-hole), iPad, tablette Android et **Ordinateur** (écran desktop large) — dimensions natives |
 | 🔄 **Rotation** | Bascule portrait ↔ paysage en un clic |
-| ⇆ **Comparaison** | Deux appareils côte à côte, synchronisés |
+| ⇆ **Comparaison** | Jusqu'à **3 appareils côte à côte** (téléphone, tablette, ordinateur), à la même hauteur — chaque colonne a son sélecteur, avec une option *Désactivé* |
+| ⛶ **Agrandissement** | Un bouton à côté de chaque écran l'affiche en grand dans une fenêtre (pleine hauteur), `⤡`/`Échap` pour revenir |
 | ➕ **Création d'appli** | Génère un squelette PWA complet depuis l'interface |
 | 🎨 **Logos auto-générés** | Une appli sans icône ? Un logo est créé à partir de son nom |
 | 🌍 **5 langues** | FR · EN · ES · IT · DE |
 | ♿ **Accessibilité** | Taille texte, contraste, police dyslexie, animations réduites |
-| ⌨️ **Raccourcis** | `1`-`4` appareils · `R` rotation · `C` comparer · `H` aide · `A` accessibilité |
+| ⌨️ **Raccourcis** | `1`-`5` appareils · `R` rotation · `C` comparer · `H` aide · `A` accessibilité |
 | 🔔 **Mises à jour** | Bannière en haut si une version plus récente est disponible sur GitHub |
 | 📸 **Capture** | Exporte l'écran simulé en PNG (via la capture d'écran native du navigateur) |
 | 🪟 **Installable (PWA)** | S'installe comme une appli de bureau (Edge/Chrome) et fonctionne hors-ligne |
