@@ -927,6 +927,9 @@
     will-change: transform;        /* own GPU layer → clean repaint while zoomed/panned */
     backface-visibility: hidden;
   }
+  /* In compare mode you drive column 1; the mirror apps follow via live sync,
+     so their app iframe isn't directly clickable (avoids conflicting drivers). */
+  .phone.mirror .app-window iframe { pointer-events: none; }
   /* Transparent layer to pan the zoomed view (an iframe swallows drag events) */
   .pan-overlay {
     position: absolute; inset: 0; z-index: 5;

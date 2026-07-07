@@ -5,7 +5,7 @@
 ### Teste tes applis web dans un vrai cadre mobile — en local, sans rien installer.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-5b6cff.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.1.0-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
+[![Version](https://img.shields.io/badge/version-1.2.0-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
 [![Vanilla JS](https://img.shields.io/badge/vanilla-JS%20%2B%20PHP-success.svg)]()
 [![No build](https://img.shields.io/badge/build-aucun-blue.svg)]()
 
@@ -33,6 +33,7 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 | 🔄 **Rotation** | Bascule portrait ↔ paysage en un clic |
 | ⇆ **Comparaison** | Jusqu'à **3 appareils côte à côte** (téléphone, tablette, ordinateur), à la même hauteur — chaque colonne a son sélecteur, avec une option *Désactivé* |
 | ⛶ **Agrandissement** | Un bouton à côté de chaque écran l'affiche en grand dans une fenêtre (pleine hauteur), `⤡`/`Échap` pour revenir |
+| 🔄 **Synchro entre écrans** | En comparaison, tes actions (navigation, défilement, clics, saisie) se répercutent sur les autres écrans (agent `phonefake-sync.js`) |
 | ➕ **Création d'appli** | Génère un squelette PWA complet depuis l'interface |
 | 🎨 **Logos auto-générés** | Une appli sans icône ? Un logo est créé à partir de son nom |
 | 🌍 **5 langues** | FR · EN · ES · IT · DE |
@@ -86,6 +87,23 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 
 - **`apps.php`** scanne les sous-dossiers et renvoie la liste des applis (nom, icône, point d'entrée) en JSON. Détection intelligente : manifeste PWA, icônes conventionnelles, redirections, override via `phonefake.json`.
 - **`index.html`** est le simulateur complet (HTML/CSS/JS vanilla, zéro dépendance, zéro build) : il met chaque appli dans une `<iframe>` mise à l'échelle, avec un mini-OS mobile (accueil, multitâche, navigation).
+
+---
+
+## 🔄 Synchro entre écrans (mode comparaison)
+
+En comparaison, tes actions dans l'appli — **navigation, défilement, clics, saisie** — sont répercutées en direct sur les autres écrans. Chaque écran étant une `<iframe>` indépendante, un petit **agent** (`phonefake-sync.js`) tourne dans l'appli et rapporte tes actions à PhoneFake, qui les rejoue sur les miroirs.
+
+- **Appli servie sur la même origine que PhoneFake** → l'agent est **injecté automatiquement**, rien à faire.
+- **Appli sur une autre origine** (autre port, autre domaine) → le navigateur interdit l'injection ; ajoute **une ligne** dans ton appli (en dev) :
+
+```html
+<script src="http://<hôte-phonefake>/APPLI/phonefake-sync.js"></script>
+```
+
+L'agent ne fait rien hors d'une iframe PhoneFake et ne communique qu'avec la fenêtre qui l'a chargé.
+
+> ⚠️ **Positionnement.** PhoneFake est un outil de **première approche** (aperçu du rendu et de la mise en page) et un bon support de **démo/présentation**. Il ne remplace pas un test sur **appareil réel** (moteur Safari/Chrome mobile) : les deux sont complémentaires.
 
 ---
 

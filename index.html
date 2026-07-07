@@ -132,6 +132,7 @@
       <li data-i18n="helpFeat2"><strong>Rotation</strong> : bascule portrait ↔ paysage en un clic, l'écran et les décorations s'adaptent.</li>
       <li data-i18n="helpFeatCompare"><strong>Comparaison</strong> : le bouton <em>Compare</em> affiche jusqu'à 3 appareils côte à côte (téléphone, tablette, ordinateur). Chaque colonne a son sélecteur ; l'option <em>Désactivé</em> en masque un (au moins deux restent visibles).</li>
       <li data-i18n="helpFeatZoom"><strong>Agrandissement</strong> : le bouton <kbd>⛶</kbd> à côté de chaque écran l'affiche en grand dans une fenêtre (pleine hauteur du viewport) ; <kbd>⤡</kbd> ou <kbd>Échap</kbd> revient à l'état initial.</li>
+      <li data-i18n="helpFeatSync"><strong>Synchro entre écrans</strong> : en comparaison, tes actions dans l'appli (navigation, défilement, clics, saisie) sont répercutées sur les autres écrans. Automatique si l'appli est servie sur la même origine que PhoneFake ; sinon, ajoute une ligne dans ton appli : <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.</li>
       <li data-i18n="helpFeat3"><strong>Multi-applis</strong> : place tes propres applis dans des sous-dossiers à côté de cette page (chacune avec son <code>index.html</code>) et elles apparaissent dans le menu <em>Mode web</em>.</li>
       <li data-i18n="helpFeat4"><strong>Compatible</strong> : sites classiques, responsive design, PWA installables, applis avec service worker — tout ce qui se sert dans un navigateur.</li>
       <li data-i18n="helpFeat5"><strong>Accueil et Applis</strong> : reviens à un launcher minimal ou retrouve la liste des applis ouvertes.</li>
@@ -596,11 +597,10 @@
       iframe.src = resolveAppUrl(app.url);
       iframe.title = app.name;
       iframe.setAttribute('allow', 'camera; microphone; fullscreen; autoplay; clipboard-read; clipboard-write');
-      // On each internal navigation inside the iframe (clicking a link),
-      // re-sync the 2nd phone (compare).
-      iframe.addEventListener('load', () => {
-        if (compareEnabled) buildCompareMirror();
-      });
+      // Same-origin apps get the live-sync agent injected automatically; the
+      // iframe stays alive across in-app navigation (compare sync is handled by
+      // the agent + parent router, not by re-cloning).
+      injectSyncAgent(iframe);
       win.appendChild(iframe);
       appsLayer.appendChild(win);
       openApps.set(app.id, { app, window: win, iframe });
@@ -832,6 +832,7 @@
       helpFeat1: '<strong>5 formats d\'appareil</strong> : iPhone (notch), Android phone (punch-hole), iPad, tablette Android et <strong>Ordinateur</strong> (écran desktop large) — chacun avec ses propres dimensions natives.',
       helpFeatCompare: '<strong>Comparaison</strong> : le bouton <em>Compare</em> affiche jusqu\'à 3 appareils côte à côte (téléphone, tablette, ordinateur). Chaque colonne a son sélecteur ; l\'option <em>Désactivé</em> en masque un (au moins deux restent visibles).',
       helpFeatZoom: '<strong>Agrandissement</strong> : le bouton <kbd>⛶</kbd> à côté de chaque écran l\'affiche en grand dans une fenêtre (pleine hauteur du viewport) ; <kbd>⤡</kbd> ou <kbd>Échap</kbd> revient à l\'état initial.',
+      helpFeatSync: '<strong>Synchro entre écrans</strong> : en comparaison, tes actions dans l\'appli (navigation, défilement, clics, saisie) sont répercutées sur les autres écrans. Automatique si l\'appli est servie sur la même origine que PhoneFake ; sinon, ajoute une ligne dans ton appli : <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeat2: '<strong>Rotation</strong> : bascule portrait ↔ paysage en un clic, l\'écran et les décorations s\'adaptent.',
       helpFeat3: '<strong>Multi-applis</strong> : place tes propres applis dans des sous-dossiers à côté de cette page (chacune avec son <code>index.html</code>) et elles apparaissent dans le menu <em>Mode web</em>.',
       helpFeat4: '<strong>Compatible</strong> : sites classiques, responsive design, PWA installables, applis avec service worker — tout ce qui se sert dans un navigateur.',
@@ -843,7 +844,7 @@
       helpUse2: 'Choisis iPhone ou Android pour adapter le rendu de ton appli aux contraintes de chaque plateforme.',
       helpUse3: 'Utilise <em>Rotation</em> pour vérifier l\'affichage paysage de ton interface.',
       helpLocalTitle: '🖥️ Usage local uniquement',
-      helpLocal: 'PhoneFake est conçu pour un environnement de développement <strong>local</strong> (Laragon, MAMP, XAMPP, serveur Node, etc.). Ce n\'est pas un service en ligne — il sert à tester rapidement tes propres applications sur ta machine, avant déploiement.',
+      helpLocal: 'PhoneFake est conçu pour un environnement de développement <strong>local</strong> (Laragon, MAMP, XAMPP, serveur Node, etc.). Ce n\'est pas un service en ligne — il sert à tester rapidement tes propres applications sur ta machine, avant déploiement. C\'est un outil de <strong>première approche</strong> (aperçu du rendu et de la mise en page) : il ne remplace pas un test sur appareil réel (moteur Safari/Chrome mobile).',
       helpShortcutsTitle: '⌨️ Raccourcis clavier',
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablette · <kbd>5</kbd> Ordinateur',
       helpShort2: '<kbd>R</kbd> Rotation · <kbd>C</kbd> Comparer · <kbd>H</kbd> Aide · <kbd>A</kbd> Accessibilité · <kbd>Échap</kbd> Fermer',
@@ -896,6 +897,7 @@
       helpFeat1: '<strong>5 device formats</strong>: iPhone (notch), Android phone (punch-hole), iPad, Android tablet and <strong>Desktop</strong> (wide computer screen) — each with native dimensions.',
       helpFeatCompare: '<strong>Compare</strong>: the <em>Compare</em> button shows up to 3 devices side by side (phone, tablet, desktop). Each column has its own selector; the <em>Off</em> option hides one (at least two stay visible).',
       helpFeatZoom: '<strong>Enlarge</strong>: the <kbd>⛶</kbd> button beside each screen shows it big in a window (full viewport height); <kbd>⤡</kbd> or <kbd>Esc</kbd> returns to the initial state.',
+      helpFeatSync: '<strong>Screen sync</strong>: in compare mode, your actions in the app (navigation, scrolling, clicks, typing) are mirrored to the other screens. Automatic if the app is served from the same origin as PhoneFake; otherwise add one line to your app: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeat2: '<strong>Rotation</strong>: toggle portrait ↔ landscape with one click, screen and decorations adapt.',
       helpFeat3: '<strong>Multi-app</strong>: drop your own apps into subfolders next to this page (each with its <code>index.html</code>) and they appear in the <em>Web mode</em> menu.',
       helpFeat4: '<strong>Compatible</strong>: classic websites, responsive design, installable PWAs, apps with service workers — anything served in a browser.',
@@ -907,7 +909,7 @@
       helpUse2: 'Pick iPhone or Android to adjust the rendering of your app to each platform\'s constraints.',
       helpUse3: 'Use <em>Rotate</em> to check landscape display of your interface.',
       helpLocalTitle: '🖥️ Local use only',
-      helpLocal: 'PhoneFake is designed for a <strong>local</strong> dev environment (Laragon, MAMP, XAMPP, Node server, etc.). It is not an online service — it lets you quickly test your own apps on your machine before deployment.',
+      helpLocal: 'PhoneFake is designed for a <strong>local</strong> dev environment (Laragon, MAMP, XAMPP, Node server, etc.). It is not an online service — it lets you quickly test your own apps on your machine before deployment. It is a <strong>first-pass</strong> tool (layout &amp; rendering preview): it does not replace testing on a real device (mobile Safari/Chrome engine).',
       helpShortcutsTitle: '⌨️ Keyboard shortcuts',
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablet · <kbd>5</kbd> Desktop',
       helpShort2: '<kbd>R</kbd> Rotate · <kbd>C</kbd> Compare · <kbd>H</kbd> Help · <kbd>A</kbd> Accessibility · <kbd>Esc</kbd> Close',
@@ -960,6 +962,7 @@
       helpFeat1: '<strong>5 formatos de dispositivo</strong>: iPhone (notch), Android phone (punch-hole), iPad, tableta Android y <strong>Ordenador</strong> (pantalla de escritorio ancha) — cada uno con sus dimensiones nativas.',
       helpFeatCompare: '<strong>Comparación</strong>: el botón <em>Compare</em> muestra hasta 3 dispositivos en paralelo (teléfono, tableta, ordenador). Cada columna tiene su selector; la opción <em>Desactivado</em> oculta uno (al menos dos permanecen visibles).',
       helpFeatZoom: '<strong>Ampliar</strong>: el botón <kbd>⛶</kbd> junto a cada pantalla la muestra en grande en una ventana (altura completa del viewport); <kbd>⤡</kbd> o <kbd>Esc</kbd> vuelve al estado inicial.',
+      helpFeatSync: '<strong>Sincronización entre pantallas</strong>: en modo comparación, tus acciones en la app (navegación, desplazamiento, clics, escritura) se reflejan en las demás pantallas. Automático si la app se sirve desde el mismo origen que PhoneFake; si no, añade una línea a tu app: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeat2: '<strong>Rotación</strong>: alterna vertical ↔ horizontal con un clic, la pantalla y los detalles se adaptan.',
       helpFeat3: '<strong>Multi-app</strong>: coloca tus propias apps en subcarpetas junto a esta página (cada una con su <code>index.html</code>) y aparecerán en el menú <em>Modo web</em>.',
       helpFeat4: '<strong>Compatible</strong>: sitios clásicos, responsive design, PWAs instalables, apps con service worker — cualquier cosa que se sirva en un navegador.',
@@ -971,7 +974,7 @@
       helpUse2: 'Elige iPhone o Android para adaptar el renderizado de tu app a las restricciones de cada plataforma.',
       helpUse3: 'Usa <em>Girar</em> para verificar la visualización horizontal de tu interfaz.',
       helpLocalTitle: '🖥️ Solo uso local',
-      helpLocal: 'PhoneFake está diseñado para un entorno de desarrollo <strong>local</strong> (Laragon, MAMP, XAMPP, servidor Node, etc.). No es un servicio en línea — sirve para probar rápidamente tus propias apps en tu máquina, antes del despliegue.',
+      helpLocal: 'PhoneFake está diseñado para un entorno de desarrollo <strong>local</strong> (Laragon, MAMP, XAMPP, servidor Node, etc.). No es un servicio en línea — sirve para probar rápidamente tus propias apps en tu máquina, antes del despliegue. Es una herramienta de <strong>primera aproximación</strong> (vista del renderizado y la maquetación): no sustituye las pruebas en un dispositivo real (motor Safari/Chrome móvil).',
       helpShortcutsTitle: '⌨️ Atajos de teclado',
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tableta · <kbd>5</kbd> Ordenador',
       helpShort2: '<kbd>R</kbd> Girar · <kbd>C</kbd> Comparar · <kbd>H</kbd> Ayuda · <kbd>A</kbd> Accesibilidad · <kbd>Esc</kbd> Cerrar',
@@ -1024,6 +1027,7 @@
       helpFeat1: '<strong>5 formati di dispositivo</strong>: iPhone (notch), Android phone (punch-hole), iPad, tablet Android e <strong>Computer</strong> (schermo desktop ampio) — ognuno con le proprie dimensioni native.',
       helpFeatCompare: '<strong>Confronto</strong>: il pulsante <em>Compare</em> mostra fino a 3 dispositivi affiancati (telefono, tablet, computer). Ogni colonna ha il suo selettore; l\'opzione <em>Disattivato</em> ne nasconde uno (almeno due restano visibili).',
       helpFeatZoom: '<strong>Ingrandimento</strong>: il pulsante <kbd>⛶</kbd> accanto a ogni schermo lo mostra in grande in una finestra (altezza piena del viewport); <kbd>⤡</kbd> o <kbd>Esc</kbd> torna allo stato iniziale.',
+      helpFeatSync: '<strong>Sincronizzazione tra schermi</strong>: in modalità confronto, le tue azioni nell\'app (navigazione, scorrimento, clic, digitazione) vengono riprodotte sugli altri schermi. Automatico se l\'app è servita dalla stessa origine di PhoneFake; altrimenti aggiungi una riga alla tua app: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeat2: '<strong>Rotazione</strong>: passa da verticale a orizzontale con un clic, lo schermo e i dettagli si adattano.',
       helpFeat3: '<strong>Multi-app</strong>: metti le tue app in sottocartelle accanto a questa pagina (ognuna con il suo <code>index.html</code>) e appariranno nel menu <em>Modalità web</em>.',
       helpFeat4: '<strong>Compatibile</strong>: siti classici, responsive design, PWA installabili, app con service worker — tutto ciò che gira nel browser.',
@@ -1035,7 +1039,7 @@
       helpUse2: 'Scegli iPhone o Android per adattare il rendering ai vincoli di ciascuna piattaforma.',
       helpUse3: 'Usa <em>Ruota</em> per verificare la visualizzazione orizzontale dell\'interfaccia.',
       helpLocalTitle: '🖥️ Solo uso locale',
-      helpLocal: 'PhoneFake è progettato per un ambiente di sviluppo <strong>locale</strong> (Laragon, MAMP, XAMPP, server Node, ecc.). Non è un servizio online — serve a testare rapidamente le tue app sulla tua macchina, prima del deploy.',
+      helpLocal: 'PhoneFake è progettato per un ambiente di sviluppo <strong>locale</strong> (Laragon, MAMP, XAMPP, server Node, ecc.). Non è un servizio online — serve a testare rapidamente le tue app sulla tua macchina, prima del deploy. È uno strumento di <strong>prima approssimazione</strong> (anteprima di rendering e layout): non sostituisce i test su un dispositivo reale (motore Safari/Chrome mobile).',
       helpShortcutsTitle: '⌨️ Scorciatoie da tastiera',
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablet · <kbd>5</kbd> Computer',
       helpShort2: '<kbd>R</kbd> Ruota · <kbd>C</kbd> Confronta · <kbd>H</kbd> Aiuto · <kbd>A</kbd> Accessibilità · <kbd>Esc</kbd> Chiudi',
@@ -1088,6 +1092,7 @@
       helpFeat1: '<strong>5 Geräteformate</strong>: iPhone (Notch), Android Phone (Punch-Hole), iPad, Android-Tablet und <strong>Desktop</strong> (breiter Computerbildschirm) — jeweils mit nativen Abmessungen.',
       helpFeatCompare: '<strong>Vergleich</strong>: die Schaltfläche <em>Compare</em> zeigt bis zu 3 Geräte nebeneinander (Handy, Tablet, Desktop). Jede Spalte hat ihre eigene Auswahl; die Option <em>Deaktiviert</em> blendet eines aus (mindestens zwei bleiben sichtbar).',
       helpFeatZoom: '<strong>Vergrößern</strong>: die Schaltfläche <kbd>⛶</kbd> neben jedem Bildschirm zeigt ihn groß in einem Fenster (volle Viewport-Höhe); <kbd>⤡</kbd> oder <kbd>Esc</kbd> kehrt zum Ausgangszustand zurück.',
+      helpFeatSync: '<strong>Bildschirm-Synchronisierung</strong>: im Vergleichsmodus werden deine Aktionen in der App (Navigation, Scrollen, Klicks, Eingabe) auf die anderen Bildschirme gespiegelt. Automatisch, wenn die App von derselben Origin wie PhoneFake ausgeliefert wird; sonst füge deiner App eine Zeile hinzu: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeat2: '<strong>Rotation</strong>: Wechsle Hoch- ↔ Querformat mit einem Klick, Bildschirm und Details passen sich an.',
       helpFeat3: '<strong>Multi-App</strong>: Lege deine Apps in Unterordner neben dieser Seite ab (jede mit ihrer <code>index.html</code>) und sie erscheinen im Menü <em>Web-Modus</em>.',
       helpFeat4: '<strong>Kompatibel</strong>: klassische Websites, Responsive Design, installierbare PWAs, Apps mit Service Worker — alles, was im Browser läuft.',
@@ -1099,7 +1104,7 @@
       helpUse2: 'Wähle iPhone oder Android, um das Rendering an die Plattform-Einschränkungen anzupassen.',
       helpUse3: 'Nutze <em>Drehen</em>, um die Querformat-Anzeige deiner Oberfläche zu prüfen.',
       helpLocalTitle: '🖥️ Nur lokale Nutzung',
-      helpLocal: 'PhoneFake ist für eine <strong>lokale</strong> Entwicklungsumgebung gedacht (Laragon, MAMP, XAMPP, Node-Server usw.). Es ist kein Online-Dienst — es dient zum schnellen Testen deiner Apps auf deinem Rechner, vor dem Deployment.',
+      helpLocal: 'PhoneFake ist für eine <strong>lokale</strong> Entwicklungsumgebung gedacht (Laragon, MAMP, XAMPP, Node-Server usw.). Es ist kein Online-Dienst — es dient zum schnellen Testen deiner Apps auf deinem Rechner, vor dem Deployment. Es ist ein Werkzeug für den <strong>ersten Eindruck</strong> (Layout- und Rendering-Vorschau): Es ersetzt keine Tests auf einem echten Gerät (mobile Safari-/Chrome-Engine).',
       helpShortcutsTitle: '⌨️ Tastenkürzel',
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablet · <kbd>5</kbd> Desktop',
       helpShort2: '<kbd>R</kbd> Drehen · <kbd>C</kbd> Vergleichen · <kbd>H</kbd> Hilfe · <kbd>A</kbd> Barrierefreiheit · <kbd>Esc</kbd> Schließen',
@@ -1340,6 +1345,8 @@
     slot.innerHTML = '';
     slot.appendChild(fresh);
     m.phoneEl = fresh;
+    // Wire the live-sync agent into this mirror's app iframe(s)
+    fresh.querySelectorAll('iframe').forEach(injectSyncAgent);
   }
 
   // Rebuild every mirror (called on each state change: open app, go home, …).
@@ -1425,6 +1432,50 @@
       refreshCompareState();   // collapse + option availability + layout
       buildCompareMirror();    // (re)build clones then layout
     });
+  });
+
+  // -------- Live sync between screens (compare mode) --------
+  // The app under test runs in separate iframes (one per screen). Same-origin
+  // apps get the sync agent injected automatically; cross-origin apps include
+  // it themselves (see phonefake-sync.js). The agent reports the user's actions
+  // and this router replays them from the DRIVER (column 1's active app) onto
+  // the mirror screens — so navigation, scroll, clicks and typing stay in sync.
+  function injectSyncAgent(iframe) {
+    if (!iframe || iframe.__pfSyncWired) return;
+    iframe.__pfSyncWired = true;
+    const tryInject = () => {
+      try {
+        const doc = iframe.contentDocument;                 // throws if cross-origin
+        if (!doc || !doc.head) return;
+        if (doc.getElementById('pf-sync-agent')) return;    // already injected this page
+        const s = doc.createElement('script');
+        s.id = 'pf-sync-agent';
+        s.src = new URL('phonefake-sync.js', location.href).href;
+        doc.head.appendChild(s);
+      } catch (e) { /* cross-origin → the app must include phonefake-sync.js itself */ }
+    };
+    iframe.addEventListener('load', tryInject);   // re-inject on every in-app navigation
+    tryInject();
+  }
+  function primaryIframe() { const e = activeAppId ? openApps.get(activeAppId) : null; return e ? e.iframe : null; }
+  function mirrorIframes() { return [...document.querySelectorAll('.phone.mirror .app-window.active iframe')]; }
+  function isMirrorWin(win) { return mirrorIframes().some(f => f.contentWindow === win); }
+
+  window.addEventListener('message', (e) => {
+    const d = e.data;
+    if (!d || !d.__pfsync) return;
+    const primary = primaryIframe();
+    const fromPrimary = primary && e.source === primary.contentWindow;
+    if (d.t === 'ready') {
+      // A freshly (re)loaded mirror → align it to the driver's current URL
+      if (compareEnabled && primary && !fromPrimary && isMirrorWin(e.source)) {
+        primary.contentWindow.postMessage({ __pfsync: 1, t: 'gethref' }, '*');
+      }
+    } else if (d.t === 'href' && fromPrimary) {
+      mirrorIframes().forEach(f => f.contentWindow && f.contentWindow.postMessage({ __pfsync: 1, t: 'navto', href: d.href }, '*'));
+    } else if (d.t === 'event' && compareEnabled && fromPrimary) {
+      mirrorIframes().forEach(f => f.contentWindow && f.contentWindow.postMessage({ __pfsync: 1, t: 'apply', kind: d.kind, data: d.data }, '*'));
+    }
   });
 
   // -------- Panel a11y --------
@@ -1775,7 +1826,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.1.0';
+  const APP_VERSION = '1.2.0';
   const GH_REPO = 'nd-digital/phonefake';
 
   function cmpVersions(a, b) {
