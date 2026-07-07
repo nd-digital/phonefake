@@ -133,6 +133,7 @@
       <li data-i18n="helpFeatCompare"><strong>Comparaison</strong> : le bouton <em>Compare</em> affiche jusqu'à 3 appareils côte à côte (téléphone, tablette, ordinateur). Chaque colonne a son sélecteur ; l'option <em>Désactivé</em> en masque un (au moins deux restent visibles).</li>
       <li data-i18n="helpFeatZoom"><strong>Agrandissement</strong> : le bouton <kbd>⛶</kbd> à côté de chaque écran l'affiche en grand dans une fenêtre (pleine hauteur du viewport) ; <kbd>⤡</kbd> ou <kbd>Échap</kbd> revient à l'état initial.</li>
       <li data-i18n="helpFeatSync"><strong>Synchro entre écrans</strong> : en comparaison, tes actions dans l'appli (navigation, défilement, clics, saisie) sont répercutées sur les autres écrans. Automatique si l'appli est servie sur la même origine que PhoneFake ; sinon, ajoute une ligne dans ton appli : <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.</li>
+      <li data-i18n="helpFeatKbd"><strong>Clavier virtuel</strong> : quand un champ de ton appli reçoit le focus, un clavier monte et <strong>réduit le viewport</strong> (comme un vrai téléphone) — pour vérifier que tes champs restent visibles et que la mise en page tient. (Nécessite l'agent de synchro ci-dessus.)</li>
       <li data-i18n="helpFeat3"><strong>Multi-applis</strong> : place tes propres applis dans des sous-dossiers à côté de cette page (chacune avec son <code>index.html</code>) et elles apparaissent dans le menu <em>Mode web</em>.</li>
       <li data-i18n="helpFeat4"><strong>Compatible</strong> : sites classiques, responsive design, PWA installables, applis avec service worker — tout ce qui se sert dans un navigateur.</li>
       <li data-i18n="helpFeat5"><strong>Accueil et Applis</strong> : reviens à un launcher minimal ou retrouve la liste des applis ouvertes.</li>
@@ -316,6 +317,8 @@
   </a>
   <span class="footer-sep">·</span>
   <button type="button" class="footer-readme" id="openReadme" data-i18n="readmeLink" data-i18n-title="readmeLinkTitle" title="Ouvrir le README">📄 README</button>
+  <a class="footer-stars" id="ghStars" href="https://github.com/nd-digital/phonefake/stargazers" target="_blank" rel="noopener noreferrer" title="Étoiles GitHub" hidden>⭐ <span id="ghStarCount"></span></a>
+  <a class="footer-stars" id="ghDownloads" href="https://github.com/nd-digital/phonefake/releases" target="_blank" rel="noopener noreferrer" title="Téléchargements des releases" hidden>⬇ <span id="ghDlCount"></span></a>
 </div>
 
 <!-- README modal (fetched from README.md and rendered on the fly) -->
@@ -833,6 +836,7 @@
       helpFeatCompare: '<strong>Comparaison</strong> : le bouton <em>Compare</em> affiche jusqu\'à 3 appareils côte à côte (téléphone, tablette, ordinateur). Chaque colonne a son sélecteur ; l\'option <em>Désactivé</em> en masque un (au moins deux restent visibles).',
       helpFeatZoom: '<strong>Agrandissement</strong> : le bouton <kbd>⛶</kbd> à côté de chaque écran l\'affiche en grand dans une fenêtre (pleine hauteur du viewport) ; <kbd>⤡</kbd> ou <kbd>Échap</kbd> revient à l\'état initial.',
       helpFeatSync: '<strong>Synchro entre écrans</strong> : en comparaison, tes actions dans l\'appli (navigation, défilement, clics, saisie) sont répercutées sur les autres écrans. Automatique si l\'appli est servie sur la même origine que PhoneFake ; sinon, ajoute une ligne dans ton appli : <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
+      helpFeatKbd: '<strong>Clavier virtuel</strong> : quand un champ de ton appli reçoit le focus, un clavier monte et <strong>réduit le viewport</strong> (comme un vrai téléphone) — pour vérifier que tes champs restent visibles et que la mise en page tient. (Nécessite l\'agent de synchro ci-dessus.)',
       helpFeat2: '<strong>Rotation</strong> : bascule portrait ↔ paysage en un clic, l\'écran et les décorations s\'adaptent.',
       helpFeat3: '<strong>Multi-applis</strong> : place tes propres applis dans des sous-dossiers à côté de cette page (chacune avec son <code>index.html</code>) et elles apparaissent dans le menu <em>Mode web</em>.',
       helpFeat4: '<strong>Compatible</strong> : sites classiques, responsive design, PWA installables, applis avec service worker — tout ce qui se sert dans un navigateur.',
@@ -898,6 +902,7 @@
       helpFeatCompare: '<strong>Compare</strong>: the <em>Compare</em> button shows up to 3 devices side by side (phone, tablet, desktop). Each column has its own selector; the <em>Off</em> option hides one (at least two stay visible).',
       helpFeatZoom: '<strong>Enlarge</strong>: the <kbd>⛶</kbd> button beside each screen shows it big in a window (full viewport height); <kbd>⤡</kbd> or <kbd>Esc</kbd> returns to the initial state.',
       helpFeatSync: '<strong>Screen sync</strong>: in compare mode, your actions in the app (navigation, scrolling, clicks, typing) are mirrored to the other screens. Automatic if the app is served from the same origin as PhoneFake; otherwise add one line to your app: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
+      helpFeatKbd: '<strong>On-screen keyboard</strong>: when a field in your app is focused, a keyboard slides up and <strong>shrinks the viewport</strong> (like a real phone) — so you can check that your fields stay visible and the layout holds. (Requires the sync agent above.)',
       helpFeat2: '<strong>Rotation</strong>: toggle portrait ↔ landscape with one click, screen and decorations adapt.',
       helpFeat3: '<strong>Multi-app</strong>: drop your own apps into subfolders next to this page (each with its <code>index.html</code>) and they appear in the <em>Web mode</em> menu.',
       helpFeat4: '<strong>Compatible</strong>: classic websites, responsive design, installable PWAs, apps with service workers — anything served in a browser.',
@@ -963,6 +968,7 @@
       helpFeatCompare: '<strong>Comparación</strong>: el botón <em>Compare</em> muestra hasta 3 dispositivos en paralelo (teléfono, tableta, ordenador). Cada columna tiene su selector; la opción <em>Desactivado</em> oculta uno (al menos dos permanecen visibles).',
       helpFeatZoom: '<strong>Ampliar</strong>: el botón <kbd>⛶</kbd> junto a cada pantalla la muestra en grande en una ventana (altura completa del viewport); <kbd>⤡</kbd> o <kbd>Esc</kbd> vuelve al estado inicial.',
       helpFeatSync: '<strong>Sincronización entre pantallas</strong>: en modo comparación, tus acciones en la app (navegación, desplazamiento, clics, escritura) se reflejan en las demás pantallas. Automático si la app se sirve desde el mismo origen que PhoneFake; si no, añade una línea a tu app: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
+      helpFeatKbd: '<strong>Teclado virtual</strong>: cuando un campo de tu app recibe el foco, un teclado sube y <strong>reduce el viewport</strong> (como un teléfono real) — para comprobar que tus campos siguen visibles y que la maquetación aguanta. (Requiere el agente de sincronización de arriba.)',
       helpFeat2: '<strong>Rotación</strong>: alterna vertical ↔ horizontal con un clic, la pantalla y los detalles se adaptan.',
       helpFeat3: '<strong>Multi-app</strong>: coloca tus propias apps en subcarpetas junto a esta página (cada una con su <code>index.html</code>) y aparecerán en el menú <em>Modo web</em>.',
       helpFeat4: '<strong>Compatible</strong>: sitios clásicos, responsive design, PWAs instalables, apps con service worker — cualquier cosa que se sirva en un navegador.',
@@ -1028,6 +1034,7 @@
       helpFeatCompare: '<strong>Confronto</strong>: il pulsante <em>Compare</em> mostra fino a 3 dispositivi affiancati (telefono, tablet, computer). Ogni colonna ha il suo selettore; l\'opzione <em>Disattivato</em> ne nasconde uno (almeno due restano visibili).',
       helpFeatZoom: '<strong>Ingrandimento</strong>: il pulsante <kbd>⛶</kbd> accanto a ogni schermo lo mostra in grande in una finestra (altezza piena del viewport); <kbd>⤡</kbd> o <kbd>Esc</kbd> torna allo stato iniziale.',
       helpFeatSync: '<strong>Sincronizzazione tra schermi</strong>: in modalità confronto, le tue azioni nell\'app (navigazione, scorrimento, clic, digitazione) vengono riprodotte sugli altri schermi. Automatico se l\'app è servita dalla stessa origine di PhoneFake; altrimenti aggiungi una riga alla tua app: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
+      helpFeatKbd: '<strong>Tastiera virtuale</strong>: quando un campo della tua app riceve il focus, una tastiera sale e <strong>riduce il viewport</strong> (come un vero telefono) — per verificare che i campi restino visibili e che il layout tenga. (Richiede l\'agente di sincronizzazione qui sopra.)',
       helpFeat2: '<strong>Rotazione</strong>: passa da verticale a orizzontale con un clic, lo schermo e i dettagli si adattano.',
       helpFeat3: '<strong>Multi-app</strong>: metti le tue app in sottocartelle accanto a questa pagina (ognuna con il suo <code>index.html</code>) e appariranno nel menu <em>Modalità web</em>.',
       helpFeat4: '<strong>Compatibile</strong>: siti classici, responsive design, PWA installabili, app con service worker — tutto ciò che gira nel browser.',
@@ -1093,6 +1100,7 @@
       helpFeatCompare: '<strong>Vergleich</strong>: die Schaltfläche <em>Compare</em> zeigt bis zu 3 Geräte nebeneinander (Handy, Tablet, Desktop). Jede Spalte hat ihre eigene Auswahl; die Option <em>Deaktiviert</em> blendet eines aus (mindestens zwei bleiben sichtbar).',
       helpFeatZoom: '<strong>Vergrößern</strong>: die Schaltfläche <kbd>⛶</kbd> neben jedem Bildschirm zeigt ihn groß in einem Fenster (volle Viewport-Höhe); <kbd>⤡</kbd> oder <kbd>Esc</kbd> kehrt zum Ausgangszustand zurück.',
       helpFeatSync: '<strong>Bildschirm-Synchronisierung</strong>: im Vergleichsmodus werden deine Aktionen in der App (Navigation, Scrollen, Klicks, Eingabe) auf die anderen Bildschirme gespiegelt. Automatisch, wenn die App von derselben Origin wie PhoneFake ausgeliefert wird; sonst füge deiner App eine Zeile hinzu: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
+      helpFeatKbd: '<strong>Bildschirmtastatur</strong>: Wenn ein Feld deiner App den Fokus erhält, fährt eine Tastatur hoch und <strong>verkleinert den Viewport</strong> (wie ein echtes Handy) — so prüfst du, ob deine Felder sichtbar bleiben und das Layout hält. (Erfordert den obigen Sync-Agent.)',
       helpFeat2: '<strong>Rotation</strong>: Wechsle Hoch- ↔ Querformat mit einem Klick, Bildschirm und Details passen sich an.',
       helpFeat3: '<strong>Multi-App</strong>: Lege deine Apps in Unterordner neben dieser Seite ab (jede mit ihrer <code>index.html</code>) und sie erscheinen im Menü <em>Web-Modus</em>.',
       helpFeat4: '<strong>Kompatibel</strong>: klassische Websites, Responsive Design, installierbare PWAs, Apps mit Service Worker — alles, was im Browser läuft.',
@@ -1475,8 +1483,55 @@
       mirrorIframes().forEach(f => f.contentWindow && f.contentWindow.postMessage({ __pfsync: 1, t: 'navto', href: d.href }, '*'));
     } else if (d.t === 'event' && compareEnabled && fromPrimary) {
       mirrorIframes().forEach(f => f.contentWindow && f.contentWindow.postMessage({ __pfsync: 1, t: 'apply', kind: d.kind, data: d.data }, '*'));
+    } else if (d.t === 'kbd' && fromPrimary) {
+      clearTimeout(kbdHideTimer);
+      if (d.on) applyKeyboard(true, d.kind);
+      else kbdHideTimer = setTimeout(() => applyKeyboard(false), 150);  // debounce field-to-field jumps
     }
   });
+
+  // -------- Simulated on-screen keyboard (shown when a text field is focused) --------
+  // Reproduces the LAYOUT impact of a mobile keyboard: it slides up and shrinks
+  // the app viewport, so you can check that fields stay visible and sticky
+  // footers don't break. (Cosmetic keyboard — it doesn't type.)
+  let kbdHideTimer = null;
+  function keyboardDevices() {
+    const els = [];
+    if (!(compareEnabled && col1Inactive)) els.push(phone);
+    if (compareEnabled) mirrors.forEach(m => { if (isActive(m.model) && m.phoneEl) els.push(m.phoneEl); });
+    return els;
+  }
+  function applyKeyboard(on, kind) {
+    keyboardDevices().forEach(dev => on ? showKeyboard(dev, kind) : hideKeyboard(dev));
+  }
+  function renderKeyboard(kind) {
+    const numeric = ['tel', 'number', 'decimal', 'numeric'].indexOf(kind) !== -1;
+    const rows = numeric
+      ? [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9'], ['*', '0', '#']]
+      : [['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+         ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+         ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+         ['⇧', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '⌫']];
+    let html = '<div class="vk-bar"><span class="vk-grabber"></span><span class="vk-kind">⌨ ' + (kind || 'text') + '</span></div>';
+    html += rows.map(r => '<div class="vk-row">' + r.map(k => '<span class="vk-key">' + k + '</span>').join('') + '</div>').join('');
+    if (!numeric) html += '<div class="vk-row"><span class="vk-key vk-wide">espace</span><span class="vk-key vk-go">↵</span></div>';
+    return html;
+  }
+  function showKeyboard(deviceEl, kind) {
+    const screen = deviceEl.querySelector('.screen');
+    if (!screen) return;
+    let kb = screen.querySelector('.vkeyboard');
+    if (!kb) { kb = document.createElement('div'); kb.className = 'vkeyboard'; kb.setAttribute('aria-hidden', 'true'); screen.appendChild(kb); }
+    kb.innerHTML = renderKeyboard(kind);
+    screen.classList.add('kbd-open');
+  }
+  function hideKeyboard(deviceEl) {
+    const screen = deviceEl.querySelector('.screen');
+    if (!screen) return;
+    screen.classList.remove('kbd-open');
+    const kb = screen.querySelector('.vkeyboard');
+    if (kb) kb.remove();
+  }
 
   // -------- Panel a11y --------
   const a11yOverlay = document.getElementById('a11yOverlay');
@@ -1824,9 +1879,41 @@
     window.addEventListener('resize', () => { if (zoomModalOpen) fitZoom(); });
   })();
 
+  // -------- GitHub popularity (stars + release downloads) --------
+  // A no-telemetry signal: the browser reads PUBLIC repo data straight from the
+  // GitHub API (nothing about the user is sent — same as a shields.io badge).
+  // Cached 6 h, and fails silently (offline / rate-limited → simply hidden).
+  (function () {
+    const REPO = 'nd-digital/phonefake';
+    const KEY = 'phonefake-ghstats';
+    const TTL = 6 * 3600 * 1000;
+    const starEl = document.getElementById('ghStars'), starN = document.getElementById('ghStarCount');
+    const dlEl = document.getElementById('ghDownloads'), dlN = document.getElementById('ghDlCount');
+    const fmt = n => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'k' : String(n);
+    function render(stars, downloads) {
+      if (starEl && typeof stars === 'number') { starN.textContent = fmt(stars); starEl.hidden = false; }
+      if (dlEl && typeof downloads === 'number' && downloads > 0) { dlN.textContent = fmt(downloads); dlEl.hidden = false; }
+    }
+    try {
+      const c = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (c && (Date.now() - c.t) < TTL) { render(c.s, c.d); return; }
+    } catch {}
+    const j = u => fetch(u, { headers: { 'Accept': 'application/vnd.github+json' } }).then(r => r.ok ? r.json() : Promise.reject());
+    Promise.all([
+      j('https://api.github.com/repos/' + REPO).then(d => d.stargazers_count).catch(() => null),
+      // Sum download_count across all release assets (0 until assets are attached)
+      j('https://api.github.com/repos/' + REPO + '/releases?per_page=100')
+        .then(rs => rs.reduce((s, r) => s + (r.assets || []).reduce((a, x) => a + (x.download_count || 0), 0), 0))
+        .catch(() => null)
+    ]).then(([s, d]) => {
+      render(s, d);
+      try { localStorage.setItem(KEY, JSON.stringify({ s, d, t: Date.now() })); } catch {}
+    }).catch(() => {});
+  })();
+
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.2.0';
+  const APP_VERSION = '1.3.0';
   const GH_REPO = 'nd-digital/phonefake';
 
   function cmpVersions(a, b) {

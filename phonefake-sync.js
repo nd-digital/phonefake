@@ -96,6 +96,30 @@
     if (p) report('input', { sel: p, value: t.value, checked: !!t.checked });
   }, true);
 
+  // --- soft keyboard: tell PhoneFake when a text field gains/loses focus so it
+  //     can show a simulated on-screen keyboard and shrink the viewport ---
+  function isTextField(t) {
+    if (!t) return false;
+    if (t.isContentEditable) return true;
+    var tag = (t.tagName || '').toLowerCase();
+    if (tag === 'textarea') return true;
+    if (tag !== 'input') return false;
+    var ty = (t.type || 'text').toLowerCase();
+    return ['text', 'email', 'tel', 'url', 'number', 'search', 'password',
+            'date', 'time', 'datetime-local', 'month', 'week', ''].indexOf(ty) !== -1;
+  }
+  function kbdKind(t) {
+    var im = (t.getAttribute && t.getAttribute('inputmode')) || '';
+    var ty = (t.type || '') || '';
+    return String(im || ty || 'text').toLowerCase();
+  }
+  document.addEventListener('focusin', function (e) {
+    if (isTextField(e.target)) send({ t: 'kbd', on: true, kind: kbdKind(e.target) });
+  }, true);
+  document.addEventListener('focusout', function (e) {
+    if (isTextField(e.target)) send({ t: 'kbd', on: false });
+  }, true);
+
   // --- replay an incoming action (when PhoneFake designates us a mirror) ---
   function apply(kind, data) {
     suppress = true;
