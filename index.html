@@ -132,6 +132,7 @@
       <li data-i18n="helpFeat2"><strong>Rotation</strong> : bascule portrait ↔ paysage en un clic, l'écran et les décorations s'adaptent.</li>
       <li data-i18n="helpFeatCompare"><strong>Comparaison</strong> : le bouton <em>Compare</em> affiche jusqu'à 3 appareils côte à côte (téléphone, tablette, ordinateur). Chaque colonne a son sélecteur ; l'option <em>Désactivé</em> en masque un (au moins deux restent visibles).</li>
       <li data-i18n="helpFeatZoom"><strong>Agrandissement</strong> : le bouton <kbd>⛶</kbd> à côté de chaque écran l'affiche en grand dans une fenêtre (pleine hauteur du viewport) ; <kbd>⤡</kbd> ou <kbd>Échap</kbd> revient à l'état initial.</li>
+      <li data-i18n="helpFeatMagnify"><strong>Zoom</strong> : chaque appareil a un <strong>curseur de zoom</strong> vertical (à droite, quand une appli est ouverte). Glisse pour agrandir ; une fois zoomé, <strong>glisse dans la fenêtre pour te déplacer</strong> (comme sur un téléphone) et reviens à 100 % pour cliquer.</li>
       <li data-i18n="helpFeatSync"><strong>Synchro entre écrans</strong> : en comparaison, tes actions dans l'appli (navigation, défilement, clics, saisie) sont répercutées sur les autres écrans. Automatique si l'appli est servie sur la même origine que PhoneFake ; sinon, ajoute une ligne dans ton appli : <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.</li>
       <li data-i18n="helpFeatKbd"><strong>Clavier virtuel</strong> : quand un champ de ton appli reçoit le focus, un clavier monte et <strong>réduit le viewport</strong> (comme un vrai téléphone) — pour vérifier que tes champs restent visibles et que la mise en page tient. (Nécessite l'agent de synchro ci-dessus.)</li>
       <li data-i18n="helpFeat3"><strong>Multi-applis</strong> : place tes propres applis dans des sous-dossiers à côté de cette page (chacune avec son <code>index.html</code>) et elles apparaissent dans le menu <em>Mode web</em>.</li>
@@ -319,6 +320,8 @@
   <button type="button" class="footer-readme" id="openReadme" data-i18n="readmeLink" data-i18n-title="readmeLinkTitle" title="Ouvrir le README">📄 README</button>
   <a class="footer-stars" id="ghStars" href="https://github.com/nd-digital/phonefake/stargazers" target="_blank" rel="noopener noreferrer" title="Étoiles GitHub" hidden>⭐ <span id="ghStarCount"></span></a>
   <a class="footer-stars" id="ghDownloads" href="https://github.com/nd-digital/phonefake/releases" target="_blank" rel="noopener noreferrer" title="Téléchargements des releases" hidden>⬇ <span id="ghDlCount"></span></a>
+  <span class="footer-sep">·</span>
+  <a class="footer-version" id="appVersionLabel" href="https://github.com/nd-digital/phonefake/releases" target="_blank" rel="noopener noreferrer" title="Version installée · voir les releases">v…</a>
 </div>
 
 <!-- README modal (fetched from README.md and rendered on the fly) -->
@@ -835,6 +838,7 @@
       helpFeat1: '<strong>5 formats d\'appareil</strong> : iPhone (notch), Android phone (punch-hole), iPad, tablette Android et <strong>Ordinateur</strong> (écran desktop large) — chacun avec ses propres dimensions natives.',
       helpFeatCompare: '<strong>Comparaison</strong> : le bouton <em>Compare</em> affiche jusqu\'à 3 appareils côte à côte (téléphone, tablette, ordinateur). Chaque colonne a son sélecteur ; l\'option <em>Désactivé</em> en masque un (au moins deux restent visibles).',
       helpFeatZoom: '<strong>Agrandissement</strong> : le bouton <kbd>⛶</kbd> à côté de chaque écran l\'affiche en grand dans une fenêtre (pleine hauteur du viewport) ; <kbd>⤡</kbd> ou <kbd>Échap</kbd> revient à l\'état initial.',
+      helpFeatMagnify: '<strong>Zoom</strong> : chaque appareil a un <strong>curseur de zoom</strong> vertical (à droite, quand une appli est ouverte). Glisse pour agrandir ; une fois zoomé, <strong>glisse dans la fenêtre pour te déplacer</strong> (comme sur un téléphone) et reviens à 100 % pour cliquer.',
       helpFeatSync: '<strong>Synchro entre écrans</strong> : en comparaison, tes actions dans l\'appli (navigation, défilement, clics, saisie) sont répercutées sur les autres écrans. Automatique si l\'appli est servie sur la même origine que PhoneFake ; sinon, ajoute une ligne dans ton appli : <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeatKbd: '<strong>Clavier virtuel</strong> : quand un champ de ton appli reçoit le focus, un clavier monte et <strong>réduit le viewport</strong> (comme un vrai téléphone) — pour vérifier que tes champs restent visibles et que la mise en page tient. (Nécessite l\'agent de synchro ci-dessus.)',
       helpFeat2: '<strong>Rotation</strong> : bascule portrait ↔ paysage en un clic, l\'écran et les décorations s\'adaptent.',
@@ -901,6 +905,7 @@
       helpFeat1: '<strong>5 device formats</strong>: iPhone (notch), Android phone (punch-hole), iPad, Android tablet and <strong>Desktop</strong> (wide computer screen) — each with native dimensions.',
       helpFeatCompare: '<strong>Compare</strong>: the <em>Compare</em> button shows up to 3 devices side by side (phone, tablet, desktop). Each column has its own selector; the <em>Off</em> option hides one (at least two stay visible).',
       helpFeatZoom: '<strong>Enlarge</strong>: the <kbd>⛶</kbd> button beside each screen shows it big in a window (full viewport height); <kbd>⤡</kbd> or <kbd>Esc</kbd> returns to the initial state.',
+      helpFeatMagnify: '<strong>Zoom</strong>: each device has a vertical <strong>zoom slider</strong> (on the right, when an app is open). Drag to magnify; once zoomed, <strong>drag inside the window to pan</strong> (like on a phone), and go back to 100% to click.',
       helpFeatSync: '<strong>Screen sync</strong>: in compare mode, your actions in the app (navigation, scrolling, clicks, typing) are mirrored to the other screens. Automatic if the app is served from the same origin as PhoneFake; otherwise add one line to your app: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeatKbd: '<strong>On-screen keyboard</strong>: when a field in your app is focused, a keyboard slides up and <strong>shrinks the viewport</strong> (like a real phone) — so you can check that your fields stay visible and the layout holds. (Requires the sync agent above.)',
       helpFeat2: '<strong>Rotation</strong>: toggle portrait ↔ landscape with one click, screen and decorations adapt.',
@@ -967,6 +972,7 @@
       helpFeat1: '<strong>5 formatos de dispositivo</strong>: iPhone (notch), Android phone (punch-hole), iPad, tableta Android y <strong>Ordenador</strong> (pantalla de escritorio ancha) — cada uno con sus dimensiones nativas.',
       helpFeatCompare: '<strong>Comparación</strong>: el botón <em>Compare</em> muestra hasta 3 dispositivos en paralelo (teléfono, tableta, ordenador). Cada columna tiene su selector; la opción <em>Desactivado</em> oculta uno (al menos dos permanecen visibles).',
       helpFeatZoom: '<strong>Ampliar</strong>: el botón <kbd>⛶</kbd> junto a cada pantalla la muestra en grande en una ventana (altura completa del viewport); <kbd>⤡</kbd> o <kbd>Esc</kbd> vuelve al estado inicial.',
+      helpFeatMagnify: '<strong>Zoom</strong>: cada dispositivo tiene un <strong>control de zoom</strong> vertical (a la derecha, cuando hay una app abierta). Arrastra para ampliar; una vez ampliado, <strong>arrastra dentro de la ventana para desplazarte</strong> (como en un teléfono) y vuelve al 100 % para hacer clic.',
       helpFeatSync: '<strong>Sincronización entre pantallas</strong>: en modo comparación, tus acciones en la app (navegación, desplazamiento, clics, escritura) se reflejan en las demás pantallas. Automático si la app se sirve desde el mismo origen que PhoneFake; si no, añade una línea a tu app: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeatKbd: '<strong>Teclado virtual</strong>: cuando un campo de tu app recibe el foco, un teclado sube y <strong>reduce el viewport</strong> (como un teléfono real) — para comprobar que tus campos siguen visibles y que la maquetación aguanta. (Requiere el agente de sincronización de arriba.)',
       helpFeat2: '<strong>Rotación</strong>: alterna vertical ↔ horizontal con un clic, la pantalla y los detalles se adaptan.',
@@ -1033,6 +1039,7 @@
       helpFeat1: '<strong>5 formati di dispositivo</strong>: iPhone (notch), Android phone (punch-hole), iPad, tablet Android e <strong>Computer</strong> (schermo desktop ampio) — ognuno con le proprie dimensioni native.',
       helpFeatCompare: '<strong>Confronto</strong>: il pulsante <em>Compare</em> mostra fino a 3 dispositivi affiancati (telefono, tablet, computer). Ogni colonna ha il suo selettore; l\'opzione <em>Disattivato</em> ne nasconde uno (almeno due restano visibili).',
       helpFeatZoom: '<strong>Ingrandimento</strong>: il pulsante <kbd>⛶</kbd> accanto a ogni schermo lo mostra in grande in una finestra (altezza piena del viewport); <kbd>⤡</kbd> o <kbd>Esc</kbd> torna allo stato iniziale.',
+      helpFeatMagnify: '<strong>Zoom</strong>: ogni dispositivo ha un <strong>cursore di zoom</strong> verticale (a destra, quando un\'app è aperta). Trascina per ingrandire; una volta ingrandito, <strong>trascina nella finestra per spostarti</strong> (come su un telefono) e torna al 100% per cliccare.',
       helpFeatSync: '<strong>Sincronizzazione tra schermi</strong>: in modalità confronto, le tue azioni nell\'app (navigazione, scorrimento, clic, digitazione) vengono riprodotte sugli altri schermi. Automatico se l\'app è servita dalla stessa origine di PhoneFake; altrimenti aggiungi una riga alla tua app: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeatKbd: '<strong>Tastiera virtuale</strong>: quando un campo della tua app riceve il focus, una tastiera sale e <strong>riduce il viewport</strong> (come un vero telefono) — per verificare che i campi restino visibili e che il layout tenga. (Richiede l\'agente di sincronizzazione qui sopra.)',
       helpFeat2: '<strong>Rotazione</strong>: passa da verticale a orizzontale con un clic, lo schermo e i dettagli si adattano.',
@@ -1099,6 +1106,7 @@
       helpFeat1: '<strong>5 Geräteformate</strong>: iPhone (Notch), Android Phone (Punch-Hole), iPad, Android-Tablet und <strong>Desktop</strong> (breiter Computerbildschirm) — jeweils mit nativen Abmessungen.',
       helpFeatCompare: '<strong>Vergleich</strong>: die Schaltfläche <em>Compare</em> zeigt bis zu 3 Geräte nebeneinander (Handy, Tablet, Desktop). Jede Spalte hat ihre eigene Auswahl; die Option <em>Deaktiviert</em> blendet eines aus (mindestens zwei bleiben sichtbar).',
       helpFeatZoom: '<strong>Vergrößern</strong>: die Schaltfläche <kbd>⛶</kbd> neben jedem Bildschirm zeigt ihn groß in einem Fenster (volle Viewport-Höhe); <kbd>⤡</kbd> oder <kbd>Esc</kbd> kehrt zum Ausgangszustand zurück.',
+      helpFeatMagnify: '<strong>Zoom</strong>: jedes Gerät hat einen vertikalen <strong>Zoom-Regler</strong> (rechts, wenn eine App geöffnet ist). Ziehen zum Vergrößern; im gezoomten Zustand <strong>im Fenster ziehen zum Verschieben</strong> (wie auf einem Handy), zurück auf 100 % zum Klicken.',
       helpFeatSync: '<strong>Bildschirm-Synchronisierung</strong>: im Vergleichsmodus werden deine Aktionen in der App (Navigation, Scrollen, Klicks, Eingabe) auf die anderen Bildschirme gespiegelt. Automatisch, wenn die App von derselben Origin wie PhoneFake ausgeliefert wird; sonst füge deiner App eine Zeile hinzu: <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.',
       helpFeatKbd: '<strong>Bildschirmtastatur</strong>: Wenn ein Feld deiner App den Fokus erhält, fährt eine Tastatur hoch und <strong>verkleinert den Viewport</strong> (wie ein echtes Handy) — so prüfst du, ob deine Felder sichtbar bleiben und das Layout hält. (Erfordert den obigen Sync-Agent.)',
       helpFeat2: '<strong>Rotation</strong>: Wechsle Hoch- ↔ Querformat mit einem Klick, Bildschirm und Details passen sich an.',
@@ -1640,7 +1648,8 @@
     entry.iframe.style.transform = 'translate3d(' + z.x + 'px,' + z.y + 'px,0) scale(' + z.level + ')';
     let ov = entry.window.querySelector('.pan-overlay');
     if (z.level > 1) {
-      if (!ov) { ov = document.createElement('div'); ov.className = 'pan-overlay'; attachPan(ov, entry); entry.window.appendChild(ov); }
+      // Pan is handled by delegation on the stage (works on column 1 AND mirrors)
+      if (!ov) { ov = document.createElement('div'); ov.className = 'pan-overlay'; entry.window.appendChild(ov); }
       ov.classList.add('active');
     } else if (ov) {
       ov.classList.remove('active');
@@ -1654,25 +1663,45 @@
     z.y = Math.min(0, Math.max(-fr.clientHeight * (z.level - 1), z.y));
   }
 
-  function attachPan(ov, entry) {
-    let drag = false, sx = 0, sy = 0, ox = 0, oy = 0;
-    ov.addEventListener('pointerdown', (e) => {
-      drag = true; ov.classList.add('dragging');
+  // Panning is delegated on the stage so dragging the zoom overlay works on
+  // column 1 AND the mirror clones (which have no per-element listeners). While
+  // dragging, all active screens follow live; on release we re-sync.
+  (function () {
+    let drag = false, sx = 0, sy = 0, ox = 0, oy = 0, entry = null, curOv = null;
+    const scaleOf = (el) => {
+      const dev = el.closest('.phone');
+      return (dev && parseFloat(getComputedStyle(dev).getPropertyValue('--phone-scale'))) || 1;
+    };
+    stage.addEventListener('pointerdown', (e) => {
+      const ov = e.target.closest('.pan-overlay.active');
+      if (!ov) return;
+      entry = activeEntry();
+      if (!entry) return;
+      drag = true; curOv = ov; ov.classList.add('dragging');
       try { ov.setPointerCapture(e.pointerId); } catch {}
       sx = e.clientX; sy = e.clientY; ox = entry.zoom.x; oy = entry.zoom.y;
+      e.preventDefault();
     });
-    ov.addEventListener('pointermove', (e) => {
-      if (!drag) return;
-      const s = parseFloat(getComputedStyle(phone).getPropertyValue('--phone-scale')) || 1;
+    stage.addEventListener('pointermove', (e) => {
+      if (!drag || !entry || !curOv) return;
+      const s = scaleOf(curOv);
       entry.zoom.x = ox + (e.clientX - sx) / s;
       entry.zoom.y = oy + (e.clientY - sy) / s;
       clampPan(entry);
-      entry.iframe.style.transform = 'translate3d(' + entry.zoom.x + 'px,' + entry.zoom.y + 'px,0) scale(' + entry.zoom.level + ')';
+      const tf = 'translate3d(' + entry.zoom.x + 'px,' + entry.zoom.y + 'px,0) scale(' + entry.zoom.level + ')';
+      entry.iframe.style.transform = tf;   // column 1
+      document.querySelectorAll('.phone.mirror .app-window.active iframe').forEach(f => { f.style.transform = tf; }); // mirrors, live
     });
-    const end = () => { if (!drag) return; drag = false; ov.classList.remove('dragging'); if (compareEnabled) buildCompareMirror(); };
-    ov.addEventListener('pointerup', end);
-    ov.addEventListener('pointercancel', end);
-  }
+    const end = () => {
+      if (!drag) return;
+      drag = false;
+      if (curOv) curOv.classList.remove('dragging');
+      curOv = null;
+      if (compareEnabled) buildCompareMirror();
+    };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', end);
+  })();
 
   // Reflect the active app's zoom on the vertical slider (shown only when an app is open)
   function refreshZoomLabel() {
@@ -1913,8 +1942,10 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.3.0';
+  const APP_VERSION = '1.3.1';
   const GH_REPO = 'nd-digital/phonefake';
+  // Always show the installed version in the footer
+  (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();
 
   function cmpVersions(a, b) {
     const pa = a.split('.').map(Number), pb = b.split('.').map(Number);

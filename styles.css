@@ -273,6 +273,11 @@
   }
   .footer-stars:hover, .footer-stars:focus-visible { background: rgba(255,255,255,.1); color: #fff; }
   .footer-stars[hidden] { display: none; }
+  .footer-version {
+    color: #8a93a6; text-decoration: none; font-size: 0.8rem;
+    font-variant-numeric: tabular-nums; transition: color 0.15s;
+  }
+  .footer-version:hover, .footer-version:focus-visible { color: #fff; }
 
   /* README modal: wider box (~half screen), scrollable */
   .readme-box {
@@ -936,10 +941,6 @@
     will-change: transform;        /* own GPU layer → clean repaint while zoomed/panned */
     backface-visibility: hidden;
   }
-  /* In compare mode you drive column 1; the mirror apps follow via live sync,
-     so their app iframe isn't directly clickable (avoids conflicting drivers). */
-  .phone.mirror .app-window iframe { pointer-events: none; }
-
   /* Simulated on-screen keyboard: slides up and shrinks the app viewport so you
      can check fields stay visible / sticky footers don't break. Cosmetic. */
   .screen.kbd-open .app-window.active { bottom: 44%; }
