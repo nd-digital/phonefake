@@ -324,6 +324,13 @@
   <a class="footer-version" id="appVersionLabel" href="https://github.com/nd-digital/phonefake/releases" target="_blank" rel="noopener noreferrer" title="Version installée · voir les releases">v…</a>
 </div>
 
+<!-- Live usage counter (split-flap). Populated by the SSE server; hidden until a count is known. -->
+<div class="usage-counter" id="usageCounter" hidden aria-live="polite">
+  <span class="uc-icon" aria-hidden="true">👥</span>
+  <span class="uc-flaps" id="ucFlaps"></span>
+  <span class="uc-label" id="ucLabel"></span>
+</div>
+
 <!-- README modal (fetched from README.md and rendered on the fly) -->
 <div class="help-overlay readme-overlay" id="readmeOverlay" role="dialog" aria-modal="true" aria-label="README">
   <div class="help-box readme-box">
@@ -875,6 +882,8 @@
       announceCompareOn: 'Mode comparaison activé',
       announceCompareOff: 'Mode comparaison désactivé',
       footerInfo: 'Dépose un sous-dossier dans <code>APPLI/</code> et il apparaîtra automatiquement. Ajoute un <code>icon.png</code> (ou <code>logo.png</code>) dans le dossier pour personnaliser l\'icône.',
+      usageOne: ' codeur utilise actuellement PhoneFake',
+      usageMany: ' codeurs utilisent actuellement PhoneFake',
       readmeLink: '📄 README',
       readmeLinkTitle: 'Ouvrir le README',
       expandTitle: 'Agrandir',
@@ -942,6 +951,8 @@
       announceCompareOn: 'Compare mode enabled',
       announceCompareOff: 'Compare mode disabled',
       footerInfo: 'Drop a subfolder in <code>APPLI/</code> and it will appear automatically. Add an <code>icon.png</code> (or <code>logo.png</code>) in the folder to customize the icon.',
+      usageOne: ' coder is using PhoneFake right now',
+      usageMany: ' coders are using PhoneFake right now',
       readmeLink: '📄 README',
       readmeLinkTitle: 'Open the README',
       expandTitle: 'Enlarge',
@@ -1009,6 +1020,8 @@
       announceCompareOn: 'Modo comparación activado',
       announceCompareOff: 'Modo comparación desactivado',
       footerInfo: 'Coloca una subcarpeta en <code>APPLI/</code> y aparecerá automáticamente. Añade un <code>icon.png</code> (o <code>logo.png</code>) en la carpeta para personalizar el icono.',
+      usageOne: ' programador está usando PhoneFake ahora mismo',
+      usageMany: ' programadores están usando PhoneFake ahora mismo',
       readmeLink: '📄 README',
       readmeLinkTitle: 'Abrir el README',
       expandTitle: 'Ampliar',
@@ -1076,6 +1089,8 @@
       announceCompareOn: 'Modalità confronto attivata',
       announceCompareOff: 'Modalità confronto disattivata',
       footerInfo: 'Metti una sottocartella in <code>APPLI/</code> e apparirà automaticamente. Aggiungi un <code>icon.png</code> (o <code>logo.png</code>) nella cartella per personalizzare l\'icona.',
+      usageOne: ' sviluppatore sta usando PhoneFake in questo momento',
+      usageMany: ' sviluppatori stanno usando PhoneFake in questo momento',
       readmeLink: '📄 README',
       readmeLinkTitle: 'Apri il README',
       expandTitle: 'Ingrandisci',
@@ -1143,6 +1158,8 @@
       announceCompareOn: 'Vergleichsmodus aktiviert',
       announceCompareOff: 'Vergleichsmodus deaktiviert',
       footerInfo: 'Lege einen Unterordner in <code>APPLI/</code> ab — er erscheint automatisch. Füge eine <code>icon.png</code> (oder <code>logo.png</code>) im Ordner hinzu, um das Icon anzupassen.',
+      usageOne: ' Entwickler benutzt PhoneFake gerade',
+      usageMany: ' Entwickler benutzen PhoneFake gerade',
       readmeLink: '📄 README',
       readmeLinkTitle: 'README öffnen',
       expandTitle: 'Vergrößern',
@@ -1940,9 +1957,65 @@
     }).catch(() => {});
   })();
 
+  // -------- Live usage counter (SSE, split-flap) --------
+  // Optional & non-blocking: connects to a tiny counter server that pushes how
+  // many people currently have PhoneFake open. Server down / no endpoint → the
+  // last known value stays shown (or nothing). Nothing about the user is sent.
+  (function () {
+    const COUNTER_URL = 'https://live.nicolas-degabriel.digital/events'; // '' pour désactiver
+    const wrap = document.getElementById('usageCounter');
+    const flaps = document.getElementById('ucFlaps');
+    const label = document.getElementById('ucLabel');
+    if (!wrap || !flaps || !label || !COUNTER_URL || typeof EventSource === 'undefined') return;
+    const KEY = 'phonefake-usage';
+    let lastN;
+
+    function setFlap(el, ch) {
+      if (el.dataset.d === ch) return;
+      el.dataset.d = ch; el.textContent = ch;
+      el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip'); // restart the flip
+    }
+    function render(n) {
+      if (!Number.isFinite(n) || n < 0) return;
+      const s = String(n);
+      while (flaps.children.length < s.length) { const f = document.createElement('span'); f.className = 'flap'; flaps.appendChild(f); }
+      while (flaps.children.length > s.length) flaps.removeChild(flaps.lastChild);
+      for (let i = 0; i < s.length; i++) setFlap(flaps.children[i], s[i]);
+      lastN = n;
+      const T = (typeof I18N !== 'undefined' && I18N[document.documentElement.lang]) ? I18N[document.documentElement.lang] : I18N.fr;
+      label.textContent = (n <= 1) ? T.usageOne : T.usageMany;
+      wrap.hidden = false;
+    }
+
+    // Re-apply just the label when the UI language changes mid-session (no flap animation).
+    new MutationObserver(() => {
+      if (!Number.isFinite(lastN)) return;
+      const T = (typeof I18N !== 'undefined' && I18N[document.documentElement.lang]) ? I18N[document.documentElement.lang] : I18N.fr;
+      label.textContent = (lastN <= 1) ? T.usageOne : T.usageMany;
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+
+    // Show the last known value immediately (survives a momentarily-down server)
+    try { const v = parseInt(localStorage.getItem(KEY), 10); if (Number.isFinite(v)) render(v); } catch {}
+
+    try {
+      const es = new EventSource(COUNTER_URL);
+      let errs = 0;
+      es.onmessage = (ev) => {
+        errs = 0;
+        try {
+          const d = JSON.parse(ev.data);
+          if (typeof d.count === 'number') { render(d.count); try { localStorage.setItem(KEY, String(d.count)); } catch {} }
+        } catch (e) {}
+      };
+      // Auto-reconnects; but stop after several failures so an unreachable server
+      // doesn't spam the console forever (the last value stays shown).
+      es.onerror = () => { if (++errs >= 6) es.close(); };
+    } catch (e) {}
+  })();
+
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.3.1';
+  const APP_VERSION = '1.4.0';
   const GH_REPO = 'nd-digital/phonefake';
   // Always show the installed version in the footer
   (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();

@@ -5,7 +5,7 @@
 ### Teste tes applis web dans un vrai cadre mobile — en local, sans rien installer.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-5b6cff.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.3.1-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
+[![Version](https://img.shields.io/badge/version-1.4.0-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
 [![Vanilla JS](https://img.shields.io/badge/vanilla-JS%20%2B%20PHP-success.svg)]()
 [![No build](https://img.shields.io/badge/build-aucun-blue.svg)]()
 
@@ -36,6 +36,7 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 | 🔍 **Zoom** | Un curseur par appareil pour agrandir ; une fois zoomé, glisse dans la fenêtre pour te déplacer (comme un téléphone) et reviens à 100 % pour cliquer |
 | 🔄 **Synchro entre écrans** | En comparaison, tes actions (navigation, défilement, clics, saisie) se répercutent sur les autres écrans (agent `phonefake-sync.js`) |
 | ⌨️ **Clavier virtuel** | Au focus d'un champ, un clavier monte et **réduit le viewport** (comme un vrai téléphone) — vérifie que tes champs restent visibles |
+| 👥 **Compteur live** | Affiche en direct (style split-flap) combien de codeurs utilisent PhoneFake en ce moment — anonyme, aucune donnée perso envoyée, optionnel |
 | ➕ **Création d'appli** | Génère un squelette PWA complet depuis l'interface |
 | 🎨 **Logos auto-générés** | Une appli sans icône ? Un logo est créé à partir de son nom |
 | 🌍 **5 langues** | FR · EN · ES · IT · DE |
