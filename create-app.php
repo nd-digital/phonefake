@@ -267,7 +267,8 @@ HTML);
 $serviceWorker = $tpl(<<<'JS'
 // Service worker minimal : pré-cache + repli hors-ligne. Adaptez la liste CORE.
 const CACHE = '{{SLUG}}-v1';
-const CORE = ['./', './index.html', './manifest.json', './css/style.css', './js/app.js', './offline.html'];
+const CORE = ['./', './index.html', './manifest.json', './css/style.css', './js/app.js', './offline.html',
+  './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon.svg'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
