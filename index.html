@@ -21,7 +21,7 @@
 
 <div class="page-header">
   <div class="server-zone">
-    <a class="server-link" href="../" data-i18n="serverHome" data-i18n-title="serverHomeTitle" title="Aller à l'index localhost">↩ index localhost</a>
+    <a class="server-link" id="serverLink" href="home.php" data-i18n="serverHome" data-i18n-title="serverHomeTitle" title="Aller à l'index localhost">↩ index localhost</a>
   </div>
   <h1 class="page-title" data-i18n="title">📱 PhoneFake — Simulateur mobile &amp; ++</h1>
   <div class="lang-switch" role="group" aria-label="Language">
@@ -140,6 +140,7 @@
       <li data-i18n="helpFeat5"><strong>Accueil et Applis</strong> : reviens à un launcher minimal ou retrouve la liste des applis ouvertes.</li>
       <li data-i18n="helpFeat6"><strong>Multilingue</strong> : interface en 5 langues (🇫🇷 français, 🇬🇧 anglais, 🇪🇸 espagnol, 🇮🇹 italien, 🇩🇪 allemand), sélectionnable via les drapeaux en haut.</li>
       <li data-i18n="helpFeat7"><strong>Mode desktop</strong> : le sélecteur <em>Mode web</em> en haut de la page permet aussi d'ouvrir une appli dans un nouvel onglet du navigateur, en pleine largeur (rendu desktop sans simulation).</li>
+      <li data-i18n="helpFeatIndex"><strong>Tableau de bord</strong> : le bouton <em>↩ index localhost</em> (en haut à gauche) renvoie à <a href="https://github.com/nd-digital/INDEX_LARAGON" target="_blank" rel="noopener">INDEX_LARAGON</a>, un tableau de bord open-source qui liste tous tes projets locaux. S'il n'est pas installé, une page t'invite à le faire (aucune dépendance : PhoneFake marche seul).</li>
     </ul>
 
     <h3 data-i18n="helpUsageTitle">💡 Utilisation</h3>
@@ -854,6 +855,7 @@
       helpFeat5: '<strong>Accueil et Applis</strong> : reviens à un launcher minimal ou retrouve la liste des applis ouvertes.',
       helpFeat6: '<strong>Multilingue</strong> : interface en 5 langues (🇫🇷 français, 🇬🇧 anglais, 🇪🇸 espagnol, 🇮🇹 italien, 🇩🇪 allemand), sélectionnable via les drapeaux en haut.',
       helpFeat7: '<strong>Mode desktop</strong> : le sélecteur <em>Mode web</em> en haut de la page permet aussi d\'ouvrir une appli dans un nouvel onglet du navigateur, en pleine largeur (rendu desktop sans simulation).',
+      helpFeatIndex: '<strong>Tableau de bord</strong> : le bouton <em>↩ index localhost</em> (en haut à gauche) renvoie à <a href="https://github.com/nd-digital/INDEX_LARAGON" target="_blank" rel="noopener">INDEX_LARAGON</a>, un tableau de bord open-source qui liste tous tes projets locaux. S\'il n\'est pas installé, une page t\'invite à le faire (aucune dépendance : PhoneFake marche seul).',
       helpUsageTitle: '💡 Utilisation',
       helpUse1: 'Ajoute tes applis dans des sous-dossiers du même répertoire que ce fichier ; elles apparaissent automatiquement dans le sélecteur.',
       helpUse2: 'Choisis iPhone ou Android pour adapter le rendu de ton appli aux contraintes de chaque plateforme.',
@@ -923,6 +925,7 @@
       helpFeat5: '<strong>Home and Apps</strong>: return to a minimal launcher or browse the list of open apps.',
       helpFeat6: '<strong>Multilingual</strong>: interface in 5 languages (🇫🇷 French, 🇬🇧 English, 🇪🇸 Spanish, 🇮🇹 Italian, 🇩🇪 German), selectable via the flags at the top.',
       helpFeat7: '<strong>Desktop mode</strong>: the <em>Web mode</em> selector at the top of the page also lets you open an app in a new browser tab, full width (raw desktop rendering, no simulation).',
+      helpFeatIndex: '<strong>Dashboard</strong>: the <em>↩ localhost index</em> button (top left) links to <a href="https://github.com/nd-digital/INDEX_LARAGON" target="_blank" rel="noopener">INDEX_LARAGON</a>, an open-source dashboard listing all your local projects. If it isn\'t installed, a page invites you to do so (no dependency: PhoneFake works on its own).',
       helpUsageTitle: '💡 Usage',
       helpUse1: 'Add your apps in subfolders next to this file; they appear automatically in the selector.',
       helpUse2: 'Pick iPhone or Android to adjust the rendering of your app to each platform\'s constraints.',
@@ -992,6 +995,7 @@
       helpFeat5: '<strong>Inicio y Apps</strong>: vuelve a un launcher mínimo o consulta la lista de apps abiertas.',
       helpFeat6: '<strong>Multilingüe</strong>: interfaz en 5 idiomas (🇫🇷 francés, 🇬🇧 inglés, 🇪🇸 español, 🇮🇹 italiano, 🇩🇪 alemán), seleccionable mediante las banderas de arriba.',
       helpFeat7: '<strong>Modo escritorio</strong>: el selector <em>Modo web</em> en la parte superior también permite abrir una app en una nueva pestaña, en pantalla completa (renderizado escritorio sin simulación).',
+      helpFeatIndex: '<strong>Panel</strong>: el botón <em>↩ índice localhost</em> (arriba a la izquierda) enlaza con <a href="https://github.com/nd-digital/INDEX_LARAGON" target="_blank" rel="noopener">INDEX_LARAGON</a>, un panel de código abierto que lista todos tus proyectos locales. Si no está instalado, una página te invita a hacerlo (sin dependencia: PhoneFake funciona solo).',
       helpUsageTitle: '💡 Uso',
       helpUse1: 'Coloca tus apps en subcarpetas dentro del mismo directorio que este archivo; aparecerán automáticamente en el selector.',
       helpUse2: 'Elige iPhone o Android para adaptar el renderizado de tu app a las restricciones de cada plataforma.',
@@ -1061,6 +1065,7 @@
       helpFeat5: '<strong>Home e App</strong>: torna a un launcher minimale o consulta la lista delle app aperte.',
       helpFeat6: '<strong>Multilingua</strong>: interfaccia in 5 lingue (🇫🇷 francese, 🇬🇧 inglese, 🇪🇸 spagnolo, 🇮🇹 italiano, 🇩🇪 tedesco), selezionabile tramite le bandiere in alto.',
       helpFeat7: '<strong>Modalità desktop</strong>: il selettore <em>Modalità web</em> in alto consente anche di aprire un\'app in una nuova scheda, a tutta larghezza (rendering desktop senza simulazione).',
+      helpFeatIndex: '<strong>Cruscotto</strong>: il pulsante <em>↩ indice localhost</em> (in alto a sinistra) rimanda a <a href="https://github.com/nd-digital/INDEX_LARAGON" target="_blank" rel="noopener">INDEX_LARAGON</a>, un cruscotto open-source che elenca tutti i tuoi progetti locali. Se non è installato, una pagina ti invita a farlo (nessuna dipendenza: PhoneFake funziona da solo).',
       helpUsageTitle: '💡 Utilizzo',
       helpUse1: 'Metti le tue app in sottocartelle accanto a questo file; appariranno automaticamente nel selettore.',
       helpUse2: 'Scegli iPhone o Android per adattare il rendering ai vincoli di ciascuna piattaforma.',
@@ -1130,6 +1135,7 @@
       helpFeat5: '<strong>Start und Apps</strong>: zurück zu einem minimalen Launcher oder Liste der offenen Apps anzeigen.',
       helpFeat6: '<strong>Mehrsprachig</strong>: Oberfläche in 5 Sprachen (🇫🇷 Französisch, 🇬🇧 Englisch, 🇪🇸 Spanisch, 🇮🇹 Italienisch, 🇩🇪 Deutsch), über die Flaggen oben wählbar.',
       helpFeat7: '<strong>Desktop-Modus</strong>: der <em>Web-Modus</em>-Selektor oben ermöglicht auch das Öffnen einer App in einem neuen Tab, in voller Breite (Desktop-Rendering ohne Simulation).',
+      helpFeatIndex: '<strong>Dashboard</strong>: der Button <em>↩ localhost-Index</em> (oben links) verweist auf <a href="https://github.com/nd-digital/INDEX_LARAGON" target="_blank" rel="noopener">INDEX_LARAGON</a>, ein Open-Source-Dashboard, das all deine lokalen Projekte auflistet. Ist es nicht installiert, lädt dich eine Seite dazu ein (keine Abhängigkeit: PhoneFake läuft eigenständig).',
       helpUsageTitle: '💡 Verwendung',
       helpUse1: 'Lege deine Apps in Unterordner neben dieser Datei; sie erscheinen automatisch im Selektor.',
       helpUse2: 'Wähle iPhone oder Android, um das Rendering an die Plattform-Einschränkungen anzupassen.',
@@ -1239,6 +1245,9 @@
     document.querySelectorAll('.lang-switch button').forEach(b => {
       b.classList.toggle('active', b.dataset.lang === lang);
     });
+    // Pass the current language to the localhost-index page (invite shown if not installed)
+    const sl = document.getElementById('serverLink');
+    if (sl) sl.href = 'home.php?lang=' + lang;
     try { localStorage.setItem('phonefake-lang', lang); } catch {}
   }
 

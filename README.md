@@ -93,6 +93,17 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 
 ---
 
+## 🧭 Intégration au tableau de bord INDEX_LARAGON
+
+PhoneFake se marie avec **[INDEX_LARAGON](https://github.com/nd-digital/INDEX_LARAGON)**, un tableau de bord open-source qui liste tous tes projets locaux (Laragon, MAMP, XAMPP…) sur une seule page. Le bouton **↩ index localhost** (en haut à gauche) y renvoie.
+
+- Si INDEX_LARAGON (ou tout autre index) est installé à la racine de ton `www`, le bouton t'y ramène directement.
+- Sinon, au lieu d'un 404, une page t'**invite à l'installer** avec un lien vers son dépôt GitHub.
+
+> Les deux outils sont indépendants : PhoneFake fonctionne très bien seul, INDEX_LARAGON n'est pas requis.
+
+---
+
 ## 🔄 Synchro entre écrans (mode comparaison)
 
 En comparaison, tes actions dans l'appli — **navigation, défilement, clics, saisie** — sont répercutées en direct sur les autres écrans. Chaque écran étant une `<iframe>` indépendante, un petit **agent** (`phonefake-sync.js`) tourne dans l'appli et rapporte tes actions à PhoneFake, qui les rejoue sur les miroirs.
