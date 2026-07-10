@@ -90,10 +90,102 @@ $manifest = [
     'background_color' => '#0d0d13',
     'theme_color'      => '#5b6cff',
     'icons'            => [
-        ['src' => 'icons/icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
-        ['src' => 'icons/icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],
+        ['src' => 'icons/icon-192.png', 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],
+        ['src' => 'icons/icon-512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any'],
+        ['src' => 'icons/icon-512-maskable.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
     ],
 ];
+
+// --- App icon generation: real PNGs for mobile "Add to Home Screen"
+//     (iOS apple-touch-icon + Android/PWA manifest, incl. maskable) + an SVG.
+//     Same gradient + name design as the launcher placeholder, so a freshly
+//     created app already has a proper icon on iPhone, Android and in the tab.
+//     Icons are SQUARE on purpose: iOS/Android apply their own rounding/mask.
+//     Degrades gracefully if GD or a TrueType font is unavailable. ---
+function pf_hue_from_name($name) {
+    $h = 0; $len = strlen($name);
+    for ($i = 0; $i < $len; $i++) { $h = ($h * 31 + ord($name[$i])) & 0xFFFFFFFF; }
+    return $h % 360;
+}
+function pf_hsl_rgb($h, $s, $l) {
+    $c = (1 - abs(2 * $l - 1)) * $s;
+    $x = $c * (1 - abs(fmod($h / 60, 2) - 1));
+    $m = $l - $c / 2;
+    if ($h < 60)      { $r = $c; $g = $x; $b = 0; }
+    elseif ($h < 120) { $r = $x; $g = $c; $b = 0; }
+    elseif ($h < 180) { $r = 0; $g = $c; $b = $x; }
+    elseif ($h < 240) { $r = 0; $g = $x; $b = $c; }
+    elseif ($h < 300) { $r = $x; $g = 0; $b = $c; }
+    else              { $r = $c; $g = 0; $b = $x; }
+    return [(int) round(($r + $m) * 255), (int) round(($g + $m) * 255), (int) round(($b + $m) * 255)];
+}
+function pf_font_path() {
+    foreach ([
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+        '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf',
+        '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
+        'C:/Windows/Fonts/segoeuib.ttf',
+        'C:/Windows/Fonts/arialbd.ttf',
+        'C:/Windows/Fonts/arial.ttf',
+        '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
+    ] as $f) { if (@is_file($f)) return $f; }
+    return null;
+}
+function pf_icon_words($name) {
+    $words = preg_split('/\s+/', trim($name)) ?: [$name];
+    if (count($words) > 3) $words = array_merge(array_slice($words, 0, 2), [implode(' ', array_slice($words, 2))]);
+    return $words;
+}
+function pf_png_icon($rawName, $size, $font, $withText = true) {
+    $hue = pf_hue_from_name($rawName); $hue2 = ($hue + 40) % 360;
+    list($r1, $g1, $b1) = pf_hsl_rgb($hue, 0.70, 0.55);
+    list($r2, $g2, $b2) = pf_hsl_rgb($hue2, 0.65, 0.40);
+    $im = imagecreatetruecolor($size, $size);
+    imagealphablending($im, true); imagesavealpha($im, true);
+    for ($y = 0; $y < $size; $y++) {                       // vertical gradient
+        $t = $y / max(1, $size - 1);
+        $c = imagecolorallocate($im,
+            (int) round($r1 + ($r2 - $r1) * $t),
+            (int) round($g1 + ($g2 - $g1) * $t),
+            (int) round($b1 + ($b2 - $b1) * $t));
+        imageline($im, 0, $y, $size, $y, $c);
+    }
+    if ($withText && $font) {                              // app name (multi-line), centered
+        $white = imagecolorallocate($im, 255, 255, 255);
+        $words = pf_icon_words($rawName);
+        $lines = count($words);
+        $usable = $size * 0.68;
+        $maxLen = max(1, max(array_map('strlen', $words)));
+        $fs = max(8, min($size * 0.42, $usable / ($maxLen * 0.62), $usable / ($lines * 1.35)));
+        $lh = $fs * 1.28;
+        $y0 = ($size - $lh * $lines) / 2 + $fs;            // baseline of first line
+        foreach ($words as $i => $w) {
+            $bb = imagettfbbox($fs, 0, $font, $w);
+            $tw = $bb[2] - $bb[0];
+            imagettftext($im, $fs, 0, (int) (($size - $tw) / 2 - $bb[0]), (int) ($y0 + $i * $lh), $white, $font, $w);
+        }
+    }
+    ob_start(); imagepng($im); $png = ob_get_clean(); imagedestroy($im);
+    return $png;
+}
+function pf_svg_icon($rawName) {
+    $hue = pf_hue_from_name($rawName); $hue2 = ($hue + 40) % 360;
+    $words = pf_icon_words($rawName);
+    $lines = count($words); $maxLen = max(1, max(array_map('strlen', $words)));
+    $S = 240; $pad = 28; $usable = $S - 2 * $pad;
+    $fs = (int) max(20, min(96, $usable / ($maxLen * 0.62), $usable / ($lines * 1.25)));
+    $lh = $fs * 1.2; $startY = ($S - $lh * $lines) / 2 + $fs * 0.78;
+    $texts = '';
+    foreach ($words as $i => $w) {
+        $y = round($startY + $i * $lh, 1);
+        $texts .= '<text x="' . ($S / 2) . '" y="' . $y . '" text-anchor="middle" font-family="system-ui,Segoe UI,Roboto,sans-serif" font-weight="700" font-size="' . $fs . '" fill="#fff">' . htmlspecialchars($w, ENT_QUOTES) . '</text>';
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' . $S . ' ' . $S . '">'
+        . '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
+        . '<stop offset="0" stop-color="hsl(' . $hue . ',70%,55%)"/>'
+        . '<stop offset="1" stop-color="hsl(' . $hue2 . ',65%,40%)"/></linearGradient></defs>'
+        . '<rect width="' . $S . '" height="' . $S . '" rx="48" fill="url(#g)"/>' . $texts . '</svg>';
+}
 
 // --- Templates (nowdoc: no interpolation, placeholders replaced afterwards) ---
 $indexHtml = $tpl(<<<'HTML'
@@ -105,6 +197,13 @@ $indexHtml = $tpl(<<<'HTML'
 <meta name="theme-color" content="#5b6cff">
 <title>{{NAME}}</title>
 <link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="{{NAME}}">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -123,7 +222,7 @@ $indexHtml = $tpl(<<<'HTML'
    &#9500;&#9472; manifest.json     &#8592; m&eacute;tadonn&eacute;es PWA (nom, ic&ocirc;nes, couleurs)
    &#9500;&#9472; service-worker.js &#8592; cache &amp; mode hors-ligne
    &#9500;&#9472; offline.html      &#8592; page affich&eacute;e sans connexion
-   &#9500;&#9472; icons/            &#8592; d&eacute;posez icon-192.png / icon-512.png
+   &#9500;&#9472; icons/            &#8592; ic&ocirc;nes g&eacute;n&eacute;r&eacute;es (iOS + Android + favicon)
    &#9500;&#9472; css/style.css     &#8592; vos styles
    &#9492;&#9472; js/app.js         &#8592; votre JavaScript</pre>
   </section>
@@ -133,7 +232,7 @@ $indexHtml = $tpl(<<<'HTML'
     <ul>
       <li>Remplacez le contenu de <code>public/index.html</code> par votre interface.</li>
       <li>&Eacute;crivez vos styles dans <code>css/style.css</code> et votre logique dans <code>js/app.js</code>.</li>
-      <li>Ajoutez <code>icon-192.png</code> et <code>icon-512.png</code> dans <code>icons/</code> &mdash; sinon PhoneFake affiche un logo g&eacute;n&eacute;r&eacute; au nom du dossier.</li>
+      <li>Les <strong>ic&ocirc;nes</strong> (iOS &laquo;&nbsp;ajouter &agrave; l'&eacute;cran&nbsp;&raquo;, Android/PWA maskable, favicon) sont <strong>g&eacute;n&eacute;r&eacute;es automatiquement</strong> dans <code>icons/</code> &mdash; remplacez-les par les v&ocirc;tres quand vous voulez.</li>
       <li>Adaptez <code>manifest.json</code> (nom, couleurs) &agrave; votre projet.</li>
     </ul>
   </section>
@@ -254,8 +353,25 @@ foreach ($files as $file => $content) {
         exit;
     }
 }
-// Keep icons/ tracked / visible even when empty
-@file_put_contents("$path/public/icons/.gitkeep", '');
+// Generate real app icons (mobile "Add to Home Screen" + PWA) when GD is available.
+// Falls back to an empty icons/ (PhoneFake then shows its auto placeholder logo).
+$iconsOk = false;
+if (extension_loaded('gd') && function_exists('imagecreatetruecolor')) {
+    $font = pf_font_path();
+    $icons = [
+        "$path/public/icons/icon-192.png"          => pf_png_icon($rawName, 192, $font),
+        "$path/public/icons/icon-512.png"          => pf_png_icon($rawName, 512, $font),
+        "$path/public/icons/icon-512-maskable.png" => pf_png_icon($rawName, 512, $font),
+        "$path/public/icons/apple-touch-icon.png"  => pf_png_icon($rawName, 180, $font),
+        "$path/public/icons/favicon-32.png"        => pf_png_icon($rawName, 32, $font, false),
+        "$path/public/icons/favicon.svg"           => pf_svg_icon($rawName),
+    ];
+    $iconsOk = true;
+    foreach ($icons as $f => $data) {
+        if ($data === null || $data === false || file_put_contents($f, $data) === false) { $iconsOk = false; break; }
+    }
+}
+if (!$iconsOk) { @file_put_contents("$path/public/icons/.gitkeep", ''); }
 
 echo json_encode([
     'ok'   => true,

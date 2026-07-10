@@ -3,7 +3,7 @@
 // tested apps in subfolders and apps.php / create-app.php — is left to the network,
 // so the simulator never serves stale content for the apps it hosts.
 
-const CACHE = 'phonefake-shell-v7';
+const CACHE = 'phonefake-shell-v8';
 const ROOTPATH = new URL('./', self.location).pathname; // e.g. "/" or "/APPLI/"
 const SHELL = ['./', './index.html', './styles.css', './favicon.svg', './manifest.json', './icon-192.png', './icon-512.png', './phonefake-sync.js'];
 const SHELL_FILES = ['', 'index.html', 'styles.css', 'favicon.svg', 'manifest.json', 'icon-192.png', 'icon-512.png', 'phonefake-sync.js'];
