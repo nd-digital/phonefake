@@ -5,7 +5,7 @@
 ### Teste tes applis web dans un vrai cadre mobile — en local, sans rien installer.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-5b6cff.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.5.1-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
+[![Version](https://img.shields.io/badge/version-1.6.0-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
 [![Vanilla JS](https://img.shields.io/badge/vanilla-JS%20%2B%20PHP-success.svg)]()
 [![No build](https://img.shields.io/badge/build-aucun-blue.svg)]()
 
@@ -90,6 +90,39 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 
 - **`apps.php`** scanne les sous-dossiers et renvoie la liste des applis (nom, icône, point d'entrée) en JSON. Détection intelligente : manifeste PWA, icônes conventionnelles, redirections, override via `phonefake.json`.
 - **`index.html`** est le simulateur complet (HTML/CSS/JS vanilla, zéro dépendance, zéro build) : il met chaque appli dans une `<iframe>` mise à l'échelle, avec un mini-OS mobile (accueil, multitâche, navigation).
+
+---
+
+## 🖥️ Intégrer une app qui est un **serveur** (Node, pm2…)
+
+PhoneFake sert nativement les apps **statiques** (un dossier avec `index.html`). Mais certaines apps sont un **serveur** tournant sur son propre port — par exemple une app **Node/Express lancée par pm2** sur `http://localhost:3002`. Leur dossier n'a pas d'`index.html` à la racine : Apache n'a rien à servir.
+
+**Symptôme :** à l'ouverture, tu vois une page **« Index of /APPLI/mon-app »** (listing du dossier) au lieu de l'app. Cause : `apps.php` n'a trouvé aucun point d'entrée statique et retombe sur le dossier, qu'Apache affiche en liste.
+
+**Solution : un `phonefake.json` à la racine de l'app**, qui pointe vers le process en cours au lieu du dossier :
+
+```json
+{
+  "url": "http://localhost:3002",
+  "name": "Mon App Node",
+  "icon": "public/logo.png"
+}
+```
+
+| Clé | Rôle |
+|---|---|
+| `url` | **(requise pour une app serveur)** adresse où tourne le process (le port pm2). PhoneFake charge cette URL dans l'`<iframe>`. |
+| `name` | (optionnel) nom affiché dans le sélecteur (sinon déduit du nom de dossier). |
+| `icon` | (optionnel) chemin d'une icône, **relatif au dossier de l'app**. |
+
+> ℹ️ L'app doit **tourner** sur ce port (ex. `pm2 start app.js --name mon-app`). PhoneFake ne lance pas le serveur, il s'y **connecte**.
+> Comme l'app est sur une **autre origine** (autre port), la [synchro entre écrans](#-synchro-entre-écrans-mode-comparaison) nécessite d'ajouter la ligne `<script src="…/phonefake-sync.js">` dans l'app (en dev).
+
+**⚠️ Éviter le listing du dossier.** Sans `index.html` ni `phonefake.json`, Apache peut **lister le contenu** du dossier (dont `.git/`, `node_modules/`…) — peu discret. Pour l'éviter : soit le `phonefake.json` ci-dessus, soit un `.htaccess` à la racine de l'app avec :
+
+```apache
+Options -Indexes
+```
 
 ---
 

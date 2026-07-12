@@ -18,6 +18,9 @@ Thumbs.db
 # Matériel marketing (local, jamais publié)
 .MARKET/
 
+# Compte utilisateur local (pseudo GitHub, auteur, prefs récurrentes) — jamais poussé
+/.phonefake-user.json
+
 # Secrets / config locale (préventif — ne jamais versionner)
 .env
 .env.*

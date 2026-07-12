@@ -136,6 +136,7 @@
       <li data-i18n="helpFeatSync"><strong>Synchro entre écrans</strong> : en comparaison, tes actions dans l'appli (navigation, défilement, clics, saisie) sont répercutées sur les autres écrans. Automatique si l'appli est servie sur la même origine que PhoneFake ; sinon, ajoute une ligne dans ton appli : <code>&lt;script src="…/phonefake-sync.js"&gt;&lt;/script&gt;</code>.</li>
       <li data-i18n="helpFeatKbd"><strong>Clavier virtuel</strong> : quand un champ de ton appli reçoit le focus, un clavier monte et <strong>réduit le viewport</strong> (comme un vrai téléphone) — pour vérifier que tes champs restent visibles et que la mise en page tient. (Nécessite l'agent de synchro ci-dessus.)</li>
       <li data-i18n="helpFeat3"><strong>Multi-applis</strong> : place tes propres applis dans des sous-dossiers à côté de cette page (chacune avec son <code>index.html</code>) et elles apparaissent dans le menu <em>Mode web</em>.</li>
+      <li data-i18n="helpFeatServer"><strong>Apps « serveur » (Node/pm2)</strong> : une app qui tourne sur son propre port (ex. <code>localhost:3002</code>), sans <code>index.html</code> ? Ajoute un <code>phonefake.json</code> à sa racine — <code>{ "url": "http://localhost:3002" }</code> — sinon tu obtiens un listing « Index of… ». Clés en option : <code>name</code>, <code>icon</code>.</li>
       <li data-i18n="helpFeat4"><strong>Compatible</strong> : sites classiques, responsive design, PWA installables, applis avec service worker — tout ce qui se sert dans un navigateur.</li>
       <li data-i18n="helpFeat5"><strong>Accueil et Applis</strong> : reviens à un launcher minimal ou retrouve la liste des applis ouvertes.</li>
       <li data-i18n="helpFeat6"><strong>Multilingue</strong> : interface en 5 langues (🇫🇷 français, 🇬🇧 anglais, 🇪🇸 espagnol, 🇮🇹 italien, 🇩🇪 allemand), sélectionnable via les drapeaux en haut.</li>
@@ -206,9 +207,31 @@
     <p data-i18n="newAppIntro">Entre un nom : PhoneFake crée un dossier avec une structure PWA de base (point d'entrée, manifeste, service worker, page hors-ligne, css/js) et l'affiche aussitôt.</p>
     <div class="new-app-form">
       <input type="text" id="newAppName" data-i18n-placeholder="newAppPlaceholder" placeholder="Nom de l'appli (ex. Mon Projet)" autocomplete="off" maxlength="60" aria-label="Nom de l'appli">
+      <input type="text" id="newAppDesc" data-i18n-placeholder="newAppDescPh" placeholder="Description courte (1 phrase)" autocomplete="off" maxlength="200" aria-label="Description courte">
+      <textarea id="newAppLongDesc" class="new-app-textarea" data-i18n-placeholder="newAppLongDescPh" placeholder="Description longue (optionnelle) — présentation du projet pour le README" maxlength="2000" rows="3" aria-label="Description longue"></textarea>
+      <button type="button" id="newAppGhFill" class="new-app-ghfill" data-i18n="newAppGhFill" data-i18n-title="newAppGhFillTitle" title="Remplit avec le compte GitHub connecté sur cet ordinateur (CLI gh). Ne marche que si tu es connecté (gh auth login).">⚡ Auto-remplir depuis mon compte GitHub</button>
+      <div class="new-app-row new-app-inline">
+        <input type="text" id="newAppAuthor" data-i18n-placeholder="newAppAuthorPh" placeholder="Auteur" autocomplete="off" maxlength="80" aria-label="Auteur">
+        <label class="new-app-check nowrap"><input type="checkbox" id="newAppRememberAuthor"> <span data-i18n="newAppRememberShort">Mémoriser</span></label>
+      </div>
+      <div class="new-app-row new-app-inline">
+        <input type="text" id="newAppGhUser" data-i18n-placeholder="newAppGhUserPh" placeholder="compte GitHub" autocomplete="off" maxlength="39" aria-label="Compte GitHub">
+        <label class="new-app-check nowrap"><input type="checkbox" id="newAppRememberGh"> <span data-i18n="newAppRememberShort">Mémoriser</span></label>
+      </div>
+      <input type="text" id="newAppRepo" data-i18n-placeholder="newAppRepoPh" placeholder="nom du projet (ex. mon-projet)" autocomplete="off" maxlength="100" aria-label="Nom du projet">
+      <select id="newAppLicense" aria-label="Licence">
+        <option value="mit">MIT</option>
+        <option value="none" data-i18n="newAppLicNone">Aucune</option>
+      </select>
+      <label class="new-app-check"><input type="checkbox" id="newAppGh"> <span data-i18n="newAppGhCreate">Créer le dépôt sur GitHub (+ premier push)</span></label>
+      <div class="new-app-vis" id="newAppVis" hidden>
+        <label><input type="radio" name="newAppVisibility" value="private" checked> <span data-i18n="newAppPrivate">Privé</span></label>
+        <label><input type="radio" name="newAppVisibility" value="public"> <span data-i18n="newAppPublic">Public</span></label>
+      </div>
       <button type="button" id="newAppCreate" data-i18n="newAppCreate">Créer</button>
     </div>
     <p class="new-app-status" id="newAppStatus" aria-live="polite"></p>
+    <p class="new-app-note" data-i18n="newAppPrivacyNote">🔒 Auteur et compte GitHub sont enregistrés uniquement en local sur ta machine (un fichier ignoré par git + ton navigateur). Ces infos ne quittent jamais l'appli et ne sont jamais envoyées sur GitHub.</p>
   </div>
 </div>
 
@@ -851,6 +874,7 @@
       helpFeatKbd: '<strong>Clavier virtuel</strong> : quand un champ de ton appli reçoit le focus, un clavier monte et <strong>réduit le viewport</strong> (comme un vrai téléphone) — pour vérifier que tes champs restent visibles et que la mise en page tient. (Nécessite l\'agent de synchro ci-dessus.)',
       helpFeat2: '<strong>Rotation</strong> : bascule portrait ↔ paysage en un clic, l\'écran et les décorations s\'adaptent.',
       helpFeat3: '<strong>Multi-applis</strong> : place tes propres applis dans des sous-dossiers à côté de cette page (chacune avec son <code>index.html</code>) et elles apparaissent dans le menu <em>Mode web</em>.',
+      helpFeatServer: '<strong>Apps « serveur » (Node/pm2)</strong> : une app qui tourne sur son propre port (ex. <code>localhost:3002</code>), sans <code>index.html</code> ? Ajoute un <code>phonefake.json</code> à sa racine — <code>{ "url": "http://localhost:3002" }</code> — sinon tu obtiens un listing « Index of… ». Clés en option : <code>name</code>, <code>icon</code>.',
       helpFeat4: '<strong>Compatible</strong> : sites classiques, responsive design, PWA installables, applis avec service worker — tout ce qui se sert dans un navigateur.',
       helpFeat5: '<strong>Accueil et Applis</strong> : reviens à un launcher minimal ou retrouve la liste des applis ouvertes.',
       helpFeat6: '<strong>Multilingue</strong> : interface en 5 langues (🇫🇷 français, 🇬🇧 anglais, 🇪🇸 espagnol, 🇮🇹 italien, 🇩🇪 allemand), sélectionnable via les drapeaux en haut.',
@@ -921,6 +945,7 @@
       helpFeatKbd: '<strong>On-screen keyboard</strong>: when a field in your app is focused, a keyboard slides up and <strong>shrinks the viewport</strong> (like a real phone) — so you can check that your fields stay visible and the layout holds. (Requires the sync agent above.)',
       helpFeat2: '<strong>Rotation</strong>: toggle portrait ↔ landscape with one click, screen and decorations adapt.',
       helpFeat3: '<strong>Multi-app</strong>: drop your own apps into subfolders next to this page (each with its <code>index.html</code>) and they appear in the <em>Web mode</em> menu.',
+      helpFeatServer: '<strong>"Server" apps (Node/pm2)</strong>: an app running on its own port (e.g. <code>localhost:3002</code>) with no <code>index.html</code>? Add a <code>phonefake.json</code> at its root — <code>{ "url": "http://localhost:3002" }</code> — otherwise you get an "Index of…" listing. Optional keys: <code>name</code>, <code>icon</code>.',
       helpFeat4: '<strong>Compatible</strong>: classic websites, responsive design, installable PWAs, apps with service workers — anything served in a browser.',
       helpFeat5: '<strong>Home and Apps</strong>: return to a minimal launcher or browse the list of open apps.',
       helpFeat6: '<strong>Multilingual</strong>: interface in 5 languages (🇫🇷 French, 🇬🇧 English, 🇪🇸 Spanish, 🇮🇹 Italian, 🇩🇪 German), selectable via the flags at the top.',
@@ -991,6 +1016,7 @@
       helpFeatKbd: '<strong>Teclado virtual</strong>: cuando un campo de tu app recibe el foco, un teclado sube y <strong>reduce el viewport</strong> (como un teléfono real) — para comprobar que tus campos siguen visibles y que la maquetación aguanta. (Requiere el agente de sincronización de arriba.)',
       helpFeat2: '<strong>Rotación</strong>: alterna vertical ↔ horizontal con un clic, la pantalla y los detalles se adaptan.',
       helpFeat3: '<strong>Multi-app</strong>: coloca tus propias apps en subcarpetas junto a esta página (cada una con su <code>index.html</code>) y aparecerán en el menú <em>Modo web</em>.',
+      helpFeatServer: '<strong>Apps «servidor» (Node/pm2)</strong>: ¿una app que corre en su propio puerto (ej. <code>localhost:3002</code>), sin <code>index.html</code>? Añade un <code>phonefake.json</code> en su raíz — <code>{ "url": "http://localhost:3002" }</code> — si no, obtienes un listado «Index of…». Claves opcionales: <code>name</code>, <code>icon</code>.',
       helpFeat4: '<strong>Compatible</strong>: sitios clásicos, responsive design, PWAs instalables, apps con service worker — cualquier cosa que se sirva en un navegador.',
       helpFeat5: '<strong>Inicio y Apps</strong>: vuelve a un launcher mínimo o consulta la lista de apps abiertas.',
       helpFeat6: '<strong>Multilingüe</strong>: interfaz en 5 idiomas (🇫🇷 francés, 🇬🇧 inglés, 🇪🇸 español, 🇮🇹 italiano, 🇩🇪 alemán), seleccionable mediante las banderas de arriba.',
@@ -1061,6 +1087,7 @@
       helpFeatKbd: '<strong>Tastiera virtuale</strong>: quando un campo della tua app riceve il focus, una tastiera sale e <strong>riduce il viewport</strong> (come un vero telefono) — per verificare che i campi restino visibili e che il layout tenga. (Richiede l\'agente di sincronizzazione qui sopra.)',
       helpFeat2: '<strong>Rotazione</strong>: passa da verticale a orizzontale con un clic, lo schermo e i dettagli si adattano.',
       helpFeat3: '<strong>Multi-app</strong>: metti le tue app in sottocartelle accanto a questa pagina (ognuna con il suo <code>index.html</code>) e appariranno nel menu <em>Modalità web</em>.',
+      helpFeatServer: '<strong>App «server» (Node/pm2)</strong>: un\'app che gira sulla propria porta (es. <code>localhost:3002</code>), senza <code>index.html</code>? Aggiungi un <code>phonefake.json</code> nella sua radice — <code>{ "url": "http://localhost:3002" }</code> — altrimenti ottieni un elenco «Index of…». Chiavi opzionali: <code>name</code>, <code>icon</code>.',
       helpFeat4: '<strong>Compatibile</strong>: siti classici, responsive design, PWA installabili, app con service worker — tutto ciò che gira nel browser.',
       helpFeat5: '<strong>Home e App</strong>: torna a un launcher minimale o consulta la lista delle app aperte.',
       helpFeat6: '<strong>Multilingua</strong>: interfaccia in 5 lingue (🇫🇷 francese, 🇬🇧 inglese, 🇪🇸 spagnolo, 🇮🇹 italiano, 🇩🇪 tedesco), selezionabile tramite le bandiere in alto.',
@@ -1131,6 +1158,7 @@
       helpFeatKbd: '<strong>Bildschirmtastatur</strong>: Wenn ein Feld deiner App den Fokus erhält, fährt eine Tastatur hoch und <strong>verkleinert den Viewport</strong> (wie ein echtes Handy) — so prüfst du, ob deine Felder sichtbar bleiben und das Layout hält. (Erfordert den obigen Sync-Agent.)',
       helpFeat2: '<strong>Rotation</strong>: Wechsle Hoch- ↔ Querformat mit einem Klick, Bildschirm und Details passen sich an.',
       helpFeat3: '<strong>Multi-App</strong>: Lege deine Apps in Unterordner neben dieser Seite ab (jede mit ihrer <code>index.html</code>) und sie erscheinen im Menü <em>Web-Modus</em>.',
+      helpFeatServer: '<strong>„Server“-Apps (Node/pm2)</strong>: eine App, die auf einem eigenen Port läuft (z. B. <code>localhost:3002</code>), ohne <code>index.html</code>? Füge eine <code>phonefake.json</code> im Stammverzeichnis hinzu — <code>{ "url": "http://localhost:3002" }</code> — sonst bekommst du eine „Index of…“-Auflistung. Optionale Schlüssel: <code>name</code>, <code>icon</code>.',
       helpFeat4: '<strong>Kompatibel</strong>: klassische Websites, Responsive Design, installierbare PWAs, Apps mit Service Worker — alles, was im Browser läuft.',
       helpFeat5: '<strong>Start und Apps</strong>: zurück zu einem minimalen Launcher oder Liste der offenen Apps anzeigen.',
       helpFeat6: '<strong>Mehrsprachig</strong>: Oberfläche in 5 Sprachen (🇫🇷 Französisch, 🇬🇧 Englisch, 🇪🇸 Spanisch, 🇮🇹 Italienisch, 🇩🇪 Deutsch), über die Flaggen oben wählbar.',
@@ -1178,31 +1206,36 @@
     newApp: '＋ Appli', newAppTitle: 'Créer une nouvelle appli', newAppModalTitle: '＋ Nouvelle appli',
     newAppIntro: 'Entre un nom : PhoneFake crée un dossier avec une structure PWA de base (point d\'entrée, manifeste, service worker, page hors-ligne, css/js) et l\'affiche aussitôt.',
     newAppPlaceholder: 'Nom de l\'appli (ex. Mon Projet)', newAppCreate: 'Créer',
-    newAppCreating: 'Création…', newAppDone: 'Appli « {n} » créée !', newAppError: 'Erreur : {e}'
+    newAppCreating: 'Création…', newAppDone: 'Appli « {n} » créée !', newAppError: 'Erreur : {e}',
+    newAppCreatingGh: 'Création + GitHub…', newAppDescPh: 'Description courte (1 phrase)', newAppAuthorPh: 'Auteur', newAppGhUserPh: 'compte GitHub', newAppRememberShort: 'Mémoriser', newAppRepoPh: 'nom du projet (ex. mon-projet)', newAppLongDescPh: 'Description longue (optionnelle) — présentation du projet pour le README', newAppLicNone: 'Aucune', newAppGhCreate: 'Créer le dépôt sur GitHub (+ premier push)', newAppGhFill: '⚡ Auto-remplir depuis mon compte GitHub', newAppGhFillDone: '✓ Rempli', newAppGhFillNone: 'Aucun compte GitHub connecté', newAppGhFillTitle: 'Remplit avec le compte GitHub connecté sur cet ordinateur (CLI gh). Ne marche que si tu es connecté (gh auth login).', newAppPrivate: 'Privé', newAppPublic: 'Public', newAppPublicConfirm: 'Rendre ce dépôt PUBLIC sur GitHub ? Tout le monde pourra le voir. Continuer ?', newAppPrivacyNote: '🔒 Auteur et compte GitHub sont enregistrés uniquement en local sur ta machine (un fichier ignoré par git + ton navigateur). Ces infos ne quittent jamais l\'appli et ne sont jamais envoyées sur GitHub.'
   });
   Object.assign(I18N.en, {
     newApp: '＋ App', newAppTitle: 'Create a new app', newAppModalTitle: '＋ New app',
     newAppIntro: 'Enter a name: PhoneFake creates a folder with a base PWA structure (entry point, manifest, service worker, offline page, css/js) and shows it right away.',
     newAppPlaceholder: 'App name (e.g. My Project)', newAppCreate: 'Create',
-    newAppCreating: 'Creating…', newAppDone: 'App “{n}” created!', newAppError: 'Error: {e}'
+    newAppCreating: 'Creating…', newAppDone: 'App “{n}” created!', newAppError: 'Error: {e}',
+    newAppCreatingGh: 'Creating + GitHub…', newAppDescPh: 'Short description (one sentence)', newAppAuthorPh: 'Author', newAppGhUserPh: 'GitHub account', newAppRememberShort: 'Remember', newAppRepoPh: 'project name (e.g. my-project)', newAppLongDescPh: 'Long description (optional) — project overview for the README', newAppLicNone: 'None', newAppGhCreate: 'Create the repo on GitHub (+ first push)', newAppGhFill: '⚡ Auto-fill from my GitHub account', newAppGhFillDone: '✓ Filled', newAppGhFillNone: 'No GitHub account connected', newAppGhFillTitle: 'Fills from the GitHub account connected on this computer (gh CLI). Only works if you are logged in (gh auth login).', newAppPrivate: 'Private', newAppPublic: 'Public', newAppPublicConfirm: 'Make this repo PUBLIC on GitHub? Anyone will be able to see it. Continue?', newAppPrivacyNote: '🔒 Author and GitHub account are stored only locally on your machine (a git-ignored file + your browser). This info never leaves the app and is never sent to GitHub.'
   });
   Object.assign(I18N.es, {
     newApp: '＋ App', newAppTitle: 'Crear una nueva app', newAppModalTitle: '＋ Nueva app',
     newAppIntro: 'Escribe un nombre: PhoneFake crea una carpeta con una estructura PWA básica (punto de entrada, manifiesto, service worker, página sin conexión, css/js) y la muestra al instante.',
     newAppPlaceholder: 'Nombre de la app (ej. Mi Proyecto)', newAppCreate: 'Crear',
-    newAppCreating: 'Creando…', newAppDone: '¡App «{n}» creada!', newAppError: 'Error: {e}'
+    newAppCreating: 'Creando…', newAppDone: '¡App «{n}» creada!', newAppError: 'Error: {e}',
+    newAppCreatingGh: 'Creando + GitHub…', newAppDescPh: 'Descripción breve (una frase)', newAppAuthorPh: 'Autor', newAppGhUserPh: 'cuenta GitHub', newAppRememberShort: 'Recordar', newAppRepoPh: 'nombre del proyecto (ej. mi-proyecto)', newAppLongDescPh: 'Descripción larga (opcional) — presentación del proyecto para el README', newAppLicNone: 'Ninguna', newAppGhCreate: 'Crear el repo en GitHub (+ primer push)', newAppGhFill: '⚡ Autocompletar desde mi cuenta GitHub', newAppGhFillDone: '✓ Rellenado', newAppGhFillNone: 'Ninguna cuenta GitHub conectada', newAppGhFillTitle: 'Rellena con la cuenta GitHub conectada en este ordenador (CLI gh). Solo funciona si has iniciado sesión (gh auth login).', newAppPrivate: 'Privado', newAppPublic: 'Público', newAppPublicConfirm: '¿Hacer este repo PÚBLICO en GitHub? Cualquiera podrá verlo. ¿Continuar?', newAppPrivacyNote: '🔒 El autor y la cuenta GitHub se guardan solo localmente en tu máquina (un archivo ignorado por git + tu navegador). Esta información nunca sale de la app ni se envía a GitHub.'
   });
   Object.assign(I18N.it, {
     newApp: '＋ App', newAppTitle: 'Crea una nuova app', newAppModalTitle: '＋ Nuova app',
     newAppIntro: 'Inserisci un nome: PhoneFake crea una cartella con una struttura PWA di base (punto d\'ingresso, manifest, service worker, pagina offline, css/js) e la mostra subito.',
     newAppPlaceholder: 'Nome dell\'app (es. Il mio progetto)', newAppCreate: 'Crea',
-    newAppCreating: 'Creazione…', newAppDone: 'App «{n}» creata!', newAppError: 'Errore: {e}'
+    newAppCreating: 'Creazione…', newAppDone: 'App «{n}» creata!', newAppError: 'Errore: {e}',
+    newAppCreatingGh: 'Creazione + GitHub…', newAppDescPh: 'Descrizione breve (una frase)', newAppAuthorPh: 'Autore', newAppGhUserPh: 'account GitHub', newAppRememberShort: 'Ricorda', newAppRepoPh: 'nome del progetto (es. mio-progetto)', newAppLongDescPh: 'Descrizione lunga (opzionale) — presentazione del progetto per il README', newAppLicNone: 'Nessuna', newAppGhCreate: 'Crea il repo su GitHub (+ primo push)', newAppGhFill: '⚡ Compila dal mio account GitHub', newAppGhFillDone: '✓ Compilato', newAppGhFillNone: 'Nessun account GitHub connesso', newAppGhFillTitle: 'Compila con l\'account GitHub connesso su questo computer (CLI gh). Funziona solo se hai effettuato l\'accesso (gh auth login).', newAppPrivate: 'Privato', newAppPublic: 'Pubblico', newAppPublicConfirm: 'Rendere questo repo PUBBLICO su GitHub? Chiunque potrà vederlo. Continuare?', newAppPrivacyNote: '🔒 Autore e account GitHub sono salvati solo localmente sul tuo computer (un file ignorato da git + il tuo browser). Queste info non lasciano mai l\'app e non vengono mai inviate a GitHub.'
   });
   Object.assign(I18N.de, {
     newApp: '＋ App', newAppTitle: 'Neue App erstellen', newAppModalTitle: '＋ Neue App',
     newAppIntro: 'Gib einen Namen ein: PhoneFake erstellt einen Ordner mit einer PWA-Grundstruktur (Einstiegspunkt, Manifest, Service Worker, Offline-Seite, css/js) und zeigt ihn sofort an.',
     newAppPlaceholder: 'App-Name (z. B. Mein Projekt)', newAppCreate: 'Erstellen',
-    newAppCreating: 'Wird erstellt…', newAppDone: 'App „{n}“ erstellt!', newAppError: 'Fehler: {e}'
+    newAppCreating: 'Wird erstellt…', newAppDone: 'App „{n}“ erstellt!', newAppError: 'Fehler: {e}',
+    newAppCreatingGh: 'Erstellen + GitHub…', newAppDescPh: 'Kurzbeschreibung (ein Satz)', newAppAuthorPh: 'Autor', newAppGhUserPh: 'GitHub-Konto', newAppRememberShort: 'Merken', newAppRepoPh: 'Projektname (z. B. mein-projekt)', newAppLongDescPh: 'Lange Beschreibung (optional) — Projektübersicht für die README', newAppLicNone: 'Keine', newAppGhCreate: 'Repo auf GitHub erstellen (+ erster Push)', newAppGhFill: '⚡ Aus meinem GitHub-Konto ausfüllen', newAppGhFillDone: '✓ Ausgefüllt', newAppGhFillNone: 'Kein GitHub-Konto verbunden', newAppGhFillTitle: 'Füllt mit dem auf diesem Rechner verbundenen GitHub-Konto (gh CLI). Funktioniert nur, wenn du angemeldet bist (gh auth login).', newAppPrivate: 'Privat', newAppPublic: 'Öffentlich', newAppPublicConfirm: 'Dieses Repo auf GitHub ÖFFENTLICH machen? Jeder kann es sehen. Fortfahren?', newAppPrivacyNote: '🔒 Autor und GitHub-Konto werden nur lokal auf deinem Rechner gespeichert (eine von git ignorierte Datei + dein Browser). Diese Infos verlassen die App nie und werden nie an GitHub gesendet.'
   });
 
   // "Update available" notice keys
@@ -1265,8 +1298,43 @@
   // -------- Create a new app --------
   const newAppOverlay = document.getElementById('newAppOverlay');
   const newAppName = document.getElementById('newAppName');
+  const newAppDesc = document.getElementById('newAppDesc');
+  const newAppLongDesc = document.getElementById('newAppLongDesc');
+  const newAppAuthor = document.getElementById('newAppAuthor');
+  const newAppLicense = document.getElementById('newAppLicense');
+  const newAppRepo = document.getElementById('newAppRepo');
+  const newAppGhUser = document.getElementById('newAppGhUser');
+  const newAppGhFill = document.getElementById('newAppGhFill');
+  const newAppGh = document.getElementById('newAppGh');
+  const newAppRememberAuthor = document.getElementById('newAppRememberAuthor');
+  const newAppRememberGh = document.getElementById('newAppRememberGh');
+  const newAppVis = document.getElementById('newAppVis');
   const newAppCreate = document.getElementById('newAppCreate');
   const newAppStatus = document.getElementById('newAppStatus');
+  // Show the private/public choice only when "create on GitHub" is ticked.
+  newAppGh.addEventListener('change', () => { newAppVis.hidden = !newAppGh.checked; });
+  // Auto-fill GitHub account + author from the locally-connected gh account (on click).
+  newAppGhFill.addEventListener('click', async () => {
+    newAppGhFill.disabled = true;
+    newAppGhFill.textContent = '…';
+    try {
+      const r = await fetch('gh-me.php');
+      const d = await r.json();
+      if (d && d.ok) {
+        if (d.login) newAppGhUser.value = d.login;
+        if (d.name) newAppAuthor.value = d.name;
+        newAppGhFill.textContent = newAppT('newAppGhFillDone', '✓ Rempli');
+      } else {
+        newAppGhFill.textContent = newAppT('newAppGhFillNone', 'Aucun compte GitHub connecté');
+      }
+    } catch {
+      newAppGhFill.textContent = newAppT('newAppGhFillNone', 'Aucun compte GitHub connecté');
+    }
+    setTimeout(() => {
+      newAppGhFill.textContent = newAppT('newAppGhFill', '⚡ Auto-remplir depuis mon compte GitHub');
+      newAppGhFill.disabled = false;
+    }, 2000);
+  });
   function newAppT(key, fallback) {
     const lang = document.documentElement.lang || 'fr';
     return (I18N[lang] && I18N[lang][key]) || fallback;
@@ -1276,10 +1344,46 @@
     const m = document.cookie.match(/(?:^|;\s*)phonefake_csrf=([^;]+)/);
     return m ? decodeURIComponent(m[1]) : '';
   }
+  // -------- Local "localhost account" profile (hybrid: server file + localStorage cache) --------
+  let userProfile = {};
+  async function loadProfile() {
+    try {
+      const r = await fetch('profile.php', { headers: { 'Accept': 'application/json' } });
+      const d = await r.json();
+      if (d && d.profile) userProfile = d.profile;
+    } catch {}
+  }
+  function saveProfile(patch) {
+    userProfile = Object.assign({}, userProfile, patch);
+    try {                                   // instant per-browser cache
+      if (patch.github_user !== undefined) localStorage.setItem('phonefake-github-user', patch.github_user);
+      if (patch.author !== undefined) localStorage.setItem('phonefake-author', patch.author);
+    } catch {}
+    fetch('profile.php', {                  // durable localhost account (best-effort, never blocks)
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+      body: JSON.stringify(patch)
+    }).catch(() => {});
+  }
+  loadProfile();
   function openNewApp() {
     newAppStatus.textContent = '';
     newAppStatus.className = 'new-app-status';
     newAppName.value = '';
+    newAppDesc.value = '';
+    newAppLongDesc.value = '';
+    newAppRepo.value = '';
+    newAppLicense.value = 'mit';
+    newAppGh.checked = false;
+    newAppRememberAuthor.checked = false;
+    newAppRememberGh.checked = false;
+    newAppVis.hidden = true;
+    // Prefill the remembered account fields (server profile, then localStorage cache).
+    let cachedUser = '', cachedAuthor = '';
+    try { cachedUser = localStorage.getItem('phonefake-github-user') || ''; cachedAuthor = localStorage.getItem('phonefake-author') || ''; } catch {}
+    newAppGhUser.value = userProfile.github_user || cachedUser;
+    newAppAuthor.value = userProfile.author || cachedAuthor;
+    loadProfile(); // refresh in the background for next time
     newAppCreate.disabled = false;
     newAppOverlay.classList.add('visible');
     setTimeout(() => newAppName.focus(), 50);
@@ -1293,9 +1397,20 @@
   async function createApp() {
     const name = newAppName.value.trim();
     if (!name) { newAppName.focus(); return; }
+    const ghCreate = newAppGh.checked;
+    const visibility = (newAppVis.querySelector('input[name="newAppVisibility"]:checked') || {}).value || 'private';
+    // Safety gate: making a repo public is irreversible-ish — ask for confirmation.
+    if (ghCreate && visibility === 'public') {
+      if (!confirm(newAppT('newAppPublicConfirm', 'Rendre ce dépôt PUBLIC sur GitHub ? Tout le monde pourra le voir.'))) return;
+    }
+    // Remember each field independently (one checkbox each).
+    const rememberPatch = {};
+    if (newAppRememberAuthor.checked) rememberPatch.author = newAppAuthor.value.trim();
+    if (newAppRememberGh.checked) rememberPatch.github_user = newAppGhUser.value.trim();
+    if (Object.keys(rememberPatch).length) saveProfile(rememberPatch);
     newAppCreate.disabled = true;
     newAppStatus.className = 'new-app-status';
-    newAppStatus.textContent = newAppT('newAppCreating', 'Création…');
+    newAppStatus.textContent = newAppT(ghCreate ? 'newAppCreatingGh' : 'newAppCreating', ghCreate ? 'Création + GitHub…' : 'Création…');
     try {
       const r = await fetch('create-app.php', {
         method: 'POST',
@@ -1303,15 +1418,31 @@
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
           'X-CSRF-Token': getCsrfToken()
         },
-        body: new URLSearchParams({ name }).toString()
+        body: new URLSearchParams({
+          name,
+          description: newAppDesc.value.trim(),
+          long_description: newAppLongDesc.value.trim(),
+          author: newAppAuthor.value.trim(),
+          license: newAppLicense.value,
+          github_user: newAppGhUser.value.trim(),
+          repo: newAppRepo.value.trim(),
+          github_create: ghCreate ? '1' : '0',
+          github_visibility: visibility
+        }).toString()
       });
       const data = await r.json().catch(() => ({ error: 'Réponse invalide' }));
       if (!r.ok || data.error) throw new Error(data.error || ('HTTP ' + r.status));
       newAppStatus.className = 'new-app-status success';
-      newAppStatus.textContent = newAppT('newAppDone', 'Appli « {n} » créée !').replace('{n}', data.name);
+      let msg = newAppT('newAppDone', 'Appli « {n} » créée !').replace('{n}', data.name);
+      if (data.repoUrl) msg += ' → ' + data.repoUrl;
+      if (data.warnings && data.warnings.length) {
+        newAppStatus.className = 'new-app-status'; // neutral: created but with notices
+        msg += ' ⚠️ ' + data.warnings.join(' ');
+      }
+      newAppStatus.textContent = msg;
       knownAppIds = new Set();       // force le re-render de la grille
       await loadApps();              // immediate refresh -> the generated logo appears
-      setTimeout(closeNewApp, 1300);
+      setTimeout(closeNewApp, (data.repoUrl || (data.warnings && data.warnings.length)) ? 3500 : 1300);
     } catch (err) {
       newAppStatus.className = 'new-app-status error';
       newAppStatus.textContent = newAppT('newAppError', 'Erreur : {e}').replace('{e}', err.message);
@@ -2024,7 +2155,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.5.1';
+  const APP_VERSION = '1.6.0';
   const GH_REPO = 'nd-digital/phonefake';
   // Always show the installed version in the footer
   (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();

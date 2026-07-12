@@ -30,12 +30,39 @@ $base = __DIR__;
 $reserved = ['node_modules', 'git', 'idea', 'vscode', 'vendor', 'memory', 'assets',
              'public', 'src', 'lib', 'data', 'scripts', 'tests', 'certs', 'dist', 'build'];
 
-$rawName = trim((string)($_POST['name'] ?? ''));
+// Normalise any user text to valid UTF-8. A single stray non-UTF-8 byte (e.g. a
+// Windows-1252 "é") would make the generated README invalid, tricking GitHub into
+// Latin-1 rendering = mojibake on the (correct) UTF-8 template text.
+function pf_utf8($s) {
+    $s = (string)$s;
+    return mb_check_encoding($s, 'UTF-8') ? $s : mb_convert_encoding($s, 'UTF-8', 'Windows-1252');
+}
+$rawName = trim(pf_utf8($_POST['name'] ?? ''));
 if ($rawName === '') {
     echo json_encode(['error' => 'Le nom est vide.']);
     exit;
 }
 if (mb_strlen($rawName) > 60) $rawName = mb_substr($rawName, 0, 60);
+
+// Optional project fields (feed the README / LICENSE / git). All are sanitised.
+$rawDesc   = trim(strip_tags(pf_utf8($_POST['description'] ?? '')));
+if (mb_strlen($rawDesc) > 200) $rawDesc = mb_substr($rawDesc, 0, 200);
+$rawLongDesc = trim(strip_tags(pf_utf8($_POST['long_description'] ?? '')));
+if (mb_strlen($rawLongDesc) > 2000) $rawLongDesc = mb_substr($rawLongDesc, 0, 2000);
+$rawAuthor = trim(strip_tags(pf_utf8($_POST['author'] ?? '')));
+if (mb_strlen($rawAuthor) > 80) $rawAuthor = mb_substr($rawAuthor, 0, 80);
+$license   = strtolower(trim((string)($_POST['license'] ?? 'none')));
+if (!in_array($license, ['mit', 'none'], true)) $license = 'none';
+// GitHub account (owner) and project (repo) name — kept SEPARATE so the user can
+// fill just the project name if they have no account yet / aren't connected.
+$ghUser   = preg_replace('~[^A-Za-z0-9-]~', '', (string)($_POST['github_user'] ?? ''));
+$ghUser   = mb_substr($ghUser, 0, 39); // GitHub username max length
+$repoName = preg_replace('~[^A-Za-z0-9._-]~', '', (string)($_POST['repo'] ?? ''));
+$repoName = mb_substr(trim($repoName, '/'), 0, 100);
+// Composed slug for gh / README (owner/name when the account is known, else name).
+$rawRepo  = $repoName !== '' ? ($ghUser !== '' ? "$ghUser/$repoName" : $repoName) : '';
+$ghCreate  = ((string)($_POST['github_create'] ?? '') === '1');
+$ghVisibility = ((string)($_POST['github_visibility'] ?? 'private') === 'public') ? 'public' : 'private';
 
 // Slug: transliterate accents (deterministic, locale-independent table),
 // keep only [A-Za-z0-9], separate with '-', uppercase.
@@ -84,6 +111,7 @@ $tpl = function ($s) use ($repl) { return strtr($s, $repl); };
 $manifest = [
     'name'             => $rawName,
     'short_name'       => $rawName,
+    'description'      => $rawDesc,
     'start_url'        => './',
     'scope'            => './',
     'display'          => 'standalone',
@@ -343,7 +371,7 @@ CSS;
 $files = [
     "$path/public/index.html"        => $indexHtml,
     "$path/public/offline.html"      => $offlineHtml,
-    "$path/public/manifest.json"     => json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+    "$path/public/manifest.json"     => json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE),
     "$path/public/service-worker.js" => $serviceWorker,
     "$path/public/css/style.css"     => $css,
     "$path/public/js/app.js"         => $appJs,
@@ -374,9 +402,141 @@ if (extension_loaded('gd') && function_exists('imagecreatetruecolor')) {
 }
 if (!$iconsOk) { @file_put_contents("$path/public/icons/.gitkeep", ''); }
 
+// =====================================================================
+//  Project-root files (README GitHub-ready, .gitignore, LICENSE),
+//  local git repo (+ first commit), and optional GitHub repo + push.
+// =====================================================================
+$year   = date('Y');
+$author = $rawAuthor !== '' ? $rawAuthor : $rawName;
+$descLine = $rawDesc !== '' ? $rawDesc : 'Application web générée avec PhoneFake.';
+
+$badgeMd = $license === 'mit'
+    ? "\n[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)\n"
+    : '';
+$aboutMd = $rawLongDesc !== '' ? "\n## À propos\n\n$rawLongDesc\n" : '';
+$repoMd = '';
+if ($repoName !== '') {
+    $ownerShown = $ghUser !== '' ? $ghUser : '<votre-compte>';
+    $repoMd = "\n## Dépôt\n\n```bash\ngit clone https://github.com/$ownerShown/$repoName.git\n```\n";
+}
+$licenseMd = $license === 'mit'
+    ? "[MIT](LICENSE) © $year $author"
+    : "Aucune licence définie pour l'instant.";
+$authorMd = $rawAuthor !== '' ? "\n---\n\nAuteur : **$author**\n" : '';
+
+$readmeTpl = <<<'MD'
+# {{NAME}}
+
+> {{DESC}}
+{{BADGE}}{{ABOUT}}
+## Démarrage
+
+Servez le dossier `public/` avec un serveur web local (Laragon, MAMP, XAMPP, `php -S`, serveur Node…), puis ouvrez `public/index.html`.
+
+## Structure
+
+```
+{{SLUG}}/
+└─ public/            ← racine web
+   ├─ index.html      ← point d'entrée
+   ├─ manifest.json   ← métadonnées PWA
+   ├─ service-worker.js
+   ├─ offline.html
+   ├─ icons/          ← icônes (iOS + Android + favicon)
+   ├─ css/style.css
+   └─ js/app.js
+```
+
+## PWA
+
+L'appli est installable (« ajouter à l'écran d'accueil ») et fonctionne hors-ligne une fois chargée.
+{{REPO}}
+## Licence
+
+{{LICENSE}}
+{{AUTHOR}}
+MD;
+@file_put_contents("$path/README.md", strtr($readmeTpl, [
+    '{{NAME}}' => $rawName, '{{DESC}}' => $descLine, '{{BADGE}}' => $badgeMd, '{{ABOUT}}' => $aboutMd,
+    '{{SLUG}}' => $slug, '{{REPO}}' => $repoMd, '{{LICENSE}}' => $licenseMd, '{{AUTHOR}}' => $authorMd,
+]));
+
+$gitignore = "# Dependencies\nnode_modules/\nvendor/\n\n# Env / secrets\n.env\n.env.*\n*.local\n\n# OS / editor\n.DS_Store\nThumbs.db\n.vscode/\n.idea/\n\n# Logs\n*.log\n";
+@file_put_contents("$path/.gitignore", $gitignore);
+
+if ($license === 'mit') {
+    $mitTpl = <<<'TXT'
+MIT License
+
+Copyright (c) {{YEAR}} {{AUTHOR}}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+TXT;
+    @file_put_contents("$path/LICENSE", strtr($mitTpl, ['{{YEAR}}' => $year, '{{AUTHOR}}' => $author]));
+}
+
+// --- Local git repo + first commit (best-effort; never blocks app creation) ---
+$git = ['init' => false, 'committed' => false];
+$repoUrl  = null;
+$warnings = [];
+if (function_exists('exec')) {
+    $cd = 'cd /d ' . escapeshellarg($path) . ' && ';
+    @exec($cd . 'git init -b main 2>&1', $o1, $c1);
+    if (!is_dir("$path/.git")) { @exec($cd . 'git init 2>&1', $o1b); } // older git without -b
+    if (is_dir("$path/.git")) {
+        $git['init'] = true;
+        @exec($cd . 'git add -A 2>&1', $o2);
+        @exec($cd . 'git commit -m "Initial commit (genere par PhoneFake)" 2>&1', $o3, $c3);
+        $git['committed'] = ($c3 === 0);
+        if ($c3 !== 0) $warnings[] = "git commit a echoue (identite git configuree ?).";
+        // Optional: create the GitHub repo and push.
+        if ($ghCreate) {
+            if ($git['committed']) {
+                $repoArg = $rawRepo !== '' ? $rawRepo : strtolower($slug);
+                $vis = $ghVisibility === 'public' ? '--public' : '--private';
+                @exec('gh repo create ' . escapeshellarg($repoArg) . ' ' . $vis
+                    . ' --source=' . escapeshellarg($path) . ' --remote=origin --push 2>&1', $go, $gc);
+                if ($gc === 0) {
+                    foreach ($go as $line) {
+                        if (preg_match('~https://github\.com/\S+~', $line, $m)) { $repoUrl = rtrim($m[0], '.'); break; }
+                    }
+                    if (!$repoUrl) $repoUrl = 'https://github.com/' . $repoArg;
+                } else {
+                    $warnings[] = 'Creation GitHub echouee : ' . trim(implode(' ', array_slice($go, -3)));
+                }
+            } else {
+                $warnings[] = 'Depot GitHub non cree (pas de commit initial).';
+            }
+        }
+    } else {
+        $warnings[] = 'git indisponible : depot non initialise (fichiers prets).';
+    }
+} else {
+    $warnings[] = 'exec() desactive : depot git non initialise (fichiers prets).';
+}
+
 echo json_encode([
-    'ok'   => true,
-    'id'   => $slug,
-    'name' => $rawName,
-    'url'  => $slug . '/public/index.html',
+    'ok'       => true,
+    'id'       => $slug,
+    'name'     => $rawName,
+    'url'      => $slug . '/public/index.html',
+    'git'      => $git,
+    'repoUrl'  => $repoUrl,
+    'warnings' => $warnings,
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

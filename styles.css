@@ -146,22 +146,44 @@
   .update-banner .update-notes { font-weight: 400; opacity: .9; }
 
   /* === Modale "Nouvelle appli" === */
-  .new-app-box { max-width: 480px; }
-  .new-app-form { display: flex; gap: 8px; margin: 16px 0 4px; }
-  .new-app-form input {
-    flex: 1; min-width: 0; padding: 10px 12px;
+  .new-app-box { max-width: 640px; }
+  .new-app-form { display: flex; flex-direction: column; gap: 8px; margin: 16px 0 4px; }
+  .new-app-form input, .new-app-form select, .new-app-form textarea {
+    width: 100%; min-width: 0; padding: 10px 12px;
     border-radius: 8px; border: 1px solid rgba(255,255,255,.15);
     background: #0d0d13; color: #fff; font-size: 0.95rem;
   }
-  .new-app-form input:focus { outline: 2px solid #5b6cff; outline-offset: 0; border-color: #5b6cff; }
+  .new-app-form textarea { font-family: inherit; resize: vertical; min-height: 56px; line-height: 1.4; }
+  .new-app-form button.new-app-ghfill {
+    width: 100%; padding: 8px 12px; border-radius: 8px; cursor: pointer;
+    background: rgba(91,108,255,.12); border: 1px solid rgba(91,108,255,.35);
+    color: #cdd3ff; font-size: 0.88rem; font-weight: 600; margin-top: 0;
+  }
+  .new-app-form button.new-app-ghfill:hover { background: rgba(91,108,255,.2); filter: none; }
+  .new-app-form button.new-app-ghfill:disabled { opacity: .6; cursor: default; }
+  .new-app-form input:focus, .new-app-form select:focus, .new-app-form textarea:focus { outline: 2px solid #5b6cff; outline-offset: 0; border-color: #5b6cff; }
+  .new-app-row { display: flex; gap: 8px; }
+  .new-app-row select { width: auto; flex: 0 0 auto; }
+  .new-app-row input { flex: 1; }
+  .new-app-repo-row { align-items: center; }
+  .new-app-sep { flex: 0 0 auto; color: #8a93a6; font-weight: 600; }
+  .new-app-inline { align-items: center; }
+  .new-app-check.nowrap { flex: 0 0 auto; white-space: nowrap; margin-top: 0; }
+  .new-app-check { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #cbd0dc; cursor: pointer; margin-top: 2px; }
+  .new-app-check input { width: auto; }
+  .new-app-vis { display: flex; gap: 18px; padding-left: 26px; font-size: 0.9rem; color: #cbd0dc; }
+  .new-app-vis[hidden] { display: none; }
+  .new-app-vis label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .new-app-vis input { width: auto; }
   .new-app-form button {
-    padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer;
+    margin-top: 4px; padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer;
     background: linear-gradient(135deg, #5b6cff, #8a3ffc);
     color: #fff; font-weight: 600; font-size: 0.95rem; white-space: nowrap;
   }
   .new-app-form button:hover { filter: brightness(1.08); }
   .new-app-form button:disabled { opacity: .5; cursor: default; filter: none; }
   .new-app-status { font-size: 0.85rem; min-height: 1.2em; margin: 8px 0 0; color: #8a93a6; }
+  .new-app-note { font-size: 0.78rem; color: #8a93a6; line-height: 1.45; margin: 10px 0 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08); }
   .new-app-status.error { color: #ff7a7a; }
   .new-app-status.success { color: #6ee7a8; }
 
