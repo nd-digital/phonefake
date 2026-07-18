@@ -36,7 +36,7 @@ if ($method === 'POST') {
     $headerToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
     if ($cookieToken === '' || !hash_equals($cookieToken, $headerToken)) {
         http_response_code(403);
-        echo json_encode(['error' => 'Requête non autorisée (jeton CSRF invalide).']);
+        echo json_encode(['error' => 'Unauthorized request (invalid CSRF token).']);
         exit;
     }
 
@@ -68,7 +68,7 @@ if ($method === 'POST') {
     $ok = @file_put_contents($file, json_encode($profile,
         JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE));
     if ($ok === false) {
-        echo json_encode(['error' => 'Écriture du profil impossible (droits ?).']);
+        echo json_encode(['error' => 'Could not write the profile (permissions?).']);
         exit;
     }
     echo json_encode(['ok' => true, 'profile' => $profile], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -76,4 +76,4 @@ if ($method === 'POST') {
 }
 
 http_response_code(405);
-echo json_encode(['error' => 'Méthode non autorisée']);
+echo json_encode(['error' => 'Method not allowed']);

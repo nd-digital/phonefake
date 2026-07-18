@@ -80,7 +80,7 @@
 <a href="#stage" class="skip-link" data-i18n="skipToContent">Aller au contenu principal</a>
 
 
-<!-- Modale d'aide -->
+<!-- Help modal -->
 <div class="help-overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitleEl">
   <div class="help-box">
     <button type="button" class="help-close" id="helpClose" aria-label="Fermer">×</button>
@@ -261,26 +261,26 @@
 
     <div class="home" id="home">
       <div class="apps-grid" id="apps-grid">
-        <div class="empty">Chargement des applis…</div>
+        <div class="empty" data-i18n="loadingApps">Chargement des applis…</div>
       </div>
     </div>
 
     <div class="apps-layer" id="apps-layer"></div>
 
     <div class="app-switcher" id="app-switcher">
-      <div class="switcher-title">Applis ouvertes</div>
+      <div class="switcher-title" data-i18n="apps">Applis ouvertes</div>
       <div class="switcher-list" id="switcher-list"></div>
     </div>
 
     <div class="nav-bar" id="nav-bar">
-      <button id="and-back" title="Retour">◁</button>
-      <button id="and-home" title="Accueil">○</button>
-      <button id="and-switch" title="Applis récentes">▢</button>
+      <button id="and-back" data-i18n-title="navBack" title="Retour">◁</button>
+      <button id="and-home" data-i18n-title="home" title="Accueil">○</button>
+      <button id="and-switch" data-i18n-title="navRecent" title="Applis récentes">▢</button>
     </div>
 
-    <div class="home-indicator" id="home-indicator" title="Accueil"></div>
+    <div class="home-indicator" id="home-indicator" data-i18n-title="home" title="Accueil"></div>
   </div>
-  <div class="zoom-bar" id="zoomBar" role="slider" aria-label="Zoom" title="Zoom — glisser ; bas = 100 %">
+  <div class="zoom-bar" id="zoomBar" role="slider" aria-label="Zoom" data-i18n-title="zoomHint" title="Zoom — glisser ; bas = 100 %">
     <div class="zoom-fill" id="zoomFill"></div>
     <div class="zoom-thumb" id="zoomThumb"></div>
     <div class="zoom-pct" id="zoomPct">100%</div>
@@ -359,7 +359,7 @@
 <div class="help-overlay readme-overlay" id="readmeOverlay" role="dialog" aria-modal="true" aria-label="README">
   <div class="help-box readme-box">
     <button type="button" class="help-close" id="readmeClose" aria-label="Fermer">×</button>
-    <div class="readme-body" id="readmeBody"><p>Chargement…</p></div>
+    <div class="readme-body" id="readmeBody"><p data-i18n="loadingReadme">Chargement…</p></div>
   </div>
 </div>
 
@@ -444,14 +444,14 @@
       const b = document.getElementById(id);
       if (b) b.classList.toggle('active', map[id] === m);
     });
-    // Synchronise le select au-dessus du phone (1er seulement)
+    // Sync the select above the phone (first one only)
     const sel = document.getElementById('phoneModelSelect');
     if (sel && sel.value !== m) sel.value = m;
     layoutDevices();
     // In compare: refresh option availability (after any swap) and re-clone
     // the mirrors (they mirror column 1's DOM).
     if (compareEnabled) { refreshCompareState(); buildCompareMirror(); }
-    // Annonce a11y (live region)
+    // a11y announcement (live region)
     const r = document.getElementById('liveRegion');
     if (r) {
       const lang = (document.documentElement.lang || 'fr');
@@ -576,7 +576,7 @@
       const list = await r.json();
       renderApps(list);
     } catch (e) {
-      grid.innerHTML = '<div class="empty">Impossible de charger <code>apps.php</code>.<br>Vérifie que PHP est activé dans Laragon.</div>';
+      grid.innerHTML = '<div class="empty">' + newAppT('appsLoadError', 'Impossible de charger <code>apps.php</code>.<br>Vérifie que PHP est activé dans Laragon.') + '</div>';
     }
   }
 
@@ -591,7 +591,7 @@
 
     grid.innerHTML = '';
     if (!apps.length) {
-      grid.innerHTML = '<div class="empty">Aucune appli trouvée.<br>Ajoute un sous-dossier dans <code>APPLI/</code>.</div>';
+      grid.innerHTML = '<div class="empty">' + newAppT('appsEmpty', 'Aucune appli trouvée.<br>Ajoute un sous-dossier dans <code>APPLI/</code>.') + '</div>';
       return;
     }
     // Remember the apps list for event delegation
@@ -700,7 +700,7 @@
     if (!openApps.size) {
       const e = document.createElement('div');
       e.className = 'switcher-empty';
-      e.textContent = 'Aucune appli ouverte';
+      e.textContent = newAppT('noOpenApps', 'Aucune appli ouverte');
       switcherList.appendChild(e);
       return;
     }
@@ -730,13 +730,13 @@
       close.dataset.action = 'close';
       close.dataset.appId = id;
       close.textContent = '×';
-      close.title = 'Fermer';
+      close.title = newAppT('closeApp', 'Fermer');
       close.addEventListener('click', e => { e.stopPropagation(); closeApp(id); });
       head.appendChild(mini); head.appendChild(title); head.appendChild(close);
 
       const preview = document.createElement('div');
       preview.className = 'preview';
-      preview.textContent = 'Toucher pour rouvrir';
+      preview.textContent = newAppT('tapReopen', 'Toucher pour rouvrir');
 
       card.appendChild(head);
       card.appendChild(preview);
@@ -798,7 +798,7 @@
   // phone (clone) triggers the right actions. The clone has no
   // JS listeners, so we rely on the data-* attributes already present.
   stage.addEventListener('click', (e) => {
-    // 1) Bouton fermer une appli dans le switcher
+    // 1) Close-app button in the switcher
     const closeBtn = e.target.closest('.switcher-card .close[data-app-id]');
     if (closeBtn) {
       e.preventDefault(); e.stopPropagation();
@@ -890,9 +890,7 @@
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablette · <kbd>5</kbd> Ordinateur',
       helpShort2: '<kbd>R</kbd> Rotation · <kbd>C</kbd> Comparer · <kbd>H</kbd> Aide · <kbd>A</kbd> Accessibilité · <kbd>Échap</kbd> Fermer',
       compare: '⇆ Compare',
-      compareTitle: 'Côte à côte',
-      a11y: '♿',
-      a11yTitle: 'Réglages d\'accessibilité',
+      compareTitle: 'Côte à côte',      a11yTitle: 'Réglages d\'accessibilité',
       a11yPanelTitle: '♿ Accessibilité',
       a11yFontSize: 'Taille du texte',
       a11ySizeNormal: 'Normal',
@@ -961,9 +959,7 @@
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablet · <kbd>5</kbd> Desktop',
       helpShort2: '<kbd>R</kbd> Rotate · <kbd>C</kbd> Compare · <kbd>H</kbd> Help · <kbd>A</kbd> Accessibility · <kbd>Esc</kbd> Close',
       compare: '⇆ Compare',
-      compareTitle: 'Side by side',
-      a11y: '♿',
-      a11yTitle: 'Accessibility settings',
+      compareTitle: 'Side by side',      a11yTitle: 'Accessibility settings',
       a11yPanelTitle: '♿ Accessibility',
       a11yFontSize: 'Text size',
       a11ySizeNormal: 'Normal',
@@ -1032,9 +1028,7 @@
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tableta · <kbd>5</kbd> Ordenador',
       helpShort2: '<kbd>R</kbd> Girar · <kbd>C</kbd> Comparar · <kbd>H</kbd> Ayuda · <kbd>A</kbd> Accesibilidad · <kbd>Esc</kbd> Cerrar',
       compare: '⇆ Comparar',
-      compareTitle: 'Lado a lado',
-      a11y: '♿',
-      a11yTitle: 'Ajustes de accesibilidad',
+      compareTitle: 'Lado a lado',      a11yTitle: 'Ajustes de accesibilidad',
       a11yPanelTitle: '♿ Accesibilidad',
       a11yFontSize: 'Tamaño del texto',
       a11ySizeNormal: 'Normal',
@@ -1103,9 +1097,7 @@
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablet · <kbd>5</kbd> Computer',
       helpShort2: '<kbd>R</kbd> Ruota · <kbd>C</kbd> Confronta · <kbd>H</kbd> Aiuto · <kbd>A</kbd> Accessibilità · <kbd>Esc</kbd> Chiudi',
       compare: '⇆ Confronta',
-      compareTitle: 'Affiancati',
-      a11y: '♿',
-      a11yTitle: 'Impostazioni di accessibilità',
+      compareTitle: 'Affiancati',      a11yTitle: 'Impostazioni di accessibilità',
       a11yPanelTitle: '♿ Accessibilità',
       a11yFontSize: 'Dimensione del testo',
       a11ySizeNormal: 'Normale',
@@ -1174,9 +1166,7 @@
       helpShort1: '<kbd>1</kbd> iPhone · <kbd>2</kbd> Android · <kbd>3</kbd> iPad · <kbd>4</kbd> Tablet · <kbd>5</kbd> Desktop',
       helpShort2: '<kbd>R</kbd> Drehen · <kbd>C</kbd> Vergleichen · <kbd>H</kbd> Hilfe · <kbd>A</kbd> Barrierefreiheit · <kbd>Esc</kbd> Schließen',
       compare: '⇆ Vergleichen',
-      compareTitle: 'Nebeneinander',
-      a11y: '♿',
-      a11yTitle: 'Barrierefreiheits-Einstellungen',
+      compareTitle: 'Nebeneinander',      a11yTitle: 'Barrierefreiheits-Einstellungen',
       a11yPanelTitle: '♿ Barrierefreiheit',
       a11yFontSize: 'Textgröße',
       a11ySizeNormal: 'Normal',
@@ -1251,6 +1241,13 @@
   Object.assign(I18N.es, { capture: '📸 Captura', captureTitle: 'Capturar la pantalla simulada', captureUnsupported: 'La captura no es compatible con este navegador.' });
   Object.assign(I18N.it, { capture: '📸 Cattura', captureTitle: 'Cattura lo schermo simulato', captureUnsupported: 'La cattura non è supportata da questo browser.' });
   Object.assign(I18N.de, { capture: '📸 Aufnahme', captureTitle: 'Simulierten Bildschirm aufnehmen', captureUnsupported: 'Aufnahme wird von diesem Browser nicht unterstützt.' });
+
+  // Runtime UI strings (JS-generated text, tooltips, loading/empty/error states)
+  Object.assign(I18N.fr, { loadingApps: 'Chargement des applis…', appsLoadError: 'Impossible de charger <code>apps.php</code>.<br>Vérifie que PHP est activé dans Laragon.', appsEmpty: 'Aucune appli trouvée.<br>Ajoute un sous-dossier dans <code>APPLI/</code>.', noOpenApps: 'Aucune appli ouverte', tapReopen: 'Toucher pour rouvrir', closeApp: 'Fermer', navBack: 'Retour', navRecent: 'Applis récentes', zoomHint: 'Zoom — glisser ; bas = 100 %', invalidResponse: 'Réponse invalide', loadingReadme: 'Chargement…', readmeLoadError: '<p>Impossible de charger le README. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">Voir sur GitHub</a>.</p>' });
+  Object.assign(I18N.en, { loadingApps: 'Loading apps…', appsLoadError: 'Could not load <code>apps.php</code>.<br>Check that PHP is enabled in Laragon.', appsEmpty: 'No app found.<br>Add a subfolder inside <code>APPLI/</code>.', noOpenApps: 'No open app', tapReopen: 'Tap to reopen', closeApp: 'Close', navBack: 'Back', navRecent: 'Recent apps', zoomHint: 'Zoom — drag; bottom = 100%', invalidResponse: 'Invalid response', loadingReadme: 'Loading…', readmeLoadError: '<p>Could not load the README. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">View on GitHub</a>.</p>' });
+  Object.assign(I18N.es, { loadingApps: 'Cargando apps…', appsLoadError: 'No se pudo cargar <code>apps.php</code>.<br>Comprueba que PHP está activado en Laragon.', appsEmpty: 'No se encontró ninguna app.<br>Añade una subcarpeta en <code>APPLI/</code>.', noOpenApps: 'Ninguna app abierta', tapReopen: 'Toca para reabrir', closeApp: 'Cerrar', navBack: 'Atrás', navRecent: 'Apps recientes', zoomHint: 'Zoom — arrastra; abajo = 100 %', invalidResponse: 'Respuesta no válida', loadingReadme: 'Cargando…', readmeLoadError: '<p>No se pudo cargar el README. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">Ver en GitHub</a>.</p>' });
+  Object.assign(I18N.it, { loadingApps: 'Caricamento app…', appsLoadError: 'Impossibile caricare <code>apps.php</code>.<br>Verifica che PHP sia attivo in Laragon.', appsEmpty: 'Nessuna app trovata.<br>Aggiungi una sottocartella in <code>APPLI/</code>.', noOpenApps: 'Nessuna app aperta', tapReopen: 'Tocca per riaprire', closeApp: 'Chiudi', navBack: 'Indietro', navRecent: 'App recenti', zoomHint: 'Zoom — trascina; in basso = 100 %', invalidResponse: 'Risposta non valida', loadingReadme: 'Caricamento…', readmeLoadError: '<p>Impossibile caricare il README. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">Vedi su GitHub</a>.</p>' });
+  Object.assign(I18N.de, { loadingApps: 'Apps werden geladen…', appsLoadError: '<code>apps.php</code> konnte nicht geladen werden.<br>Prüfe, ob PHP in Laragon aktiviert ist.', appsEmpty: 'Keine App gefunden.<br>Füge einen Unterordner in <code>APPLI/</code> hinzu.', noOpenApps: 'Keine App geöffnet', tapReopen: 'Zum Wiederöffnen tippen', closeApp: 'Schließen', navBack: 'Zurück', navRecent: 'Letzte Apps', zoomHint: 'Zoom — ziehen; unten = 100 %', invalidResponse: 'Ungültige Antwort', loadingReadme: 'Wird geladen…', readmeLoadError: '<p>README konnte nicht geladen werden. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">Auf GitHub ansehen</a>.</p>' });
 
   // "Back to server home" link
   Object.assign(I18N.fr, { serverHome: '↩ index localhost', serverHomeTitle: 'Aller à l\'index localhost' });
@@ -1430,7 +1427,7 @@
           github_visibility: visibility
         }).toString()
       });
-      const data = await r.json().catch(() => ({ error: 'Réponse invalide' }));
+      const data = await r.json().catch(() => ({ error: newAppT('invalidResponse', 'Réponse invalide') }));
       if (!r.ok || data.error) throw new Error(data.error || ('HTTP ' + r.status));
       newAppStatus.className = 'new-app-status success';
       let msg = newAppT('newAppDone', 'Appli « {n} » créée !').replace('{n}', data.name);
@@ -1440,7 +1437,7 @@
         msg += ' ⚠️ ' + data.warnings.join(' ');
       }
       newAppStatus.textContent = msg;
-      knownAppIds = new Set();       // force le re-render de la grille
+      knownAppIds = new Set();       // force the grid to re-render
       await loadApps();              // immediate refresh -> the generated logo appears
       setTimeout(closeNewApp, (data.repoUrl || (data.warnings && data.warnings.length)) ? 3500 : 1300);
     } catch (err) {
@@ -1452,13 +1449,13 @@
   newAppCreate.addEventListener('click', createApp);
   newAppName.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); createApp(); } });
 
-  // Init langue (localStorage ou navigateur)
+  // Init language (localStorage or browser)
   const stored = (function () { try { return localStorage.getItem('phonefake-lang'); } catch { return null; } })();
   const navLang = (navigator.language || 'fr').slice(0, 2).toLowerCase();
   const supported = ['fr', 'en', 'es', 'it', 'de'];
   applyLang(stored || (supported.includes(navLang) ? navLang : 'fr'));
 
-  // -------- Live region pour annonces a11y --------
+  // -------- Live region for a11y announcements --------
   function announce(msg) {
     const r = document.getElementById('liveRegion');
     if (r) { r.textContent = msg; }
@@ -1476,9 +1473,9 @@
     }
   } catch {}
 
-  // -------- Raccourcis clavier --------
+  // -------- Keyboard shortcuts --------
   document.addEventListener('keydown', (e) => {
-    // Ignorer si focus dans un input/textarea/select
+    // Ignore when focus is in an input/textarea/select
     const tag = (e.target.tagName || '').toLowerCase();
     if (['input', 'textarea', 'select'].includes(tag)) return;
     if (e.ctrlKey || e.altKey || e.metaKey) return;
@@ -1698,7 +1695,7 @@
     if (kb) kb.remove();
   }
 
-  // -------- Panel a11y --------
+  // -------- a11y panel --------
   const a11yOverlay = document.getElementById('a11yOverlay');
   document.getElementById('btn-a11y').addEventListener('click', () => a11yOverlay.classList.add('visible'));
   document.getElementById('a11yClose').addEventListener('click', () => a11yOverlay.classList.remove('visible'));
@@ -1998,7 +1995,7 @@
         body.innerHTML = mdToHtml(await res.text());
         loaded = true;
       } catch (e) {
-        body.innerHTML = '<p>Impossible de charger le README. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">Voir sur GitHub</a>.</p>';
+        body.innerHTML = newAppT('readmeLoadError', '<p>Impossible de charger le README. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">Voir sur GitHub</a>.</p>');
       }
     });
     closeBtn.addEventListener('click', close);
@@ -2102,7 +2099,7 @@
   // many people currently have PhoneFake open. Server down / no endpoint → the
   // last known value stays shown (or nothing). Nothing about the user is sent.
   (function () {
-    const COUNTER_URL = 'https://live.nicolas-degabriel.digital/events?app=phonefake'; // '' pour désactiver
+    const COUNTER_URL = 'https://live.nicolas-degabriel.digital/events?app=phonefake'; // '' to disable
     const wrap = document.getElementById('usageCounter');
     const flaps = document.getElementById('ucFlaps');
     const label = document.getElementById('ucLabel');

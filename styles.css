@@ -72,7 +72,7 @@
   .lang-switch button:hover { background: rgba(255,255,255,.14); }
   .lang-switch button.active { background: #4a90e2; border-color: #4a90e2; }
 
-  /* Modale d'aide */
+  /* Help modal */
   .help-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,.7);
@@ -145,7 +145,7 @@
   .update-banner .update-close:hover { background: rgba(255,255,255,.38); }
   .update-banner .update-notes { font-weight: 400; opacity: .9; }
 
-  /* === Modale "Nouvelle appli" === */
+  /* === "New app" modal === */
   .new-app-box { max-width: 640px; }
   .new-app-form { display: flex; flex-direction: column; gap: 8px; margin: 16px 0 4px; }
   .new-app-form input, .new-app-form select, .new-app-form textarea {
@@ -208,7 +208,7 @@
   :focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; border-radius: 4px; }
   body.a11y-focus-ring :focus-visible { outline: 4px solid #fbbf24; outline-offset: 3px; }
 
-  /* Tailles de texte */
+  /* Text sizes */
   body.a11y-size-large { font-size: 1.15em; }
   body.a11y-size-xlarge { font-size: 1.35em; }
 
@@ -229,7 +229,7 @@
     border: 2px solid #fff !important;
   }
 
-  /* Police dyslexie (OpenDyslexic via fonts free) */
+  /* Dyslexia font (OpenDyslexic) */
   body.a11y-dyslexia,
   body.a11y-dyslexia button,
   body.a11y-dyslexia input,
@@ -426,7 +426,7 @@
   .a11y-reset:hover { background: rgba(220, 38, 38, 0.25); }
   .a11y-hint { font-size: 0.78rem; color: #8a93a6; font-style: italic; text-align: center; margin-top: 12px; }
 
-  /* Touches clavier dans la modale d'aide */
+  /* Keyboard keys in the help modal */
   .help-box kbd {
     display: inline-block;
     padding: 2px 7px;
@@ -664,9 +664,9 @@
     height: 820px;
     position: relative;
     flex-shrink: 0;
-    /* zoom (au lieu de transform:scale) modifie aussi la layout box → les
-       téléphones n'occupent que leur taille visible, ils ne dépassent plus
-       du stage en mode compare/paysage. */
+    /* zoom (instead of transform:scale) also shrinks the layout box → devices
+       take only their visible size and no longer overflow the stage in
+       compare / landscape mode. */
     zoom: var(--phone-scale, 1);
     transition:
       width .45s cubic-bezier(.4, 0, .2, 1),
@@ -704,7 +704,7 @@
     box-shadow: 0 0 0 2px #333, 0 30px 80px rgba(0,0,0,.6);
   }
   .phone.android-tablet .screen { border-radius: 14px; }
-  /* Desktop : écran d'ordinateur sur pied (moniteur paysage large). */
+  /* Desktop: standing computer monitor (wide landscape screen). */
   .phone.desktop {
     background: #17171c;
     border-radius: 16px;
@@ -712,7 +712,7 @@
     box-shadow: 0 0 0 2px #2a2a2a, inset 0 0 0 1px #34343c, 0 30px 80px rgba(0, 0, 0, .6);
   }
   .phone.desktop .screen { border-radius: 6px; }
-  /* Pied central + socle sous le moniteur */
+  /* Central stand + base under the monitor */
   .phone.desktop::after {
     content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
     width: 16%; height: 34px;
@@ -723,7 +723,7 @@
     width: 40%; height: 12px; background: #23232a; border-radius: 7px;
     box-shadow: 0 10px 24px rgba(0, 0, 0, .5);
   }
-  /* Tablettes + desktop : pas de notch, punch-hole, home-indicator ni nav-bar téléphone. */
+  /* Tablets + desktop: no notch, punch-hole, home indicator or phone nav bar. */
   .phone.ipad .notch,
   .phone.ipad .punch-hole,
   .phone.ipad .nav-bar,
@@ -927,7 +927,7 @@
     text-shadow: 0 1px 3px rgba(0,0,0,.6);
     max-width: 76px;
     text-align: center;
-    /* 2 lignes max, puis ellipsis ; coupe les mots trop longs au lieu de tronquer */
+    /* Max 2 lines, then ellipsis; breaks over-long words instead of truncating */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
