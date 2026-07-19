@@ -221,6 +221,18 @@
       <input type="text" id="newAppRepo" data-i18n-placeholder="newAppRepoPh" placeholder="nom du projet (ex. mon-projet)" autocomplete="off" maxlength="100" aria-label="Nom du projet">
       <select id="newAppLicense" aria-label="Licence">
         <option value="mit">MIT</option>
+        <option value="apache-2.0">Apache 2.0</option>
+        <option value="gpl-3.0">GNU GPL v3</option>
+        <option value="gpl-2.0">GNU GPL v2</option>
+        <option value="lgpl-3.0">GNU LGPL v3</option>
+        <option value="agpl-3.0">GNU AGPL v3</option>
+        <option value="mpl-2.0">Mozilla Public License 2.0</option>
+        <option value="bsd-3-clause">BSD 3-Clause</option>
+        <option value="bsd-2-clause">BSD 2-Clause</option>
+        <option value="isc">ISC</option>
+        <option value="unlicense">The Unlicense</option>
+        <option value="bsl-1.0">Boost Software License 1.0</option>
+        <option value="cc0-1.0">CC0 1.0 (domaine public)</option>
         <option value="none" data-i18n="newAppLicNone">Aucune</option>
       </select>
       <label class="new-app-check"><input type="checkbox" id="newAppGh"> <span data-i18n="newAppGhCreate">Créer le dépôt sur GitHub (+ premier push)</span></label>
@@ -2152,7 +2164,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.6.1';
+  const APP_VERSION = '1.7.0';
   const GH_REPO = 'nd-digital/phonefake';
   // Always show the installed version in the footer
   (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();

@@ -37,6 +37,56 @@ function pf_utf8($s) {
     $s = (string)$s;
     return mb_check_encoding($s, 'UTF-8') ? $s : mb_convert_encoding($s, 'UTF-8', 'Windows-1252');
 }
+// Return the full LICENSE text for a license key. MIT is embedded (offline-safe);
+// the others are fetched from GitHub's public Licenses API, with a short notice as
+// a graceful fallback when offline / the request fails.
+function pf_license_text($key, $year, $author, $displayName) {
+    if ($key === 'mit') {
+        $tpl = <<<'TXT'
+MIT License
+
+Copyright (c) {{YEAR}} {{AUTHOR}}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+TXT;
+        return strtr($tpl, ['{{YEAR}}' => $year, '{{AUTHOR}}' => $author]);
+    }
+    $ctx = stream_context_create(['http' => [
+        'method'  => 'GET',
+        'header'  => "User-Agent: PhoneFake\r\nAccept: application/vnd.github+json\r\n",
+        'timeout' => 6,
+    ]]);
+    $raw = @file_get_contents('https://api.github.com/licenses/' . rawurlencode($key), false, $ctx);
+    if ($raw !== false) {
+        $data = json_decode($raw, true);
+        if (is_array($data) && !empty($data['body'])) {
+            return str_replace(
+                ['[year]', '[fullname]', '[email]', '<year>', '<name of author>', '[yyyy]', '[name of copyright owner]'],
+                [$year, $author, '', $year, $author, $year, $author],
+                $data['body']
+            );
+        }
+    }
+    return "$displayName License\n\nCopyright (c) $year $author\n\n"
+        . "This project is licensed under the $displayName license.\n"
+        . "Full text: https://choosealicense.com/licenses/$key/\n";
+}
 $rawName = trim(pf_utf8($_POST['name'] ?? ''));
 if ($rawName === '') {
     echo json_encode(['error' => 'The name is empty.']);
@@ -52,7 +102,15 @@ if (mb_strlen($rawLongDesc) > 2000) $rawLongDesc = mb_substr($rawLongDesc, 0, 20
 $rawAuthor = trim(strip_tags(pf_utf8($_POST['author'] ?? '')));
 if (mb_strlen($rawAuthor) > 80) $rawAuthor = mb_substr($rawAuthor, 0, 80);
 $license   = strtolower(trim((string)($_POST['license'] ?? 'none')));
-if (!in_array($license, ['mit', 'none'], true)) $license = 'none';
+// Supported licenses (keys match GitHub's Licenses API: api.github.com/licenses/<key>).
+$LICENSES = [
+    'mit' => 'MIT', 'apache-2.0' => 'Apache 2.0', 'gpl-3.0' => 'GNU GPL v3',
+    'gpl-2.0' => 'GNU GPL v2', 'lgpl-3.0' => 'GNU LGPL v3', 'agpl-3.0' => 'GNU AGPL v3',
+    'mpl-2.0' => 'Mozilla Public License 2.0', 'bsd-3-clause' => 'BSD 3-Clause',
+    'bsd-2-clause' => 'BSD 2-Clause', 'isc' => 'ISC', 'unlicense' => 'The Unlicense',
+    'bsl-1.0' => 'Boost Software License 1.0', 'cc0-1.0' => 'CC0 1.0 (public domain)',
+];
+if ($license !== 'none' && !isset($LICENSES[$license])) $license = 'none';
 // GitHub account (owner) and project (repo) name — kept SEPARATE so the user can
 // fill just the project name if they have no account yet / aren't connected.
 $ghUser   = preg_replace('~[^A-Za-z0-9-]~', '', (string)($_POST['github_user'] ?? ''));
@@ -411,8 +469,9 @@ $year   = date('Y');
 $author = $rawAuthor !== '' ? $rawAuthor : $rawName;
 $descLine = $rawDesc !== '' ? $rawDesc : 'Application web générée avec PhoneFake.';
 
-$badgeMd = $license === 'mit'
-    ? "\n[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)\n"
+$licenseName = $license !== 'none' ? ($LICENSES[$license] ?? '') : '';
+$badgeMd = $licenseName !== ''
+    ? "\n[![License](https://img.shields.io/badge/license-" . rawurlencode(str_replace('-', ' ', $licenseName)) . "-blue.svg)](LICENSE)\n"
     : '';
 $aboutMd = $rawLongDesc !== '' ? "\n## À propos\n\n$rawLongDesc\n" : '';
 $repoMd = '';
@@ -420,8 +479,8 @@ if ($repoName !== '') {
     $ownerShown = $ghUser !== '' ? $ghUser : '<votre-compte>';
     $repoMd = "\n## Dépôt\n\n```bash\ngit clone https://github.com/$ownerShown/$repoName.git\n```\n";
 }
-$licenseMd = $license === 'mit'
-    ? "[MIT](LICENSE) © $year $author"
+$licenseMd = $licenseName !== ''
+    ? "Sous licence **$licenseName** — voir [LICENSE](LICENSE)."
     : "Aucune licence définie pour l'instant.";
 $authorMd = $rawAuthor !== '' ? "\n---\n\nAuteur : **$author**\n" : '';
 
@@ -465,31 +524,11 @@ MD;
 $gitignore = "# Dependencies\nnode_modules/\nvendor/\n\n# Env / secrets\n.env\n.env.*\n*.local\n\n# OS / editor\n.DS_Store\nThumbs.db\n.vscode/\n.idea/\n\n# Logs\n*.log\n";
 @file_put_contents("$path/.gitignore", $gitignore);
 
-if ($license === 'mit') {
-    $mitTpl = <<<'TXT'
-MIT License
-
-Copyright (c) {{YEAR}} {{AUTHOR}}
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-TXT;
-    @file_put_contents("$path/LICENSE", strtr($mitTpl, ['{{YEAR}}' => $year, '{{AUTHOR}}' => $author]));
+if ($license !== 'none') {
+    $licenseText = pf_license_text($license, $year, $author, $licenseName);
+    if (is_string($licenseText) && $licenseText !== '') {
+        @file_put_contents("$path/LICENSE", $licenseText);
+    }
 }
 
 // --- Local git repo + first commit (best-effort; never blocks app creation) ---
