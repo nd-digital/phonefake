@@ -16,7 +16,7 @@
 <div id="update-banner" class="update-banner" role="status" hidden>
   <span class="update-text"></span>
   <a id="update-link" class="update-link" href="https://github.com/nd-digital/phonefake/releases" target="_blank" rel="noopener noreferrer"></a>
-  <button type="button" id="update-close" class="update-close" aria-label="Fermer">×</button>
+  <button type="button" id="update-close" class="update-close" data-i18n-aria-label="closeApp" aria-label="Fermer">×</button>
 </div>
 
 <!-- Color-blindness simulation filters, applied to the device screen via the a11y panel -->
@@ -31,7 +31,7 @@
     <a class="server-link" id="serverLink" href="home.php" data-i18n="serverHome" data-i18n-title="serverHomeTitle" title="Aller à l'index localhost">↩ index localhost</a>
   </div>
   <h1 class="page-title" data-i18n="title">📱 PhoneFake — Simulateur mobile &amp; ++</h1>
-  <div class="lang-switch" role="group" aria-label="Language">
+  <div class="lang-switch" role="group" data-i18n-aria-label="language" aria-label="Language">
     <button type="button" data-lang="fr" class="active" aria-label="Français" title="Français">🇫🇷</button>
     <button type="button" data-lang="en" aria-label="English" title="English">🇬🇧</button>
     <button type="button" data-lang="es" aria-label="Español" title="Español">🇪🇸</button>
@@ -47,8 +47,8 @@
   </select>
 </div>
 
-<div class="toolbar" id="toolbar" role="toolbar" aria-label="Contrôles du simulateur">
-  <button id="btn-burger" class="btn-burger" aria-label="Menu" aria-expanded="false" aria-controls="toolbar-menu" title="Menu">☰</button>
+<div class="toolbar" id="toolbar" role="toolbar" data-i18n-aria-label="simulatorControls" aria-label="Contrôles du simulateur">
+  <button id="btn-burger" class="btn-burger" data-i18n-aria-label="menu" aria-label="Menu" aria-expanded="false" aria-controls="toolbar-menu" title="Menu">☰</button>
   <div class="toolbar-menu" id="toolbar-menu">
   <button id="btn-home" data-i18n="home" data-i18n-title="homeTitle" title="Retour à l'accueil">Accueil</button>
   <button id="btn-new-app" data-i18n="newApp" data-i18n-title="newAppTitle" title="Créer une nouvelle appli">＋ Appli</button>
@@ -64,7 +64,7 @@
   <button id="btn-compare" data-i18n="compare" data-i18n-title="compareTitle" title="Côte à côte">⇆ Compare</button>
   <button id="btn-capture" data-i18n="capture" data-i18n-title="captureTitle" title="Capturer l'écran simulé">📸 Capture</button>
   <div class="sep"></div>
-  <button id="btn-a11y" class="btn-icon-only" data-i18n-title="a11yTitle" title="Réglages d'accessibilité" aria-label="Accessibilité">
+  <button id="btn-a11y" class="btn-icon-only" data-i18n-title="a11yTitle" title="Réglages d'accessibilité" data-i18n-aria-label="accessibility" aria-label="Accessibilité">
     <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
       <clipPath id="wcClip">
         <path d="M -20,50 10,13 c 5.522847,0 10,4.477153 10,10 L 40,50 20,-30"/>
@@ -90,12 +90,12 @@
 <!-- Help modal -->
 <div class="help-overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitleEl">
   <div class="help-box">
-    <button type="button" class="help-close" id="helpClose" aria-label="Fermer">×</button>
+    <button type="button" class="help-close" id="helpClose" data-i18n-aria-label="closeApp" aria-label="Fermer">×</button>
     <h2 id="helpTitleEl" data-i18n="helpModalTitle">📱 PhoneFake — Guide</h2>
     <p data-i18n="helpIntro">Cet outil simule un appareil mobile (iPhone ou Android) dans ton navigateur, en portrait ou paysage. Il sert à tester l'apparence et le comportement de tes propres applications web — qu'elles soient classiques, responsive, PWA installables ou autres.</p>
 
     <div class="help-screenshot">
-      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aperçu PhoneFake">
+      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" data-i18n-aria-label="previewAlt" aria-label="Aperçu PhoneFake">
         <rect x="0" y="0" width="900" height="300" rx="12" fill="#0d0d13"/>
         <text x="450" y="30" text-anchor="middle" fill="#b9c2d6" font-family="system-ui" font-size="14" font-weight="700">PhoneFake</text>
         <rect x="238" y="44" width="424" height="22" rx="11" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)"/>
@@ -176,7 +176,7 @@
 <!-- Accessibility panel -->
 <div class="a11y-overlay" id="a11yOverlay" role="dialog" aria-modal="true" aria-labelledby="a11yPanelTitle">
   <div class="a11y-panel">
-    <button type="button" class="help-close" id="a11yClose" aria-label="Fermer">×</button>
+    <button type="button" class="help-close" id="a11yClose" data-i18n-aria-label="closeApp" aria-label="Fermer">×</button>
     <h2 id="a11yPanelTitle" data-i18n="a11yPanelTitle">♿ Accessibilité</h2>
     <div class="a11y-row">
       <label for="a11yFontSize" data-i18n="a11yFontSize">Taille du texte</label>
@@ -219,24 +219,24 @@
 <!-- Modal: create a new app -->
 <div class="help-overlay" id="newAppOverlay" role="dialog" aria-modal="true" aria-labelledby="newAppTitleEl">
   <div class="help-box new-app-box">
-    <button type="button" class="help-close" id="newAppClose" aria-label="Fermer">×</button>
+    <button type="button" class="help-close" id="newAppClose" data-i18n-aria-label="closeApp" aria-label="Fermer">×</button>
     <h2 id="newAppTitleEl" data-i18n="newAppModalTitle">＋ Nouvelle appli</h2>
     <p data-i18n="newAppIntro">Entre un nom : PhoneFake crée un dossier avec une structure PWA de base (point d'entrée, manifeste, service worker, page hors-ligne, css/js) et l'affiche aussitôt.</p>
     <div class="new-app-form">
-      <input type="text" id="newAppName" data-i18n-placeholder="newAppPlaceholder" placeholder="Nom de l'appli (ex. Mon Projet)" autocomplete="off" maxlength="60" aria-label="Nom de l'appli">
-      <input type="text" id="newAppDesc" data-i18n-placeholder="newAppDescPh" placeholder="Description courte (1 phrase)" autocomplete="off" maxlength="200" aria-label="Description courte">
-      <textarea id="newAppLongDesc" class="new-app-textarea" data-i18n-placeholder="newAppLongDescPh" placeholder="Description longue (optionnelle) — présentation du projet pour le README" maxlength="2000" rows="3" aria-label="Description longue"></textarea>
+      <input type="text" id="newAppName" data-i18n-placeholder="newAppPlaceholder" placeholder="Nom de l'appli (ex. Mon Projet)" autocomplete="off" maxlength="60" data-i18n-aria-label="newAppPlaceholder" aria-label="Nom de l'appli">
+      <input type="text" id="newAppDesc" data-i18n-placeholder="newAppDescPh" placeholder="Description courte (1 phrase)" autocomplete="off" maxlength="200" data-i18n-aria-label="newAppDescPh" aria-label="Description courte">
+      <textarea id="newAppLongDesc" class="new-app-textarea" data-i18n-placeholder="newAppLongDescPh" placeholder="Description longue (optionnelle) — présentation du projet pour le README" maxlength="2000" rows="3" data-i18n-aria-label="newAppLongDescPh" aria-label="Description longue"></textarea>
       <button type="button" id="newAppGhFill" class="new-app-ghfill" data-i18n="newAppGhFill" data-i18n-title="newAppGhFillTitle" title="Remplit avec le compte GitHub connecté sur cet ordinateur (CLI gh). Ne marche que si tu es connecté (gh auth login).">⚡ Auto-remplir depuis mon compte GitHub</button>
       <div class="new-app-row new-app-inline">
-        <input type="text" id="newAppAuthor" data-i18n-placeholder="newAppAuthorPh" placeholder="Auteur" autocomplete="off" maxlength="80" aria-label="Auteur">
+        <input type="text" id="newAppAuthor" data-i18n-placeholder="newAppAuthorPh" placeholder="Auteur" autocomplete="off" maxlength="80" data-i18n-aria-label="newAppAuthorPh" aria-label="Auteur">
         <label class="new-app-check nowrap"><input type="checkbox" id="newAppRememberAuthor"> <span data-i18n="newAppRememberShort">Mémoriser</span></label>
       </div>
       <div class="new-app-row new-app-inline">
-        <input type="text" id="newAppGhUser" data-i18n-placeholder="newAppGhUserPh" placeholder="compte GitHub" autocomplete="off" maxlength="39" aria-label="Compte GitHub">
+        <input type="text" id="newAppGhUser" data-i18n-placeholder="newAppGhUserPh" placeholder="compte GitHub" autocomplete="off" maxlength="39" data-i18n-aria-label="newAppGhUserPh" aria-label="Compte GitHub">
         <label class="new-app-check nowrap"><input type="checkbox" id="newAppRememberGh"> <span data-i18n="newAppRememberShort">Mémoriser</span></label>
       </div>
-      <input type="text" id="newAppRepo" data-i18n-placeholder="newAppRepoPh" placeholder="nom du projet (ex. mon-projet)" autocomplete="off" maxlength="100" aria-label="Nom du projet">
-      <select id="newAppLicense" aria-label="Licence">
+      <input type="text" id="newAppRepo" data-i18n-placeholder="newAppRepoPh" placeholder="nom du projet (ex. mon-projet)" autocomplete="off" maxlength="100" data-i18n-aria-label="newAppRepoPh" aria-label="Nom du projet">
+      <select id="newAppLicense" data-i18n-aria-label="ariaLicense" aria-label="Licence">
         <option value="mit">MIT</option>
         <option value="apache-2.0">Apache 2.0</option>
         <option value="gpl-3.0">GNU GPL v3</option>
@@ -267,7 +267,7 @@
 <div class="stage" id="stage">
 <div class="device-col" id="deviceCol1">
 <div class="col-head">
-  <select class="phone-model-select" id="phoneModelSelect" aria-label="Modèle de l'appareil 1">
+  <select class="phone-model-select" id="phoneModelSelect" data-i18n-aria-label="ariaModel1" aria-label="Modèle de l'appareil 1">
     <option value="iphone">📱 iPhone</option>
     <option value="android">🤖 Android</option>
     <option value="ipad">📲 iPad</option>
@@ -309,21 +309,21 @@
 
     <div class="home-indicator" id="home-indicator" data-i18n-title="home" title="Accueil"></div>
   </div>
-  <div class="zoom-bar" id="zoomBar" role="slider" aria-label="Zoom" data-i18n-title="zoomHint" title="Zoom — glisser ; bas = 100 %">
+  <div class="zoom-bar" id="zoomBar" role="slider" data-i18n-aria-label="zoomLabel" aria-label="Zoom" data-i18n-title="zoomHint" title="Zoom — glisser ; bas = 100 %">
     <div class="zoom-fill" id="zoomFill"></div>
     <div class="zoom-thumb" id="zoomThumb"></div>
     <div class="zoom-pct" id="zoomPct">100%</div>
   </div>
 </div>
 </div><!-- /col-device -->
-<button type="button" class="zoom-expand" data-i18n-title="expandTitle" title="Agrandir" aria-label="Agrandir l'écran">⛶</button>
+<button type="button" class="zoom-expand" data-i18n-title="expandTitle" title="Agrandir" data-i18n-aria-label="enlargeScreen" aria-label="Agrandir l'écran">⛶</button>
 </div><!-- /col-body -->
 </div><!-- /deviceCol1 -->
 
 <!-- Compare columns 2 & 3 (shown only in compare mode; devices are DOM mirrors of column 1) -->
 <div class="device-col compare-col" id="deviceCol2">
   <div class="col-head">
-    <select class="phone-model-select" id="phoneModelSelect-c" aria-label="Modèle de l'appareil 2">
+    <select class="phone-model-select" id="phoneModelSelect-c" data-i18n-aria-label="ariaModel2" aria-label="Modèle de l'appareil 2">
       <option value="iphone">📱 iPhone</option>
       <option value="android">🤖 Android</option>
       <option value="ipad">📲 iPad</option>
@@ -334,13 +334,13 @@
   </div>
   <div class="col-body">
     <div class="col-device"></div>
-    <button type="button" class="zoom-expand" data-i18n-title="expandTitle" title="Agrandir" aria-label="Agrandir l'écran">⛶</button>
+    <button type="button" class="zoom-expand" data-i18n-title="expandTitle" title="Agrandir" data-i18n-aria-label="enlargeScreen" aria-label="Agrandir l'écran">⛶</button>
   </div>
 </div>
 
 <div class="device-col compare-col" id="deviceCol3">
   <div class="col-head">
-    <select class="phone-model-select" id="phoneModelSelect-c2" aria-label="Modèle de l'appareil 3">
+    <select class="phone-model-select" id="phoneModelSelect-c2" data-i18n-aria-label="ariaModel3" aria-label="Modèle de l'appareil 3">
       <option value="iphone">📱 iPhone</option>
       <option value="android">🤖 Android</option>
       <option value="ipad">📲 iPad</option>
@@ -351,7 +351,7 @@
   </div>
   <div class="col-body">
     <div class="col-device"></div>
-    <button type="button" class="zoom-expand" data-i18n-title="expandTitle" title="Agrandir" aria-label="Agrandir l'écran">⛶</button>
+    <button type="button" class="zoom-expand" data-i18n-title="expandTitle" title="Agrandir" data-i18n-aria-label="enlargeScreen" aria-label="Agrandir l'écran">⛶</button>
   </div>
 </div>
 </div><!-- /stage -->
@@ -387,14 +387,14 @@
 <!-- README modal (fetched from README.md and rendered on the fly) -->
 <div class="help-overlay readme-overlay" id="readmeOverlay" role="dialog" aria-modal="true" aria-label="README">
   <div class="help-box readme-box">
-    <button type="button" class="help-close" id="readmeClose" aria-label="Fermer">×</button>
+    <button type="button" class="help-close" id="readmeClose" data-i18n-aria-label="closeApp" aria-label="Fermer">×</button>
     <div class="readme-body" id="readmeBody"><p data-i18n="loadingReadme">Chargement…</p></div>
   </div>
 </div>
 
 <!-- Enlarge modal: shows one device at full viewport height (grow animation) -->
-<div class="zoom-modal" id="zoomModal" role="dialog" aria-modal="true" aria-label="Écran agrandi">
-  <button type="button" class="zoom-restore" id="zoomRestore" data-i18n-title="restoreTitle" title="Réduire" aria-label="Revenir à l'état initial">⤡</button>
+<div class="zoom-modal" id="zoomModal" role="dialog" aria-modal="true" data-i18n-aria-label="enlargedScreen" aria-label="Écran agrandi">
+  <button type="button" class="zoom-restore" id="zoomRestore" data-i18n-title="restoreTitle" title="Réduire" data-i18n-aria-label="restoreInitial" aria-label="Revenir à l'état initial">⤡</button>
   <div class="zoom-modal-content" id="zoomModalContent"></div>
 </div>
 
@@ -1288,6 +1288,13 @@
   Object.assign(I18N.it, { loadingApps: 'Caricamento app…', appsLoadError: 'Impossibile caricare <code>apps.php</code>.<br>Verifica che PHP sia attivo in Laragon.', appsEmpty: 'Nessuna app trovata.<br>Aggiungi una sottocartella in <code>APPLI/</code>.', noOpenApps: 'Nessuna app aperta', tapReopen: 'Tocca per riaprire', closeApp: 'Chiudi', navBack: 'Indietro', navRecent: 'App recenti', zoomHint: 'Zoom — trascina; in basso = 100 %', invalidResponse: 'Risposta non valida', loadingReadme: 'Caricamento…', readmeLoadError: '<p>Impossibile caricare il README. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">Vedi su GitHub</a>.</p>' });
   Object.assign(I18N.de, { loadingApps: 'Apps werden geladen…', appsLoadError: '<code>apps.php</code> konnte nicht geladen werden.<br>Prüfe, ob PHP in Laragon aktiviert ist.', appsEmpty: 'Keine App gefunden.<br>Füge einen Unterordner in <code>APPLI/</code> hinzu.', noOpenApps: 'Keine App geöffnet', tapReopen: 'Zum Wiederöffnen tippen', closeApp: 'Schließen', navBack: 'Zurück', navRecent: 'Letzte Apps', zoomHint: 'Zoom — ziehen; unten = 100 %', invalidResponse: 'Ungültige Antwort', loadingReadme: 'Wird geladen…', readmeLoadError: '<p>README konnte nicht geladen werden. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">Auf GitHub ansehen</a>.</p>' });
 
+  // ARIA labels (accessible names read by screen readers)
+  Object.assign(I18N.fr, { language: 'Langue', simulatorControls: 'Contrôles du simulateur', menu: 'Menu', accessibility: 'Accessibilité', previewAlt: 'Aperçu PhoneFake', ariaLicense: 'Licence', ariaModel1: 'Modèle de l\'appareil 1', ariaModel2: 'Modèle de l\'appareil 2', ariaModel3: 'Modèle de l\'appareil 3', zoomLabel: 'Zoom', enlargeScreen: 'Agrandir l\'écran', enlargedScreen: 'Écran agrandi', restoreInitial: 'Revenir à l\'état initial' });
+  Object.assign(I18N.en, { language: 'Language', simulatorControls: 'Simulator controls', menu: 'Menu', accessibility: 'Accessibility', previewAlt: 'PhoneFake preview', ariaLicense: 'License', ariaModel1: 'Device model 1', ariaModel2: 'Device model 2', ariaModel3: 'Device model 3', zoomLabel: 'Zoom', enlargeScreen: 'Enlarge the screen', enlargedScreen: 'Enlarged screen', restoreInitial: 'Back to initial state' });
+  Object.assign(I18N.es, { language: 'Idioma', simulatorControls: 'Controles del simulador', menu: 'Menú', accessibility: 'Accesibilidad', previewAlt: 'Vista previa de PhoneFake', ariaLicense: 'Licencia', ariaModel1: 'Modelo de dispositivo 1', ariaModel2: 'Modelo de dispositivo 2', ariaModel3: 'Modelo de dispositivo 3', zoomLabel: 'Zoom', enlargeScreen: 'Ampliar la pantalla', enlargedScreen: 'Pantalla ampliada', restoreInitial: 'Volver al estado inicial' });
+  Object.assign(I18N.it, { language: 'Lingua', simulatorControls: 'Controlli del simulatore', menu: 'Menu', accessibility: 'Accessibilità', previewAlt: 'Anteprima PhoneFake', ariaLicense: 'Licenza', ariaModel1: 'Modello del dispositivo 1', ariaModel2: 'Modello del dispositivo 2', ariaModel3: 'Modello del dispositivo 3', zoomLabel: 'Zoom', enlargeScreen: 'Ingrandisci lo schermo', enlargedScreen: 'Schermo ingrandito', restoreInitial: 'Torna allo stato iniziale' });
+  Object.assign(I18N.de, { language: 'Sprache', simulatorControls: 'Simulator-Steuerung', menu: 'Menü', accessibility: 'Barrierefreiheit', previewAlt: 'PhoneFake-Vorschau', ariaLicense: 'Lizenz', ariaModel1: 'Gerätemodell 1', ariaModel2: 'Gerätemodell 2', ariaModel3: 'Gerätemodell 3', zoomLabel: 'Zoom', enlargeScreen: 'Bildschirm vergrößern', enlargedScreen: 'Vergrößerter Bildschirm', restoreInitial: 'Zurück zum Ausgangszustand' });
+
   // "Back to server home" link
   Object.assign(I18N.fr, { serverHome: '↩ index localhost', serverHomeTitle: 'Aller à l\'index localhost' });
   Object.assign(I18N.en, { serverHome: '↩ index localhost', serverHomeTitle: 'Go to the localhost index' });
@@ -1310,6 +1317,10 @@
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
       const key = el.dataset.i18nPlaceholder;
       if (t[key] !== undefined) el.placeholder = t[key];
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+      const key = el.dataset.i18nAriaLabel;
+      if (t[key] !== undefined) el.setAttribute('aria-label', t[key]);
     });
     document.querySelectorAll('.lang-switch button').forEach(b => {
       b.classList.toggle('active', b.dataset.lang === lang);
@@ -2196,7 +2207,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.8.0';
+  const APP_VERSION = '1.8.1';
   const GH_REPO = 'nd-digital/phonefake';
   // Always show the installed version in the footer
   (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();
