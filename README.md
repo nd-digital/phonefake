@@ -37,7 +37,7 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 | 🔄 **Synchro entre écrans** | En comparaison, tes actions (navigation, défilement, clics, saisie) se répercutent sur les autres écrans (agent `phonefake-sync.js`) |
 | ⌨️ **Clavier virtuel** | Au focus d'un champ, un clavier monte et **réduit le viewport** (comme un vrai téléphone) — vérifie que tes champs restent visibles |
 | 👥 **Compteur live** | Affiche en direct (style split-flap) combien de codeurs utilisent PhoneFake en ce moment — anonyme, aucune donnée perso envoyée, optionnel |
-| ➕ **Création d'appli** | Génère un squelette PWA complet depuis l'interface — avec **icônes prêtes pour mobile** (iOS « ajouter à l'écran », Android/PWA maskable, favicon) |
+| ➕ **Créer une appli** | Démarreur de projet complet : squelette PWA + **icônes mobiles**, **README / `.gitignore` / LICENSE** (13 licences au choix), **`git init` + 1er commit**, et en option **création + push du dépôt GitHub** (privé/public) — voir la section dédiée plus bas |
 | 🎨 **Logos auto-générés** | Une appli sans icône ? Un logo est créé à partir de son nom |
 | 🌍 **5 langues** | FR · EN · ES · IT · DE |
 | ♿ **Accessibilité** | Taille texte, contraste, police dyslexie, animations réduites |
@@ -83,6 +83,28 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 ### Pré-requis
 - Un serveur servant `apps.php` (PHP, pour lister les sous-dossiers)
 - Un navigateur récent (Chrome 105+, Firefox 121+, Safari 16+ — `:has()` & container queries)
+
+---
+
+## ➕ Créer une appli — démarreur de projet
+
+Le bouton **➕ Appli** ne crée pas qu'un squelette : il génère un **projet complet, prêt pour GitHub**.
+
+**Généré dans un nouveau dossier :**
+- une **structure PWA** fonctionnelle : `index.html`, `manifest.json`, `service-worker.js`, page hors-ligne, `css/` et `js/` ;
+- des **icônes mobiles** prêtes pour « ajouter à l'écran » (iOS `apple-touch-icon`, Android/PWA `maskable`, favicon) — sinon un **logo auto-généré** depuis le nom ;
+- un **README** GitHub-ready, un **`.gitignore`**, et un **`LICENSE`** — au choix parmi **13 licences** (MIT, Apache 2.0, GPL v3/v2, LGPL, AGPL, MPL 2.0, BSD, ISC, Unlicense, Boost, CC0…) ;
+- un **dépôt git initialisé** avec un **premier commit**.
+
+**Champs de la fenêtre :** nom, description courte + longue (pour le README), auteur, compte GitHub + nom du projet, licence.
+
+**En option — publier sur GitHub :** coche **« Créer le dépôt sur GitHub »** et PhoneFake **crée le dépôt** (privé ou public — confirmation demandée pour le public) **et pousse le premier commit**, via le [GitHub CLI `gh`](https://cli.github.com/) (il doit être installé et connecté : `gh auth login`).
+
+**Confort :**
+- **⚡ Auto-remplir** — un bouton lit le **compte GitHub connecté** sur ta machine (via `gh`) et remplit le pseudo + l'auteur.
+- **Compte local** — ton auteur et ton pseudo GitHub sont **mémorisés** (cases *Mémoriser*) dans un fichier local **ignoré par git** : ils **ne quittent jamais ta machine** et ne sont **jamais envoyés sur GitHub**.
+
+> Sans `gh`, la création locale (dossier + git + LICENSE) fonctionne quand même ; seule la partie « dépôt GitHub en ligne » est ignorée.
 
 ---
 
