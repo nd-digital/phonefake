@@ -188,6 +188,9 @@
   .new-app-status.success { color: #6ee7a8; }
 
   /* === Accessibility === */
+  /* Color-blindness simulation: hidden filter defs + filter applied to the whole app */
+  .pf-vision-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
+  body { filter: var(--pf-vision, none); }
   .sr-only {
     position: absolute !important;
     width: 1px; height: 1px;

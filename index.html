@@ -19,6 +19,13 @@
   <button type="button" id="update-close" class="update-close" aria-label="Fermer">×</button>
 </div>
 
+<!-- Color-blindness simulation filters, applied to the device screen via the a11y panel -->
+<svg class="pf-vision-filters" aria-hidden="true" focusable="false"><defs>
+  <filter id="pf-protanopia"><feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"/></filter>
+  <filter id="pf-deuteranopia"><feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"/></filter>
+  <filter id="pf-tritanopia"><feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"/></filter>
+</defs></svg>
+
 <div class="page-header">
   <div class="server-zone">
     <a class="server-link" id="serverLink" href="home.php" data-i18n="serverHome" data-i18n-title="serverHomeTitle" title="Aller à l'index localhost">↩ index localhost</a>
@@ -195,6 +202,15 @@
       <input type="checkbox" id="a11yFocusRing">
       <span data-i18n="a11yFocusRing">Indicateur de focus renforcé</span>
     </label>
+    <div class="a11y-row">
+      <label for="a11yVision" data-i18n="a11yVision">Simuler le daltonisme (écran)</label>
+      <select id="a11yVision">
+        <option value="normal" data-i18n="a11yVisionNormal">Vision normale</option>
+        <option value="protanopia" data-i18n="a11yVisionProt">Protanopie (rouge)</option>
+        <option value="deuteranopia" data-i18n="a11yVisionDeut">Deutéranopie (vert)</option>
+        <option value="tritanopia" data-i18n="a11yVisionTri">Tritanopie (bleu)</option>
+      </select>
+    </div>
     <button type="button" id="a11yReset" class="a11y-reset" data-i18n="a11yReset">Réinitialiser</button>
     <p class="a11y-hint" data-i18n="a11yHint">Tes choix sont mémorisés et s'appliquent uniquement à cette page.</p>
   </div>
@@ -915,6 +931,7 @@
       a11yReducedMotion: 'Réduire les animations',
       a11yFocusRing: 'Indicateur de focus renforcé',
       a11yReset: 'Réinitialiser',
+      a11yVision: 'Simuler le daltonisme', a11yVisionNormal: 'Vision normale', a11yVisionProt: 'Protanopie (rouge)', a11yVisionDeut: 'Deutéranopie (vert)', a11yVisionTri: 'Tritanopie (bleu)',
       a11yHint: 'Tes choix sont mémorisés et s\'appliquent uniquement à cette page.',
       skipToContent: 'Aller au contenu principal',
       announceCompareOn: 'Mode comparaison activé',
@@ -985,6 +1002,7 @@
       a11yReducedMotion: 'Reduce animations',
       a11yFocusRing: 'Enhanced focus indicator',
       a11yReset: 'Reset',
+      a11yVision: 'Simulate color blindness', a11yVisionNormal: 'Normal vision', a11yVisionProt: 'Protanopia (red)', a11yVisionDeut: 'Deuteranopia (green)', a11yVisionTri: 'Tritanopia (blue)',
       a11yHint: 'Your choices are saved and apply only to this page.',
       skipToContent: 'Skip to main content',
       announceCompareOn: 'Compare mode enabled',
@@ -1055,6 +1073,7 @@
       a11yReducedMotion: 'Reducir animaciones',
       a11yFocusRing: 'Indicador de foco reforzado',
       a11yReset: 'Restablecer',
+      a11yVision: 'Simular daltonismo', a11yVisionNormal: 'Visión normal', a11yVisionProt: 'Protanopía (rojo)', a11yVisionDeut: 'Deuteranopía (verde)', a11yVisionTri: 'Tritanopía (azul)',
       a11yHint: 'Tus ajustes se guardan y solo se aplican a esta página.',
       skipToContent: 'Ir al contenido principal',
       announceCompareOn: 'Modo comparación activado',
@@ -1125,6 +1144,7 @@
       a11yReducedMotion: 'Riduci animazioni',
       a11yFocusRing: 'Indicatore di focus rinforzato',
       a11yReset: 'Ripristina',
+      a11yVision: 'Simula il daltonismo', a11yVisionNormal: 'Visione normale', a11yVisionProt: 'Protanopia (rosso)', a11yVisionDeut: 'Deuteranopia (verde)', a11yVisionTri: 'Tritanopia (blu)',
       a11yHint: 'Le tue scelte sono salvate e si applicano solo a questa pagina.',
       skipToContent: 'Vai al contenuto principale',
       announceCompareOn: 'Modalità confronto attivata',
@@ -1195,6 +1215,7 @@
       a11yReducedMotion: 'Animationen reduzieren',
       a11yFocusRing: 'Verstärkter Fokus-Indikator',
       a11yReset: 'Zurücksetzen',
+      a11yVision: 'Farbenblindheit simulieren', a11yVisionNormal: 'Normales Sehen', a11yVisionProt: 'Protanopie (Rot)', a11yVisionDeut: 'Deuteranopie (Grün)', a11yVisionTri: 'Tritanopie (Blau)',
       a11yHint: 'Deine Einstellungen werden gespeichert und nur auf dieser Seite angewendet.',
       skipToContent: 'Zum Hauptinhalt springen',
       announceCompareOn: 'Vergleichsmodus aktiviert',
@@ -1727,15 +1748,19 @@
     document.body.classList.toggle('a11y-dyslexia', !!prefs.dyslexia);
     document.body.classList.toggle('a11y-reduced-motion', !!prefs.reducedMotion);
     document.body.classList.toggle('a11y-focus-ring', !!prefs.focusRing);
+    // Color-blindness simulation filter on the device screen (SVG feColorMatrix).
+    document.documentElement.style.setProperty('--pf-vision',
+      (prefs.vision && prefs.vision !== 'normal') ? 'url(#pf-' + prefs.vision + ')' : 'none');
   }
   function a11yLoad() {
-    let p = { fontSize: 'normal', contrast: false, dyslexia: false, reducedMotion: false, focusRing: false };
+    let p = { fontSize: 'normal', contrast: false, dyslexia: false, reducedMotion: false, focusRing: false, vision: 'normal' };
     try { p = { ...p, ...JSON.parse(localStorage.getItem('phonefake-a11y') || '{}') }; } catch {}
     document.getElementById('a11yFontSize').value = p.fontSize;
     document.getElementById('a11yContrast').checked = p.contrast;
     document.getElementById('a11yDyslexia').checked = p.dyslexia;
     document.getElementById('a11yReducedMotion').checked = p.reducedMotion;
     document.getElementById('a11yFocusRing').checked = p.focusRing;
+    document.getElementById('a11yVision').value = p.vision || 'normal';
     a11yApply(p);
   }
   function a11ySave() {
@@ -1744,12 +1769,13 @@
       contrast: document.getElementById('a11yContrast').checked,
       dyslexia: document.getElementById('a11yDyslexia').checked,
       reducedMotion: document.getElementById('a11yReducedMotion').checked,
-      focusRing: document.getElementById('a11yFocusRing').checked
+      focusRing: document.getElementById('a11yFocusRing').checked,
+      vision: document.getElementById('a11yVision').value
     };
     try { localStorage.setItem('phonefake-a11y', JSON.stringify(p)); } catch {}
     a11yApply(p);
   }
-  ['a11yFontSize', 'a11yContrast', 'a11yDyslexia', 'a11yReducedMotion', 'a11yFocusRing'].forEach(id => {
+  ['a11yFontSize', 'a11yContrast', 'a11yDyslexia', 'a11yReducedMotion', 'a11yFocusRing', 'a11yVision'].forEach(id => {
     document.getElementById(id).addEventListener('change', a11ySave);
   });
   document.getElementById('a11yReset').addEventListener('click', () => {
@@ -2170,7 +2196,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.7.0';
+  const APP_VERSION = '1.8.0';
   const GH_REPO = 'nd-digital/phonefake';
   // Always show the installed version in the footer
   (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();
