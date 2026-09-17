@@ -629,7 +629,7 @@
       const el = document.createElement('div');
       el.className = 'app-icon';
       el.dataset.appId = app.id;
-      el.title = app.name;   // names are truncated under the icon
+      el.dataset.tip = app.name;   // names are truncated under the icon
       const logo = document.createElement('div');
       logo.className = 'logo';
       if (app.icon) {
@@ -720,6 +720,34 @@
     const btn = e.target.closest('.app-blocked-open');
     if (btn) window.open(btn.dataset.url, '_blank', 'noopener');
   });
+
+  // Tooltip on the app icons (names are clamped to 2 lines under the icon).
+  // Lives on <body> rather than inside the icon: the phone frame clips its
+  // content, and a tooltip on an edge icon would be cut off.
+  const tip = document.createElement('div');
+  tip.className = 'app-tip';
+  document.body.appendChild(tip);
+
+  function hideTip() { tip.classList.remove('visible'); }
+
+  function showTip(icon) {
+    tip.textContent = icon.dataset.tip;
+    tip.classList.add('visible');
+    const r = icon.getBoundingClientRect();
+    const t = tip.getBoundingClientRect();
+    const margin = 8;
+    const x = Math.min(Math.max(margin, r.left + (r.width - t.width) / 2), innerWidth - t.width - margin);
+    const above = r.top - t.height - 10;
+    tip.style.left = x + 'px';
+    tip.style.top = (above > margin ? above : r.bottom + 10) + 'px';
+  }
+
+  document.addEventListener('mouseover', (e) => {
+    const icon = e.target.closest('.app-icon[data-tip]');
+    if (icon) showTip(icon); else if (!e.target.closest('.app-tip')) hideTip();
+  });
+  document.addEventListener('mousedown', hideTip);
+  addEventListener('scroll', hideTip, true);
 
   // Update the .active classes on the Home / Open apps buttons
   // based on the current state (nothing open / app open / switcher open).
