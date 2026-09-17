@@ -176,6 +176,79 @@ L'agent ne fait rien hors d'une iframe PhoneFake et ne communique qu'avec la fen
 
 ---
 
+## 🩺 Dépannage — l'appli ne s'affiche pas (ou mal) dans PhoneFake
+
+Chaque appli tourne dans une `<iframe>`. Le navigateur applique donc à l'appli les règles d'un site **intégré dans un autre site**, qui ne s'appliquent pas quand on l'ouvre dans un onglet. Si une appli marche dans un onglet mais pas dans PhoneFake, la cause est presque toujours dans cette liste.
+
+### L'appli interdit d'être affichée dans un cadre
+
+**Symptôme :** PhoneFake affiche « Affichage bloqué par l'appli ». Sur une appli d'une autre origine, le navigateur affiche à la place sa propre page d'erreur (`ERR_BLOCKED_BY_RESPONSE`, « localhost a refusé la connexion »…).
+
+**Cause :** l'appli envoie un en-tête anti-*clickjacking* : `X-Frame-Options: DENY` ou `Content-Security-Policy: … frame-ancestors 'none'`. C'est une bonne pratique en production, mais elle bloque aussi PhoneFake.
+
+**Solution :** autoriser la même origine **en local seulement**, et garder la version stricte en production. Exemple Apache (`.htaccess`) :
+
+```apache
+<If "%{HTTP_HOST} =~ /^(localhost|127\.0\.0\.1)/">
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Content-Security-Policy "… frame-ancestors 'self'"
+</If>
+<Else>
+  Header always set X-Frame-Options "DENY"
+  Header always set Content-Security-Policy "… frame-ancestors 'none'"
+</Else>
+```
+
+> Si l'appli est sur **un autre port** que PhoneFake (app serveur), `SAMEORIGIN` / `'self'` ne suffisent plus : il faut autoriser l'adresse de PhoneFake dans `frame-ancestors` (ex. `frame-ancestors https://localhost`), `X-Frame-Options` ne sachant pas le faire.
+>
+> PhoneFake ne détecte ce blocage que pour les applis servies **sur la même origine** que lui. Pour les autres, le navigateur ne lui laisse pas lire les en-têtes.
+
+### L'appli « s'échappe » et remplace PhoneFake
+
+**Symptôme :** à l'ouverture de l'appli, toute la page PhoneFake disparaît et l'appli s'affiche en plein onglet.
+
+**Cause :** un script *anti-framing* dans l'appli, du type `if (top !== self) top.location = self.location`.
+
+**Solution :** désactiver ce script en local, ou le remplacer par l'en-tête `frame-ancestors` ci-dessus (plus fiable, et réglable par environnement).
+
+### Contenu mixte : PhoneFake en `https`, appli en `http`
+
+**Symptôme :** l'écran reste vide ou affiche une erreur de connexion.
+
+**Cause :** une page `https` ne peut pas intégrer une page `http`. Quand PhoneFake tourne en `https`, il réécrit automatiquement les adresses `http://localhost…` des applis en `https://…`. Il faut donc que le serveur de l'appli réponde aussi en `https`.
+
+**Solution :** servir l'appli en `https`, ou ouvrir PhoneFake en `http`.
+
+### Certificat local non reconnu
+
+**Symptôme :** l'appli est en `https` sur son propre port (ex. `https://localhost:3002`) et l'écran affiche une erreur de certificat, ou reste vide.
+
+**Cause :** le navigateur n'affiche pas l'avertissement « Continuer vers le site » à l'intérieur d'une iframe.
+
+**Solution :** ouvrir une fois l'adresse de l'appli dans un onglet et accepter le certificat, ou utiliser un certificat local reconnu par la machine (celui de Laragon, [mkcert](https://github.com/FiloSottile/mkcert)…).
+
+### Connexion / session perdue dans l'appli
+
+**Symptôme :** l'appli se connecte dans un onglet, mais dans PhoneFake la session ne tient pas (retour permanent à l'écran de connexion).
+
+**Cause :** si PhoneFake et l'appli ne sont pas sur le **même site**, les cookies de l'appli sont des cookies *tiers*, que les navigateurs bloquent de plus en plus. Attention : `localhost` et `127.0.0.1` sont **deux sites différents** pour le navigateur.
+
+**Solution :** ouvrir PhoneFake et l'appli avec le même nom d'hôte, par exemple `localhost` partout.
+
+### Synchro entre écrans ou clavier virtuel inactifs
+
+**Cause :** l'appli est sur une autre origine, et l'agent de synchro n'a pas pu être injecté.
+
+**Solution :** voir [Synchro entre écrans](#-synchro-entre-écrans-mode-comparaison) : une ligne `<script>` à ajouter dans l'appli.
+
+### Page « Index of… » au lieu de l'appli
+
+**Cause :** le dossier n'a pas d'`index.html` (app serveur Node/pm2).
+
+**Solution :** voir la section *Intégrer une app qui est un serveur*, plus haut : un `phonefake.json` avec l'`url`.
+
+---
+
 ## 🔔 Mises à jour
 
 Au chargement, PhoneFake compare sa version à la dernière *release* publiée sur GitHub. Si une version plus récente existe, une **bannière** s'affiche en haut de la page avec ta version locale, la version en ligne et un lien vers les [releases](https://github.com/nd-digital/phonefake/releases).
