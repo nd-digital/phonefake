@@ -252,7 +252,7 @@ function pf_png_icon($rawName, $size, $font, $withText = true) {
             imagettftext($im, $fs, 0, (int) (($size - $tw) / 2 - $bb[0]), (int) ($y0 + $i * $lh), $white, $font, $w);
         }
     }
-    ob_start(); imagepng($im); $png = ob_get_clean(); imagedestroy($im);
+    ob_start(); imagepng($im); $png = ob_get_clean();
     return $png;
 }
 function pf_svg_icon($rawName) {
