@@ -11,6 +11,7 @@
  *
  * Nothing here leaves the machine; the file is never committed.
  */
+require __DIR__ . '/local-only.php';
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 

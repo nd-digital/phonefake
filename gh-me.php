@@ -8,6 +8,7 @@
  *
  *   GET -> { ok:true, login, name }   or   { ok:false, error }
  */
+require __DIR__ . '/local-only.php';
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 

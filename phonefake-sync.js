@@ -56,6 +56,17 @@
     try { return document.querySelector(path); } catch (e) { return null; }
   }
 
+  // Only real page URLs: a javascript: URL handed to location.replace would run
+  // inside the app's origin.
+  function navigate(href) {
+    var u;
+    try { u = new URL(href, location.href); } catch (e) { return; }
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return;
+    if (u.href === location.href) return;
+    lastHref = u.href;
+    location.replace(u.href);
+  }
+
   function report(kind, data) {
     if (!suppress) send({ t: 'event', kind: kind, data: data });
   }
@@ -125,7 +136,7 @@
     suppress = true;
     try {
       if (kind === 'nav') {
-        if (data.href && data.href !== location.href) { lastHref = data.href; location.replace(data.href); return; }
+        if (data.href) { navigate(data.href); return; }
       } else if (kind === 'scroll') {
         window.scrollTo(data.x, data.y);
       } else if (kind === 'click') {
@@ -146,11 +157,13 @@
   }
 
   window.addEventListener('message', function (e) {
+    // Sibling frames (e.g. a third-party site opened in another phone) can post here too.
+    if (e.source !== PARENT) return;
     var d = e.data;
     if (!d || !d.__pfsync) return;
     if (d.t === 'apply') { apply(d.kind, d.data); }
     else if (d.t === 'gethref') { send({ t: 'href', href: location.href }); }
-    else if (d.t === 'navto') { if (d.href && d.href !== location.href) { lastHref = d.href; location.replace(d.href); } }
+    else if (d.t === 'navto') { if (d.href) navigate(d.href); }
   });
 
   send({ t: 'ready', href: location.href });

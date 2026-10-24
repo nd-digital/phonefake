@@ -5,7 +5,7 @@
 ### Teste tes applis web dans un vrai cadre mobile — en local, sans rien installer.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-5b6cff.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.8.4-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
+[![Version](https://img.shields.io/badge/version-1.8.5-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
 [![Vanilla JS](https://img.shields.io/badge/vanilla-JS%20%2B%20PHP-success.svg)]()
 [![No build](https://img.shields.io/badge/build-aucun-blue.svg)]()
 
@@ -248,6 +248,15 @@ Chaque appli tourne dans une `<iframe>`. Le navigateur applique donc à l'appli 
 **Solution :** voir la section *Intégrer une app qui est un serveur*, plus haut : un `phonefake.json` avec l'`url`.
 
 ---
+
+
+### PhoneFake ouvert depuis un autre appareil
+
+**Symptôme :** PhoneFake s'affiche, mais à la place des applis il indique « Les applis ne s'affichent que sur l'ordinateur qui héberge PhoneFake ». La création d'appli et le profil sont refusés de la même façon.
+
+**Cause :** c'est voulu. Les fonctions qui créent des dossiers, lancent `git` / `gh` ou lisent ton profil ne répondent qu'à **ta propre machine** (`localhost`, `127.0.0.1`, `*.test`…). Sans ce verrou, n'importe quel appareil du même réseau (Wi-Fi public, bureau partagé) — ou une page web piégée par *DNS rebinding* — pourrait créer des dépôts GitHub en ton nom.
+
+**Solution :** ouvrir PhoneFake **sur l'ordinateur** qui l'héberge. Pour voir une appli sur un vrai téléphone, ouvre l'appli elle-même depuis le téléphone, pas PhoneFake.
 
 ## 🔔 Mises à jour
 

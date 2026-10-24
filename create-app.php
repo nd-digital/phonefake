@@ -5,6 +5,7 @@
  * offline.html, icons/, css/style.css, js/app.js}, then returns { ok, id, name, url }.
  * The front end then re-fetches apps.php: the logo (auto-generated when missing) shows.
  */
+require __DIR__ . '/local-only.php';
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
