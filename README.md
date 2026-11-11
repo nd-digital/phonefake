@@ -107,6 +107,22 @@ Le bouton **➕ Appli** ne crée pas qu'un squelette : il génère un **projet c
 
 > Sans `gh`, la création locale (dossier + git + LICENSE) fonctionne quand même ; seule la partie « dépôt GitHub en ligne » est ignorée.
 
+### Fenêtres « httpd.exe — point d'entrée introuvable » à la création (Windows)
+
+**Symptôme :** quand tu valides la création d'une appli, Windows affiche une ou plusieurs fenêtres d'erreur au nom de `httpd.exe`.
+Elles citent un fichier comme `libharfbuzz-0.dll` ou `libgraphite2.dll`, rangé dans le dossier d'un autre logiciel (constaté avec `C:\Program Files\Tesseract-OCR\`).
+
+**Cause :** pour écrire le nom de l'appli sur son icône, PHP a besoin d'une bibliothèque de dessin du texte.
+Windows la cherche dans les dossiers listés dans la variable d'environnement `PATH`.
+Si un autre logiciel y a mis son dossier, Windows prend sa copie à lui, qui n'est pas compatible avec PHP.
+
+**Solution :** retirer le dossier de ce logiciel du `PATH`, puis quitter et relancer complètement le serveur web (Laragon).
+- Réglage : *Paramètres Windows → Système → Informations système → Paramètres avancés du système → Variables d'environnement*.
+- Pour garder la commande `tesseract` utilisable dans un terminal, crée un dossier à toi (par exemple `%LOCALAPPDATA%\tesseract-shim`) contenant un fichier `tesseract.cmd` d'une seule ligne : `@"C:\Program Files\Tesseract-OCR\tesseract.exe" %*`. Ajoute ce dossier au `PATH` à la place de celui de Tesseract.
+- Un programme qui lance Tesseract sans passer par un terminal (par exemple la bibliothèque Python `pytesseract`) doit alors recevoir le chemin complet de `tesseract.exe`.
+
+PhoneFake n'est pas en cause et n'a rien à modifier : l'appli est bien créée, seules les fenêtres d'erreur gênent.
+
 ---
 
 ## 🧩 Comment ça marche
