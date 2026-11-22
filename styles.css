@@ -581,7 +581,7 @@
      and — since JS scales every active device to the SAME height — their screens
      align too. The gap holds one device's side tools (right) plus the next one's zoom slider (left). */
   .stage.compare-mode {
-    gap: 100px;
+    gap: 112px;
     align-items: flex-start;
     padding-top: 6px;
   }
@@ -1108,7 +1108,8 @@
 
   /* Vertical zoom slider, to the right of each device (shown when an app is open) */
   .zoom-bar {
-    position: absolute; top: 12%; bottom: 12%; left: -28px; width: 12px;
+    /* Leaves room above for the 100% button and the + step, below for the − step. */
+    position: absolute; top: max(12%, calc(64px / var(--phone-scale, 1))); bottom: max(12%, calc(44px / var(--phone-scale, 1))); left: calc(-38px / var(--phone-scale, 1)); width: 12px;
     border-radius: 999px; background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.18);
     display: none; cursor: pointer; touch-action: none; z-index: 6;
@@ -1125,14 +1126,28 @@
     transform: translate(-50%, 50%); cursor: grab; pointer-events: none;
   }
   .zoom-bar.dragging .zoom-thumb { cursor: grabbing; }
+  .zoom-step {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    zoom: calc(1 / var(--phone-scale, 1));
+    width: 22px; height: 22px; padding: 0; border-radius: 7px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(138, 63, 252, 0.28); border: 1px solid rgba(160, 110, 255, 0.6);
+    color: #fff; font-size: 13px; line-height: 1; cursor: pointer;
+  }
+  .zoom-step-up { bottom: calc(100% + 6px); }
+  .zoom-step-down { top: calc(100% + 16px); }   /* clears the thumb, which overhangs the bottom end */
+  .zoom-step:hover:not(:disabled) { background: rgba(138, 63, 252, 0.5); }
+  .zoom-step:disabled { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.08); color: rgba(203, 208, 220, 0.3); cursor: default; }
+  .zoom-step:focus-visible, .zoom-pct:focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; }
   .zoom-pct {
-    /* Grows outward from the slider so it never covers the device frame next to it. */
-    position: absolute; bottom: calc(100% + 6px); right: 0;
+    position: absolute; bottom: calc(100% + 32px); left: 50%; transform: translateX(-50%);
     /* The device is shrunk with `zoom`; undo it so every label reads at the same size. */
     zoom: calc(1 / var(--phone-scale, 1));
     font-size: 13px; font-weight: 600; color: #cdd4e6; white-space: nowrap;
-    background: rgba(0, 0, 0, 0.55); padding: 1px 6px; border-radius: 6px; pointer-events: none;
+    background: rgba(0, 0, 0, 0.55); padding: 1px 6px; border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.18); font-family: inherit; line-height: 1.4; cursor: pointer;
   }
+  .zoom-pct:hover { background: rgba(138, 63, 252, 0.5); color: #fff; }
 
   /* App switcher */
   .app-switcher {

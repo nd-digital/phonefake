@@ -312,7 +312,9 @@
   <div class="zoom-bar" id="zoomBar" role="slider" data-i18n-aria-label="zoomLabel" aria-label="Zoom" data-i18n-title="zoomHint" title="Zoom — glisser ; bas = 100 %">
     <div class="zoom-fill" id="zoomFill"></div>
     <div class="zoom-thumb" id="zoomThumb"></div>
-    <div class="zoom-pct" id="zoomPct">100%</div>
+    <button type="button" class="zoom-pct" id="zoomPct" data-i18n-title="zoomResetTitle" title="Revenir à 100 %" data-i18n-aria-label="zoomResetTitle" aria-label="Revenir à 100 %">100%</button>
+    <button type="button" class="zoom-step zoom-step-up" data-zoom-step="1" data-i18n-title="zoomInTitle" title="Zoomer (+25 %)" data-i18n-aria-label="zoomInTitle" aria-label="Zoomer (+25 %)">↑</button>
+    <button type="button" class="zoom-step zoom-step-down" data-zoom-step="-1" data-i18n-title="zoomOutTitle" title="Dézoomer (−25 %)" data-i18n-aria-label="zoomOutTitle" aria-label="Dézoomer (−25 %)">↓</button>
   </div>
 </div>
 </div><!-- /col-device -->
@@ -536,7 +538,7 @@
   // height so they align side by side (a wide desktop and a phone end up the
   // same height, as requested). Also caps by the available width and never
   // upscales past a device's native size.
-  const GAP = 100, ZOOM_OVERHANG = 96;   // column gap (must match .stage.compare-mode) + side room: zoom slider left, tools right
+  const GAP = 112, ZOOM_OVERHANG = 108;   // column gap (must match .stage.compare-mode) + side room: zoom slider left, tools right
   function layoutDevices() {
     if (zoomModalOpen) return;   // don't reset scales while a device is enlarged
     const r = stage.getBoundingClientRect();
@@ -1428,11 +1430,11 @@
   Object.assign(I18N.de, { appsRemoteBlocked: 'Apps werden nur auf dem Computer angezeigt, auf dem PhoneFake läuft.<br>Öffne PhoneFake auf diesem Computer.', loadingApps: 'Apps werden geladen…', appsLoadError: '<code>apps.php</code> konnte nicht geladen werden.<br>Prüfe, ob PHP in Laragon aktiviert ist.', appsEmpty: 'Keine App gefunden.<br>Füge einen Unterordner in <code>APPLI/</code> hinzu.', noOpenApps: 'Keine App geöffnet', tapReopen: 'Zum Wiederöffnen tippen', closeApp: 'Schließen', navBack: 'Zurück', navRecent: 'Letzte Apps', zoomHint: 'Zoom — ziehen; unten = 100 %', invalidResponse: 'Ungültige Antwort', loadingReadme: 'Wird geladen…', readmeLoadError: '<p>README konnte nicht geladen werden. <a href="https://github.com/nd-digital/phonefake#readme" target="_blank" rel="noopener noreferrer">Auf GitHub ansehen</a>.</p>' });
 
   // ARIA labels (accessible names read by screen readers)
-  Object.assign(I18N.fr, { language: 'Langue', simulatorControls: 'Contrôles du simulateur', menu: 'Menu', accessibility: 'Accessibilité', previewAlt: 'Aperçu PhoneFake', ariaLicense: 'Licence', ariaModel1: 'Modèle de l\'appareil 1', ariaModel2: 'Modèle de l\'appareil 2', ariaModel3: 'Modèle de l\'appareil 3', zoomLabel: 'Zoom', enlargeScreen: 'Agrandir l\'écran', enlargedScreen: 'Écran agrandi', restoreInitial: 'Revenir à l\'état initial' });
-  Object.assign(I18N.en, { language: 'Language', simulatorControls: 'Simulator controls', menu: 'Menu', accessibility: 'Accessibility', previewAlt: 'PhoneFake preview', ariaLicense: 'License', ariaModel1: 'Device model 1', ariaModel2: 'Device model 2', ariaModel3: 'Device model 3', zoomLabel: 'Zoom', enlargeScreen: 'Enlarge the screen', enlargedScreen: 'Enlarged screen', restoreInitial: 'Back to initial state' });
-  Object.assign(I18N.es, { language: 'Idioma', simulatorControls: 'Controles del simulador', menu: 'Menú', accessibility: 'Accesibilidad', previewAlt: 'Vista previa de PhoneFake', ariaLicense: 'Licencia', ariaModel1: 'Modelo de dispositivo 1', ariaModel2: 'Modelo de dispositivo 2', ariaModel3: 'Modelo de dispositivo 3', zoomLabel: 'Zoom', enlargeScreen: 'Ampliar la pantalla', enlargedScreen: 'Pantalla ampliada', restoreInitial: 'Volver al estado inicial' });
-  Object.assign(I18N.it, { language: 'Lingua', simulatorControls: 'Controlli del simulatore', menu: 'Menu', accessibility: 'Accessibilità', previewAlt: 'Anteprima PhoneFake', ariaLicense: 'Licenza', ariaModel1: 'Modello del dispositivo 1', ariaModel2: 'Modello del dispositivo 2', ariaModel3: 'Modello del dispositivo 3', zoomLabel: 'Zoom', enlargeScreen: 'Ingrandisci lo schermo', enlargedScreen: 'Schermo ingrandito', restoreInitial: 'Torna allo stato iniziale' });
-  Object.assign(I18N.de, { language: 'Sprache', simulatorControls: 'Simulator-Steuerung', menu: 'Menü', accessibility: 'Barrierefreiheit', previewAlt: 'PhoneFake-Vorschau', ariaLicense: 'Lizenz', ariaModel1: 'Gerätemodell 1', ariaModel2: 'Gerätemodell 2', ariaModel3: 'Gerätemodell 3', zoomLabel: 'Zoom', enlargeScreen: 'Bildschirm vergrößern', enlargedScreen: 'Vergrößerter Bildschirm', restoreInitial: 'Zurück zum Ausgangszustand' });
+  Object.assign(I18N.fr, { zoomResetTitle: 'Revenir à 100 %', zoomInTitle: 'Zoomer (+25 %)', zoomOutTitle: 'Dézoomer (−25 %)', language: 'Langue', simulatorControls: 'Contrôles du simulateur', menu: 'Menu', accessibility: 'Accessibilité', previewAlt: 'Aperçu PhoneFake', ariaLicense: 'Licence', ariaModel1: 'Modèle de l\'appareil 1', ariaModel2: 'Modèle de l\'appareil 2', ariaModel3: 'Modèle de l\'appareil 3', zoomLabel: 'Zoom', enlargeScreen: 'Agrandir l\'écran', enlargedScreen: 'Écran agrandi', restoreInitial: 'Revenir à l\'état initial' });
+  Object.assign(I18N.en, { zoomResetTitle: 'Back to 100%', zoomInTitle: 'Zoom in (+25%)', zoomOutTitle: 'Zoom out (−25%)', language: 'Language', simulatorControls: 'Simulator controls', menu: 'Menu', accessibility: 'Accessibility', previewAlt: 'PhoneFake preview', ariaLicense: 'License', ariaModel1: 'Device model 1', ariaModel2: 'Device model 2', ariaModel3: 'Device model 3', zoomLabel: 'Zoom', enlargeScreen: 'Enlarge the screen', enlargedScreen: 'Enlarged screen', restoreInitial: 'Back to initial state' });
+  Object.assign(I18N.es, { zoomResetTitle: 'Volver al 100 %', zoomInTitle: 'Acercar (+25 %)', zoomOutTitle: 'Alejar (−25 %)', language: 'Idioma', simulatorControls: 'Controles del simulador', menu: 'Menú', accessibility: 'Accesibilidad', previewAlt: 'Vista previa de PhoneFake', ariaLicense: 'Licencia', ariaModel1: 'Modelo de dispositivo 1', ariaModel2: 'Modelo de dispositivo 2', ariaModel3: 'Modelo de dispositivo 3', zoomLabel: 'Zoom', enlargeScreen: 'Ampliar la pantalla', enlargedScreen: 'Pantalla ampliada', restoreInitial: 'Volver al estado inicial' });
+  Object.assign(I18N.it, { zoomResetTitle: 'Torna al 100 %', zoomInTitle: 'Ingrandisci (+25 %)', zoomOutTitle: 'Riduci (−25 %)', language: 'Lingua', simulatorControls: 'Controlli del simulatore', menu: 'Menu', accessibility: 'Accessibilità', previewAlt: 'Anteprima PhoneFake', ariaLicense: 'Licenza', ariaModel1: 'Modello del dispositivo 1', ariaModel2: 'Modello del dispositivo 2', ariaModel3: 'Modello del dispositivo 3', zoomLabel: 'Zoom', enlargeScreen: 'Ingrandisci lo schermo', enlargedScreen: 'Schermo ingrandito', restoreInitial: 'Torna allo stato iniziale' });
+  Object.assign(I18N.de, { zoomResetTitle: 'Zurück auf 100 %', zoomInTitle: 'Vergrößern (+25 %)', zoomOutTitle: 'Verkleinern (−25 %)', language: 'Sprache', simulatorControls: 'Simulator-Steuerung', menu: 'Menü', accessibility: 'Barrierefreiheit', previewAlt: 'PhoneFake-Vorschau', ariaLicense: 'Lizenz', ariaModel1: 'Gerätemodell 1', ariaModel2: 'Gerätemodell 2', ariaModel3: 'Gerätemodell 3', zoomLabel: 'Zoom', enlargeScreen: 'Bildschirm vergrößern', enlargedScreen: 'Vergrößerter Bildschirm', restoreInitial: 'Zurück zum Ausgangszustand' });
 
   // "Back to server home" link
   Object.assign(I18N.fr, { serverHome: '↩ index localhost', serverHomeTitle: 'Aller à l\'index localhost' });
@@ -2072,6 +2074,8 @@
     zoomFill.style.height = (p * 100) + '%';
     zoomThumb.style.bottom = (p * 100) + '%';
     zoomPct.textContent = Math.round(level * 100) + '%';
+    document.querySelectorAll('.phone .zoom-step-up').forEach(b => { b.disabled = level >= ZMAX - 0.001; });
+    document.querySelectorAll('.phone .zoom-step-down').forEach(b => { b.disabled = level <= ZMIN + 0.001; });
   }
 
   // Drag a vertical slider → set the zoom level (bottom = 100%, top = max).
@@ -2096,7 +2100,7 @@
     let dragging = false, bar = null;
     stage.addEventListener('pointerdown', (e) => {
       const hit = e.target.closest('.zoom-bar');
-      if (!hit || !activeEntry()) return;
+      if (!hit || !activeEntry() || e.target.closest('.zoom-step, .zoom-pct')) return;
       dragging = true; bar = hit; bar.classList.add('dragging');
       try { bar.setPointerCapture(e.pointerId); } catch {}
       zoomFromClientY(e.clientY, false, bar); e.preventDefault();
@@ -2112,6 +2116,28 @@
     stage.addEventListener('pointerup', end);
     stage.addEventListener('pointercancel', end);
   })();
+  // Step buttons and the 100% button sit on every slider, mirrors included (hence delegation).
+  const ZSTEP = 0.25;
+  function setZoomLevel(level) {
+    const entry = activeEntry();
+    if (!entry) return;
+    if (!entry.zoom) entry.zoom = { level: 1, x: 0, y: 0 };
+    // Snap to the 25% grid so steps land on round values even after a free drag.
+    entry.zoom.level = Math.min(ZMAX, Math.max(ZMIN, Math.round(level / ZSTEP) * ZSTEP));
+    clampPan(entry);
+    // Label first: applyZoom rebuilds the mirrors by cloning column 1, label included.
+    refreshZoomLabel();
+    applyZoom(entry, true);
+  }
+  document.addEventListener('click', (e) => {
+    const step = e.target.closest('.phone .zoom-step');
+    if (step) {
+      const entry = activeEntry();
+      if (entry && !step.disabled) setZoomLevel((entry.zoom ? entry.zoom.level : 1) + Number(step.dataset.zoomStep) * ZSTEP);
+      return;
+    }
+    if (e.target.closest('.phone .zoom-pct')) setZoomLevel(ZMIN);
+  });
   refreshZoomLabel();
 
   // -------- Responsive burger menu (collapsed toolbar on narrow windows) --------
@@ -2508,7 +2534,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.8.11';
+  const APP_VERSION = '1.9.0';
   const GH_REPO = 'nd-digital/phonefake';
   // Always show the installed version in the footer
   (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();
