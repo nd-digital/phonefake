@@ -485,6 +485,7 @@
   }
   .col-reload:hover, .col-home:hover, .zoom-expand:hover { background: rgba(255, 255, 255, 0.18); color: #fff; transform: scale(1.08); }
   .col-reload:focus-visible, .col-home:focus-visible, .zoom-expand:focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; }
+  .col-home:disabled { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.08); color: rgba(203, 208, 220, 0.3); cursor: default; transform: none; }
   .col-reload.busy { animation: pf-spin 0.8s linear infinite; pointer-events: none; }
   /* Left of the device, on the zoom slider's axis (its centre sits ~35px from the frame), above the zoom controls. */
   .col-scroll {
@@ -1106,15 +1107,17 @@
   .pan-overlay.active { display: block; }
   .pan-overlay.dragging { cursor: grabbing; }
 
-  /* Vertical zoom slider, to the right of each device (shown when an app is open) */
+  /* Vertical zoom slider, to the left of each device: always shown, dimmed while no app is open */
   .zoom-bar {
     /* Leaves room above for the scroll arrows (144px), the reset button, the percentage and the + step; below for the − step. */
     position: absolute; top: max(12%, calc(250px / var(--phone-scale, 1))); bottom: max(12%, calc(44px / var(--phone-scale, 1))); left: calc(-38px / var(--phone-scale, 1)); width: 12px;
     border-radius: 999px; background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.18);
-    display: none; cursor: pointer; touch-action: none; z-index: 6;
+    display: block; cursor: pointer; touch-action: none; z-index: 6;
   }
-  .phone.zoomable .zoom-bar { display: block; }
+  .phone:not(.zoomable) .zoom-bar { cursor: default; border-color: rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.05); }
+  .phone:not(.zoomable) .zoom-thumb { background: #6b7080; box-shadow: none; }
+  .phone:not(.zoomable) .zoom-pct { opacity: 0.45; }
   .zoom-fill {
     position: absolute; left: 0; right: 0; bottom: 0; height: 0%;
     background: linear-gradient(#8a3ffc, #5b6cff); border-radius: 999px; pointer-events: none;
