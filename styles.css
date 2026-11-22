@@ -579,9 +579,9 @@
   /* Compare mode: up to 3 device columns side by side.
      Columns are top-aligned so their heads (toggle + select) line up on one row,
      and — since JS scales every active device to the SAME height — their screens
-     align too. Extra right gap leaves room for each device's zoom slider. */
+     align too. The gap holds one device's side tools (right) plus the next one's zoom slider (left). */
   .stage.compare-mode {
-    gap: 56px;
+    gap: 100px;
     align-items: flex-start;
     padding-top: 6px;
   }
@@ -1108,8 +1108,7 @@
 
   /* Vertical zoom slider, to the right of each device (shown when an app is open) */
   .zoom-bar {
-    /* Starts below both tool groups (reload / home / enlarge, then the scroll arrows), whatever the device scale. */
-    position: absolute; top: calc(300px / var(--phone-scale, 1)); bottom: 12%; right: -28px; width: 12px;
+    position: absolute; top: 12%; bottom: 12%; left: -28px; width: 12px;
     border-radius: 999px; background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.18);
     display: none; cursor: pointer; touch-action: none; z-index: 6;
@@ -1127,7 +1126,8 @@
   }
   .zoom-bar.dragging .zoom-thumb { cursor: grabbing; }
   .zoom-pct {
-    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    /* Grows outward from the slider so it never covers the device frame next to it. */
+    position: absolute; bottom: calc(100% + 6px); right: 0;
     /* The device is shrunk with `zoom`; undo it so every label reads at the same size. */
     zoom: calc(1 / var(--phone-scale, 1));
     font-size: 13px; font-weight: 600; color: #cdd4e6; white-space: nowrap;

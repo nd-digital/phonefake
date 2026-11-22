@@ -536,7 +536,7 @@
   // height so they align side by side (a wide desktop and a phone end up the
   // same height, as requested). Also caps by the available width and never
   // upscales past a device's native size.
-  const GAP = 56, ZOOM_OVERHANG = 40;   // column gap + right zoom-slider room
+  const GAP = 100, ZOOM_OVERHANG = 96;   // column gap (must match .stage.compare-mode) + side room: zoom slider left, tools right
   function layoutDevices() {
     if (zoomModalOpen) return;   // don't reset scales while a device is enlarged
     const r = stage.getBoundingClientRect();
@@ -2508,7 +2508,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.8.10';
+  const APP_VERSION = '1.8.11';
   const GH_REPO = 'nd-digital/phonefake';
   // Always show the installed version in the footer
   (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();
