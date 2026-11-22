@@ -898,6 +898,12 @@
     gap: 22px 8px;
     align-content: start;
     padding-top: 8px;
+    /* Without min-height:0 the flex item grows with its content and the extra icons fall off the screen instead of scrolling. */
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.35) transparent;
   }
   .app-icon {
     display: flex;
