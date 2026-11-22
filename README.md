@@ -5,7 +5,7 @@
 ### Teste tes applis web dans un vrai cadre mobile — en local, sans rien installer.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-5b6cff.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.9.0-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
+[![Version](https://img.shields.io/badge/version-1.9.1-8a3ffc.svg)](https://github.com/nd-digital/phonefake/releases)
 [![Vanilla JS](https://img.shields.io/badge/vanilla-JS%20%2B%20PHP-success.svg)]()
 [![No build](https://img.shields.io/badge/build-aucun-blue.svg)]()
 
@@ -33,7 +33,7 @@ Tester le rendu mobile d'une appli web, c'est souvent : redimensionner la fenêt
 | 🔄 **Rotation** | Bascule portrait ↔ paysage en un clic |
 | ⇆ **Comparaison** | Jusqu'à **3 appareils côte à côte** (téléphone, tablette, ordinateur), à la même hauteur — chaque colonne a son sélecteur, avec une option *Désactivé* |
 | ↻ **Rechargement sans cache** | Un bouton à côté de chaque écran recharge l'appli comme un `Ctrl+F5` : fichiers relus sur le serveur, service worker de l'appli écarté (appli sur le même serveur que PhoneFake) ; `⌂` ramène l'appli ouverte à sa page d'accueil |
-| ↑ ↓ ← → **Flèches de défilement** | Sous les boutons de chaque écran, quatre flèches font défiler l'écran d'accueil ou l'appli ouverte. Chaque flèche ne s'allume que si l'écran peut défiler dans sa direction. En zoom, elles déplacent la vue par pas d'un demi-écran, puis font défiler l'appli une fois le bord atteint. La molette de la souris marche toujours. Dans une appli hébergée sur un autre serveur, les flèches restent éteintes : son contenu n'est pas accessible depuis PhoneFake |
+| ↑ ↓ ← → **Flèches de défilement** | À gauche de chaque écran, au-dessus du zoom, quatre flèches font défiler l'écran d'accueil ou l'appli ouverte. Chaque flèche ne s'allume que si l'écran peut défiler dans sa direction. En zoom, elles déplacent la vue par pas d'un demi-écran, puis font défiler l'appli une fois le bord atteint. La molette de la souris marche toujours. Dans une appli hébergée sur un autre serveur, les flèches restent éteintes : son contenu n'est pas accessible depuis PhoneFake |
 | ⛶ **Agrandissement** | Un bouton à côté de chaque écran l'affiche en grand dans une fenêtre (pleine hauteur), `⤡`/`Échap` pour revenir |
 | 🔍 **Zoom** | Un curseur à gauche de chaque appareil pour agrandir, avec une flèche ↑ / ↓ à chaque bout pour avancer par pas de 25 %, et un bouton qui affiche le zoom actuel et ramène à 100 % d'un clic ; une fois zoomé, glisse dans la fenêtre pour te déplacer (comme un téléphone) et reviens à 100 % pour cliquer |
 | 🔄 **Synchro entre écrans** | En comparaison, tes actions (navigation, défilement, clics, saisie) se répercutent sur les autres écrans (agent `phonefake-sync.js`) |
