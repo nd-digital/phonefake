@@ -2347,7 +2347,41 @@
     }
 
     const AXIS = { up: 'y', down: 'y', left: 'x', right: 'x' };
+
+    function zoomedEntry() {
+      const entry = activeEntry();
+      return entry && entry.zoom && entry.zoom.level > 1 ? entry : null;
+    }
+
+    // Pan offsets are negative: 0 shows the top-left corner, the minimum shows the bottom-right one.
+    function canPan(entry, dir) {
+      const z = entry.zoom, fr = entry.iframe;
+      if (dir === 'up') return z.y < -1;
+      if (dir === 'left') return z.x < -1;
+      if (dir === 'down') return z.y > -fr.clientHeight * (z.level - 1) + 1;
+      return z.x > -fr.clientWidth * (z.level - 1) + 1;
+    }
+
+    function panStep(entry, dir) {
+      const z = entry.zoom, fr = entry.iframe;
+      const axis = AXIS[dir];
+      const sign = (dir === 'up' || dir === 'left') ? 1 : -1;
+      // One step = half the screen: enough to move on while keeping context in view.
+      const step = (axis === 'y' ? fr.clientHeight : fr.clientWidth) * 0.5;
+      if (axis === 'y') z.y += sign * step; else z.x += sign * step;
+      clampPan(entry);
+      const tf = 'translate3d(' + z.x + 'px,' + z.y + 'px,0) scale(' + z.level + ')';
+      const frames = [fr, ...document.querySelectorAll('.phone.mirror .app-window.active iframe')];
+      frames.forEach(f => { f.style.transition = 'transform .2s ease'; f.style.transform = tf; });
+      setTimeout(() => {
+        frames.forEach(f => { f.style.transition = ''; });
+        if (compareEnabled) buildCompareMirror();
+      }, 220);
+    }
+
     function canScroll(dir) {
+      const zoomed = zoomedEntry();
+      if (zoomed && canPan(zoomed, dir)) return true;
       const el = scrollTarget(AXIS[dir]);
       if (!el) return false;
       if (dir === 'up') return el.scrollTop > 1;
@@ -2357,6 +2391,9 @@
     }
 
     function scrollActive(dir) {
+      // Zoomed in: move across the enlarged screen first; once at its edge, scroll the app itself.
+      const zoomed = zoomedEntry();
+      if (zoomed && canPan(zoomed, dir)) { panStep(zoomed, dir); return; }
       const axis = AXIS[dir];
       const target = scrollTarget(axis);
       if (!target) return;
@@ -2471,7 +2508,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.8.9';
+  const APP_VERSION = '1.8.10';
   const GH_REPO = 'nd-digital/phonefake';
   // Always show the installed version in the footer
   (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();
