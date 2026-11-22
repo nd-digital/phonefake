@@ -1108,8 +1108,8 @@
 
   /* Vertical zoom slider, to the right of each device (shown when an app is open) */
   .zoom-bar {
-    /* Leaves room above for the scroll arrows (144px), the 100% button and the + step; below for the − step. */
-    position: absolute; top: max(12%, calc(222px / var(--phone-scale, 1))); bottom: max(12%, calc(44px / var(--phone-scale, 1))); left: calc(-38px / var(--phone-scale, 1)); width: 12px;
+    /* Leaves room above for the scroll arrows (144px), the reset button, the percentage and the + step; below for the − step. */
+    position: absolute; top: max(12%, calc(250px / var(--phone-scale, 1))); bottom: max(12%, calc(44px / var(--phone-scale, 1))); left: calc(-38px / var(--phone-scale, 1)); width: 12px;
     border-radius: 999px; background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.18);
     display: none; cursor: pointer; touch-action: none; z-index: 6;
@@ -1126,7 +1126,7 @@
     transform: translate(-50%, 50%); cursor: grab; pointer-events: none;
   }
   .zoom-bar.dragging .zoom-thumb { cursor: grabbing; }
-  .zoom-step {
+  .zoom-step, .zoom-reset {
     position: absolute; left: 50%; transform: translateX(-50%);
     zoom: calc(1 / var(--phone-scale, 1));
     width: 22px; height: 22px; padding: 0; border-radius: 7px;
@@ -1135,19 +1135,19 @@
     color: #fff; font-size: 13px; line-height: 1; cursor: pointer;
   }
   .zoom-step-up { bottom: calc(100% + 6px); }
+  .zoom-reset { bottom: calc(100% + 60px); font-size: 15px; }
   .zoom-step-down { top: calc(100% + 16px); }   /* clears the thumb, which overhangs the bottom end */
-  .zoom-step:hover:not(:disabled) { background: rgba(138, 63, 252, 0.5); }
-  .zoom-step:disabled { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.08); color: rgba(203, 208, 220, 0.3); cursor: default; }
-  .zoom-step:focus-visible, .zoom-pct:focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; }
+  .zoom-step:hover:not(:disabled), .zoom-reset:hover:not(:disabled) { background: rgba(138, 63, 252, 0.5); }
+  .zoom-step:disabled, .zoom-reset:disabled { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.08); color: rgba(203, 208, 220, 0.3); cursor: default; }
+  .zoom-step:focus-visible, .zoom-reset:focus-visible { outline: 2px solid #4a90e2; outline-offset: 2px; }
   .zoom-pct {
     position: absolute; bottom: calc(100% + 32px); left: 50%; transform: translateX(-50%);
     /* The device is shrunk with `zoom`; undo it so every label reads at the same size. */
     zoom: calc(1 / var(--phone-scale, 1));
     font-size: 13px; font-weight: 600; color: #cdd4e6; white-space: nowrap;
     background: rgba(0, 0, 0, 0.55); padding: 1px 6px; border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.18); font-family: inherit; line-height: 1.4; cursor: pointer;
+    line-height: 1.4; pointer-events: none;
   }
-  .zoom-pct:hover { background: rgba(138, 63, 252, 0.5); color: #fff; }
 
   /* App switcher */
   .app-switcher {

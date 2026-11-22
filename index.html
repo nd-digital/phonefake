@@ -312,7 +312,8 @@
   <div class="zoom-bar" id="zoomBar" role="slider" data-i18n-aria-label="zoomLabel" aria-label="Zoom" data-i18n-title="zoomHint" title="Zoom — glisser ; bas = 100 %">
     <div class="zoom-fill" id="zoomFill"></div>
     <div class="zoom-thumb" id="zoomThumb"></div>
-    <button type="button" class="zoom-pct" id="zoomPct" data-i18n-title="zoomResetTitle" title="Revenir à 100 %" data-i18n-aria-label="zoomResetTitle" aria-label="Revenir à 100 %">100%</button>
+    <button type="button" class="zoom-reset" data-i18n-title="zoomResetTitle" title="Revenir à 100 %" data-i18n-aria-label="zoomResetTitle" aria-label="Revenir à 100 %">↺</button>
+    <div class="zoom-pct" id="zoomPct" aria-live="polite">100%</div>
     <button type="button" class="zoom-step zoom-step-up" data-zoom-step="1" data-i18n-title="zoomInTitle" title="Zoomer (+25 %)" data-i18n-aria-label="zoomInTitle" aria-label="Zoomer (+25 %)">↑</button>
     <button type="button" class="zoom-step zoom-step-down" data-zoom-step="-1" data-i18n-title="zoomOutTitle" title="Dézoomer (−25 %)" data-i18n-aria-label="zoomOutTitle" aria-label="Dézoomer (−25 %)">↓</button>
   </div>
@@ -2075,7 +2076,7 @@
     zoomThumb.style.bottom = (p * 100) + '%';
     zoomPct.textContent = Math.round(level * 100) + '%';
     document.querySelectorAll('.phone .zoom-step-up').forEach(b => { b.disabled = level >= ZMAX - 0.001; });
-    document.querySelectorAll('.phone .zoom-step-down').forEach(b => { b.disabled = level <= ZMIN + 0.001; });
+    document.querySelectorAll('.phone .zoom-step-down, .phone .zoom-reset').forEach(b => { b.disabled = level <= ZMIN + 0.001; });
   }
 
   // Drag a vertical slider → set the zoom level (bottom = 100%, top = max).
@@ -2100,7 +2101,7 @@
     let dragging = false, bar = null;
     stage.addEventListener('pointerdown', (e) => {
       const hit = e.target.closest('.zoom-bar');
-      if (!hit || !activeEntry() || e.target.closest('.zoom-step, .zoom-pct')) return;
+      if (!hit || !activeEntry() || e.target.closest('.zoom-step, .zoom-reset, .zoom-pct')) return;
       dragging = true; bar = hit; bar.classList.add('dragging');
       try { bar.setPointerCapture(e.pointerId); } catch {}
       zoomFromClientY(e.clientY, false, bar); e.preventDefault();
@@ -2116,7 +2117,7 @@
     stage.addEventListener('pointerup', end);
     stage.addEventListener('pointercancel', end);
   })();
-  // Step buttons and the 100% button sit on every slider, mirrors included (hence delegation).
+  // Step buttons and the reset button sit on every slider, mirrors included (hence delegation).
   const ZSTEP = 0.25;
   function setZoomLevel(level) {
     const entry = activeEntry();
@@ -2136,7 +2137,8 @@
       if (entry && !step.disabled) setZoomLevel((entry.zoom ? entry.zoom.level : 1) + Number(step.dataset.zoomStep) * ZSTEP);
       return;
     }
-    if (e.target.closest('.phone .zoom-pct')) setZoomLevel(ZMIN);
+    const reset = e.target.closest('.phone .zoom-reset');
+    if (reset && !reset.disabled) setZoomLevel(ZMIN);
   });
   refreshZoomLabel();
 
@@ -2534,7 +2536,7 @@
 
   // -------- Update check (compares APP_VERSION with the latest GitHub release) --------
   // Bump APP_VERSION on every release so users see when a newer one is available.
-  const APP_VERSION = '1.9.1';
+  const APP_VERSION = '1.9.2';
   const GH_REPO = 'nd-digital/phonefake';
   // Always show the installed version in the footer
   (function () { const v = document.getElementById('appVersionLabel'); if (v) v.textContent = 'v' + APP_VERSION; })();
